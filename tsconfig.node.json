@@ -16,6 +16,7 @@
     "incremental": true,
     "moduleResolution": "bundler",
     "tsBuildInfoFile": ".tsbuildinfo/tsconfig.node.tsbuildinfo",
+    "skipLibCheck": true,
     "types": [
       "electron-vite/node",
       "vitest/globals"

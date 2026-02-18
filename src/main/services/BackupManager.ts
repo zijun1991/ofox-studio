@@ -503,7 +503,7 @@ class BackupManager {
     try {
       const client = this.getWebDavInstance(config)
       const response = await client.getDirectoryContents()
-      const files = Array.isArray(response) ? response : response.data
+      const files: FileStat[] = Array.isArray(response) ? response : (response as any).data
 
       return files
         .filter((file: FileStat) => file.type === 'file' && file.basename.endsWith('.zip'))

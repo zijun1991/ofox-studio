@@ -9,7 +9,7 @@ import {
   updateMemorySystemPrompt
 } from '@renderer/utils/memory-prompts'
 import type { MemoryConfig, MemoryItem } from '@types'
-import jaison from 'jaison/lib/index.js'
+import jaison from 'jaison'
 
 import { fetchGenerate } from './ApiService'
 import MemoryService from './MemoryService'
@@ -63,12 +63,12 @@ export class MemoryProcessor {
       // Parse response using Zod schema
       try {
         logger.debug(`Response content for extraction: ${responseContent}`)
-        const jsonParsed = jaison(responseContent)
+        const jsonParsed = jaison(responseContent) as Record<string, unknown> | unknown[]
         // Handle both expected format and potential variations
         let dataToValidate = jsonParsed
 
         // If the response has a 'facts' key at the top level, use it directly
-        if (!jsonParsed.facts && Array.isArray(jsonParsed)) {
+        if (jsonParsed && typeof jsonParsed === 'object' && !('facts' in jsonParsed) && Array.isArray(jsonParsed)) {
           // If it's just an array, wrap it in the expected format
           dataToValidate = { facts: jsonParsed }
         }
@@ -133,9 +133,9 @@ export class MemoryProcessor {
 
       try {
         logger.debug(`Response content for memory update: ${responseContent}`)
-        const jsonParsed = jaison(responseContent)
+        const jsonParsed = jaison(responseContent) as Record<string, unknown> | unknown[]
         // Handle both direct array and wrapped object format
-        const dataToValidate = Array.isArray(jsonParsed) ? jsonParsed : jsonParsed.memory
+        const dataToValidate = Array.isArray(jsonParsed) ? jsonParsed : (jsonParsed as Record<string, unknown>).memory
         parsed = MemoryUpdateSchema.parse(dataToValidate)
       } catch (error) {
         logger.error(`Failed to parse memory update response: responseContent: ${responseContent}`, error as Error)

@@ -12,12 +12,19 @@
     "packages/mcp-trace/**/*",
     "packages/shared/**/*",
   ],
+  "exclude": [
+    "node_modules",
+    "node_modules/.pnpm"
+  ],
   "compilerOptions": {
     "composite": true,
     "incremental": true,
     "tsBuildInfoFile": ".tsbuildinfo/tsconfig.web.tsbuildinfo",
     "jsx": "react-jsx",
     "moduleResolution": "bundler",
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
     "paths": {
       "@logger": ["./src/renderer/src/services/LoggerService"],
       "@renderer/*": ["./src/renderer/src/*"],
