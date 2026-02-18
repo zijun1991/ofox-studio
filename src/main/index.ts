@@ -8,7 +8,7 @@ import '@main/config'
 import { loggerService } from '@logger'
 import { electronApp, optimizer } from '@electron-toolkit/utils'
 import { replaceDevtoolsFont } from '@main/utils/windowUtil'
-import { app, crashReporter } from 'electron'
+import { app, crashReporter, session } from 'electron'
 import installExtension, { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS } from 'electron-devtools-installer'
 import { isDev, isLinux, isWin } from './constant'
 
@@ -130,6 +130,22 @@ if (!app.requestSingleInstanceLock()) {
   app.quit()
   process.exit(0)
 } else {
+  // Add Referer header for all ofox.ai requests
+  // This is required for ofox.ai API calls to work correctly
+  app.whenReady().then(() => {
+    session.defaultSession.webRequest.onBeforeSendHeaders(
+      { urls: ['https://*.ofox.ai/*', 'https://ofox.ai/*'] },
+      (details, callback) => {
+        callback({
+          requestHeaders: {
+            ...details.requestHeaders,
+            Referer: 'https://app.ofox.ai/'
+          }
+        })
+      }
+    )
+  })
+
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.

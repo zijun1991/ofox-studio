@@ -64,6 +64,7 @@ import NotificationService from './services/NotificationService'
 import * as NutstoreService from './services/NutstoreService'
 import ObsidianVaultService from './services/ObsidianVaultService'
 import { ocrService } from './services/ocr/OcrService'
+import { ofoxService } from './services/OfoxService'
 import { openClawService } from './services/OpenClawService'
 import { isOvmsSupported } from './services/OvmsManager'
 import powerMonitorService from './services/PowerMonitorService'
@@ -1169,4 +1170,14 @@ export async function registerIpc(mainWindow: BrowserWindow, app: Electron.App) 
   ipcMain.handle(IpcChannel.Analytics_TrackTokenUsage, (_, data: TokenUsageData) =>
     analyticsService.trackTokenUsage(data)
   )
+
+  // Ofox
+  ipcMain.handle(IpcChannel.Ofox_GetSession, () => ofoxService.getSession())
+  ipcMain.handle(IpcChannel.Ofox_IsLoggedIn, () => ofoxService.isLoggedIn())
+  ipcMain.handle(IpcChannel.Ofox_GetUserInfo, () => ofoxService.getUserInfo())
+  ipcMain.handle(IpcChannel.Ofox_GetLoginUrl, () => ofoxService.getLoginUrl())
+  ipcMain.handle(IpcChannel.Ofox_GetDashboardUrl, () => ofoxService.getDashboardUrl())
+  ipcMain.handle(IpcChannel.Ofox_IsLoginComplete, (_, url: string) => ofoxService.isLoginComplete(url))
+  ipcMain.handle(IpcChannel.Ofox_Logout, () => ofoxService.logout())
+  ipcMain.handle(IpcChannel.Ofox_GetModels, () => ofoxService.getModels())
 }

@@ -1,5 +1,6 @@
 // import { loggerService } from '@logger'
 import TopViewMinappContainer from '@renderer/components/MinApp/TopViewMinappContainer'
+import OfoxLoginModal from '@renderer/components/OfoxLoginModal'
 import { useAppInit } from '@renderer/hooks/useAppInit'
 import { useShortcuts } from '@renderer/hooks/useShortcuts'
 import { message, Modal } from 'antd'
@@ -102,6 +103,7 @@ const TopViewContainer: React.FC<Props> = ({ children }) => {
       {messageContextHolder}
       {modalContextHolder}
       <TopViewMinappContainer />
+      <OfoxLoginModal />
       {elements.map(({ element: Element, id }) => (
         <FullScreenContainer key={`TOPVIEW_${id}`}>
           {typeof Element === 'function' ? <Element /> : Element}

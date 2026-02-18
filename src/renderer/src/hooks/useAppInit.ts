@@ -6,8 +6,10 @@ import db from '@renderer/databases'
 import i18n, { setDayjsLocale } from '@renderer/i18n'
 import KnowledgeQueue from '@renderer/queue/KnowledgeQueue'
 import MemoryService from '@renderer/services/MemoryService'
+import OfoxProviderService from '@renderer/services/OfoxProviderService'
 import { handleSaveData, useAppDispatch, useAppSelector } from '@renderer/store'
 import { selectMemoryConfig } from '@renderer/store/memory'
+import { setChecking, setShowLoginModal, setUser } from '@renderer/store/ofoxStore'
 import { setAvatar, setFilesPath, setResourcesPath, setUpdateState } from '@renderer/store/runtime'
 import {
   type ToolPermissionRequestPayload,
@@ -57,6 +59,45 @@ export function useAppInit() {
 
     // Initialize MemoryService after app is ready
     MemoryService.getInstance()
+
+    // Check Ofox login status on app startup
+    const checkOfoxLogin = async () => {
+      try {
+        dispatch(setChecking(true))
+        const response = await window.api.ofox.getSession()
+        logger.debug('Ofox session check response:', response)
+
+        if (response.success && response.data?.user) {
+          dispatch(
+            setUser({
+              id: response.data.user.id,
+              email: response.data.user.email,
+              name: response.data.user.name,
+              image: response.data.user.image,
+              emailVerified: response.data.user.emailVerified
+            })
+          )
+          logger.info('Ofox user logged in:', response.data.user.email)
+
+          // Sync Ofox providers and models
+          OfoxProviderService.getInstance()
+            .syncProviders(dispatch)
+            .catch((err) => logger.error('Failed to sync Ofox providers:', err as Error))
+        } else {
+          // Not logged in, show login modal
+          logger.info('Ofox user not logged in, showing login modal')
+          dispatch(setShowLoginModal(true))
+        }
+      } catch (error) {
+        logger.error('Failed to check Ofox login status:', error as Error)
+        dispatch(setShowLoginModal(true))
+      } finally {
+        dispatch(setChecking(false))
+      }
+    }
+
+    checkOfoxLogin()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {

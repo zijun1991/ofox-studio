@@ -24,6 +24,7 @@ export * from './knowledge'
 export * from './mcp'
 export * from './notification'
 export * from './ocr'
+export * from './ofox'
 export * from './plugin'
 export * from './provider'
 

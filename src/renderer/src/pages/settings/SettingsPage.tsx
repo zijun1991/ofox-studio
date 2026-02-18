@@ -31,7 +31,7 @@ import DocProcessSettings from './DocProcessSettings'
 import GeneralSettings from './GeneralSettings'
 import MCPSettings from './MCPSettings'
 import MemorySettings from './MemorySettings'
-import { ProviderList } from './ProviderSettings'
+import { ProviderListNew } from './ProviderSettings'
 import QuickAssistantSettings from './QuickAssistantSettings'
 import QuickPhraseSettings from './QuickPhraseSettings'
 import SelectionAssistantSettings from './SelectionAssistantSettings/SelectionAssistantSettings'
@@ -149,7 +149,7 @@ const SettingsPage: FC = () => {
         </SettingMenus>
         <SettingContent>
           <Routes>
-            <Route path="provider" element={<ProviderList />} />
+            <Route path="provider" element={<ProviderListNew />} />
             <Route path="model" element={<ModelSettings />} />
             <Route path="websearch/*" element={<WebSearchSettings />} />
             <Route path="api-server" element={<ApiServerSettings />} />

@@ -427,5 +427,15 @@ export enum IpcChannel {
   OpenClaw_GetChannels = 'openclaw:get-channels',
 
   // Analytics
-  Analytics_TrackTokenUsage = 'analytics:track-token-usage'
+  Analytics_TrackTokenUsage = 'analytics:track-token-usage',
+
+  // Ofox
+  Ofox_GetSession = 'ofox:get-session',
+  Ofox_IsLoggedIn = 'ofox:is-logged-in',
+  Ofox_GetUserInfo = 'ofox:get-user-info',
+  Ofox_GetLoginUrl = 'ofox:get-login-url',
+  Ofox_GetDashboardUrl = 'ofox:get-dashboard-url',
+  Ofox_IsLoginComplete = 'ofox:is-login-complete',
+  Ofox_Logout = 'ofox:logout',
+  Ofox_GetModels = 'ofox:get-models'
 }

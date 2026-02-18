@@ -39,6 +39,7 @@ import { setNotesPath } from './note'
 import note from './note'
 import nutstore from './nutstore'
 import ocr from './ocr'
+import ofox from './ofoxStore'
 import openclaw from './openclaw'
 import paintings from './paintings'
 import preprocess from './preprocess'
@@ -79,7 +80,8 @@ const rootReducer = combineReducers({
   translate,
   ocr,
   note,
-  toolPermissions
+  toolPermissions,
+  ofox
 })
 
 const persistedReducer = persistReducer(
@@ -87,7 +89,7 @@ const persistedReducer = persistReducer(
     key: 'cherry-studio',
     storage,
     version: 198,
-    blacklist: ['runtime', 'messages', 'messageBlocks', 'tabs', 'toolPermissions'],
+    blacklist: ['runtime', 'messages', 'messageBlocks', 'tabs', 'toolPermissions', 'ofox'],
     migrate
   },
   rootReducer

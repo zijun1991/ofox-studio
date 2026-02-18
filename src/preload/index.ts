@@ -696,6 +696,16 @@ const api = {
   },
   analytics: {
     trackTokenUsage: (data: TokenUsageData) => ipcRenderer.invoke(IpcChannel.Analytics_TrackTokenUsage, data)
+  },
+  ofox: {
+    getSession: () => ipcRenderer.invoke(IpcChannel.Ofox_GetSession),
+    isLoggedIn: () => ipcRenderer.invoke(IpcChannel.Ofox_IsLoggedIn),
+    getUserInfo: () => ipcRenderer.invoke(IpcChannel.Ofox_GetUserInfo),
+    getLoginUrl: () => ipcRenderer.invoke(IpcChannel.Ofox_GetLoginUrl),
+    getDashboardUrl: () => ipcRenderer.invoke(IpcChannel.Ofox_GetDashboardUrl),
+    isLoginComplete: (url: string) => ipcRenderer.invoke(IpcChannel.Ofox_IsLoginComplete, url),
+    logout: () => ipcRenderer.invoke(IpcChannel.Ofox_Logout),
+    getModels: () => ipcRenderer.invoke(IpcChannel.Ofox_GetModels)
   }
 }
 
