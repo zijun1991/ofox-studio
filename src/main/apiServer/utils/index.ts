@@ -6,6 +6,17 @@ import type { ApiModel, Model, Provider } from '@types'
 
 const logger = loggerService.withContext('ApiServerUtils')
 
+/**
+ * Extract a single string value from Express params/query which can be string | string[]
+ * Returns undefined if the value is an array or undefined
+ */
+export function getParamString(value: string | string[] | undefined): string | undefined {
+  if (Array.isArray(value)) {
+    return value[0]
+  }
+  return value
+}
+
 // Cache configuration
 const PROVIDERS_CACHE_KEY = 'api-server:providers'
 const PROVIDERS_CACHE_TTL = 10 * 1000 // 10 seconds

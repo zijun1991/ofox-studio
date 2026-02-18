@@ -1,5 +1,6 @@
 import { loggerService } from '@logger'
 import { MESSAGE_STREAM_TIMEOUT_MS } from '@main/apiServer/config/timeouts'
+import { getParamString } from '@main/apiServer/utils'
 import {
   createStreamAbortController,
   STREAM_TIMEOUT_REASON,
@@ -33,7 +34,8 @@ export const createMessage = async (req: Request, res: Response): Promise<void> 
   let streamController: StreamAbortController | undefined
 
   try {
-    const { agentId, sessionId } = req.params
+    const agentId = getParamString(req.params.agentId)!
+    const sessionId = getParamString(req.params.sessionId)!
 
     const session = await verifyAgentAndSession(agentId, sessionId)
 
@@ -263,8 +265,9 @@ export const createMessage = async (req: Request, res: Response): Promise<void> 
 
 export const deleteMessage = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const { agentId, sessionId, messageId: messageIdParam } = req.params
-    const messageId = Number(messageIdParam)
+    const agentId = getParamString(req.params.agentId)!
+    const sessionId = getParamString(req.params.sessionId)!
+    const messageId = Number(getParamString(req.params.messageId))
 
     await verifyAgentAndSession(agentId, sessionId)
 

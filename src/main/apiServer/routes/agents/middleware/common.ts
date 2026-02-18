@@ -2,6 +2,7 @@ import type { Request, Response } from 'express'
 
 import { agentService } from '../../../../services/agents'
 import { loggerService } from '../../../../services/LoggerService'
+import { getParamString } from '../../../utils'
 
 const logger = loggerService.withContext('ApiServerMiddleware')
 
@@ -13,7 +14,7 @@ export const handleValidationErrors = (_req: Request, _res: Response, next: any)
 // Middleware to check if agent exists
 export const checkAgentExists = async (req: Request, res: Response, next: any): Promise<void> => {
   try {
-    const { agentId } = req.params
+    const agentId = getParamString(req.params.agentId)!
     const exists = await agentService.agentExists(agentId)
 
     if (!exists) {

@@ -5,7 +5,7 @@ import type { Request, Response } from 'express'
 import express from 'express'
 
 import { messagesService } from '../services/messages'
-import { getProviderById, validateModelId } from '../utils'
+import { getParamString, getProviderById, validateModelId } from '../utils'
 
 const logger = loggerService.withContext('ApiServerMessagesRoutes')
 
@@ -367,7 +367,7 @@ providerRouter.post('/', async (req: Request, res: Response) => {
   }
 
   try {
-    const providerId = req.params.provider
+    const providerId = getParamString(req.params.provider)
 
     if (!providerId) {
       return res.status(400).json({

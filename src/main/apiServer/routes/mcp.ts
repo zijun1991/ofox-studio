@@ -3,6 +3,7 @@ import express from 'express'
 
 import { loggerService } from '../../services/LoggerService'
 import { mcpApiService } from '../services/mcp'
+import { getParamString } from '../utils'
 
 const logger = loggerService.withContext('ApiServerMCPRoutes')
 
@@ -103,13 +104,12 @@ router.get('/', async (req: Request, res: Response) => {
  *                   $ref: '#/components/schemas/Error'
  */
 router.get('/:server_id', async (req: Request, res: Response) => {
+  const serverId = getParamString(req.params.server_id)!
   try {
-    logger.debug('Get MCP server info request received', {
-      serverId: req.params.server_id
-    })
-    const server = await mcpApiService.getServerInfo(req.params.server_id)
+    logger.debug('Get MCP server info request received', { serverId })
+    const server = await mcpApiService.getServerInfo(serverId)
     if (!server) {
-      logger.warn('MCP server not found', { serverId: req.params.server_id })
+      logger.warn('MCP server not found', { serverId })
       return res.status(404).json({
         success: false,
         error: {
@@ -124,7 +124,7 @@ router.get('/:server_id', async (req: Request, res: Response) => {
       data: server
     })
   } catch (error: any) {
-    logger.error('Error fetching MCP server info', { error, serverId: req.params.server_id })
+    logger.error('Error fetching MCP server info', { error, serverId })
     return res.status(503).json({
       success: false,
       error: {
@@ -138,9 +138,10 @@ router.get('/:server_id', async (req: Request, res: Response) => {
 
 // Connect to MCP server
 router.all('/:server_id/mcp', async (req: Request, res: Response) => {
-  const server = await mcpApiService.getServerById(req.params.server_id)
+  const serverId = getParamString(req.params.server_id)!
+  const server = await mcpApiService.getServerById(serverId)
   if (!server) {
-    logger.warn('MCP server not found', { serverId: req.params.server_id })
+    logger.warn('MCP server not found', { serverId })
     return res.status(404).json({
       success: false,
       error: {

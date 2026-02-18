@@ -1,4 +1,5 @@
 import { loggerService } from '@logger'
+import { getParamString } from '@main/apiServer/utils'
 import { AgentModelValidationError, agentService, sessionService } from '@main/services/agents'
 import type { ListAgentsResponse } from '@types'
 import { type ReplaceAgentRequest, type UpdateAgentRequest } from '@types'
@@ -252,10 +253,10 @@ export const listAgents = async (req: Request, res: Response): Promise<Response>
  */
 export const getAgent = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const { agentId } = req.params
+    const agentId = getParamString(req.params.agentId)
     logger.debug('Getting agent', { agentId })
 
-    const agent = await agentService.getAgent(agentId)
+    const agent = await agentService.getAgent(agentId!)
 
     if (!agent) {
       logger.warn('Agent not found', { agentId })
@@ -329,7 +330,7 @@ export const getAgent = async (req: Request, res: Response): Promise<Response> =
  *               $ref: '#/components/schemas/Error'
  */
 export const updateAgent = async (req: Request, res: Response): Promise<Response> => {
-  const { agentId } = req.params
+  const agentId = getParamString(req.params.agentId)!
   try {
     logger.debug('Updating agent', { agentId })
     logger.debug('Replace payload', { body: req.body })
@@ -475,7 +476,7 @@ export const updateAgent = async (req: Request, res: Response): Promise<Response
  *               $ref: '#/components/schemas/Error'
  */
 export const patchAgent = async (req: Request, res: Response): Promise<Response> => {
-  const { agentId } = req.params
+  const agentId = getParamString(req.params.agentId)!
   try {
     logger.debug('Partially updating agent', { agentId })
     logger.debug('Patch payload', { body: req.body })
@@ -553,10 +554,10 @@ export const patchAgent = async (req: Request, res: Response): Promise<Response>
  */
 export const deleteAgent = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const { agentId } = req.params
+    const agentId = getParamString(req.params.agentId)
     logger.debug('Deleting agent', { agentId })
 
-    const deleted = await agentService.deleteAgent(agentId)
+    const deleted = await agentService.deleteAgent(agentId!)
 
     if (!deleted) {
       logger.warn('Agent not found for deletion', { agentId })
