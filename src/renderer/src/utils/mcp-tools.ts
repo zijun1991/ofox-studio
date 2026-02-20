@@ -168,7 +168,7 @@ export async function callMCPTool(
           env: resp.data.env,
           registryUrl: '',
           isActive: false,
-          provider: 'CherryAI'
+          provider: 'Unknown'
         }
         store.dispatch(addMCPServer(mcpServer))
       }

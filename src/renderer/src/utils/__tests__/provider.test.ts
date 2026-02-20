@@ -6,7 +6,6 @@ import {
   isAIGatewayProvider,
   isAnthropicProvider,
   isAzureOpenAIProvider,
-  isCherryAIProvider,
   isGeminiProvider,
   isGeminiWebSearchProvider,
   isNewApiProvider,
@@ -138,7 +137,7 @@ describe('provider utils', () => {
     expect(isSupportUrlContextProvider(createProvider({ type: 'gemini' }))).toBe(true)
     expect(
       isSupportUrlContextProvider(
-        createSystemProvider({ id: SystemProviderIds.cherryin, type: 'openai', isSystem: true })
+        createSystemProvider({ id: SystemProviderIds.anthropic, type: 'anthropic', isSystem: true })
       )
     ).toBe(true)
     expect(isSupportUrlContextProvider(createProvider())).toBe(false)
@@ -154,15 +153,11 @@ describe('provider utils', () => {
 
   it('detects New API providers by id or type', () => {
     expect(isNewApiProvider(createProvider({ id: SystemProviderIds['new-api'] }))).toBe(true)
-    expect(isNewApiProvider(createProvider({ id: SystemProviderIds.cherryin }))).toBe(true)
     expect(isNewApiProvider(createProvider({ type: 'new-api' }))).toBe(true)
     expect(isNewApiProvider(createProvider())).toBe(false)
   })
 
   it('detects specific provider ids', () => {
-    expect(isCherryAIProvider(createProvider({ id: 'cherryai' }))).toBe(true)
-    expect(isCherryAIProvider(createProvider())).toBe(false)
-
     expect(isPerplexityProvider(createProvider({ id: SystemProviderIds.perplexity }))).toBe(true)
     expect(isPerplexityProvider(createProvider())).toBe(false)
   })

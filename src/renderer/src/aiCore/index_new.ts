@@ -88,6 +88,11 @@ export default class ModernAiProvider {
   constructor(provider: Provider)
   constructor(modelOrProvider: Model | Provider, provider?: Provider)
   constructor(modelOrProvider: Model | Provider, provider?: Provider) {
+    // 防护检查：确保参数不为 undefined 或 null
+    if (!modelOrProvider) {
+      throw new Error('ModernAiProvider requires a Model or Provider parameter')
+    }
+
     if (this.isModel(modelOrProvider)) {
       // 传入的是 Model
       this.model = modelOrProvider
@@ -344,21 +349,42 @@ export default class ModernAiProvider {
         getText: () => finalText
       }
     } else {
-      const streamResult = await executor.streamText({
-        ...params,
-        model
+      // 非流式调用
+      // Ofox API 总是返回 SSE 流式响应，即使是 generateText/streamText 内部的非流式请求
+      // AI SDK 的 streamText 内部会调用 doGenerate，而 doGenerate 期望 JSON 响应
+      // 使用 legacy 实现来处理这种情况，因为它已经正确处理了 SSE 流
+
+      // 将 StreamTextParams 转换为字符串格式供 legacy 使用
+      // params 可能是 { prompt: string } 或 { messages: ModelMessage[] } 格式
+      let legacyMessages: string
+      if (params.prompt) {
+        // 如果是 prompt 格式，直接使用
+        legacyMessages = typeof params.prompt === 'string' ? params.prompt : JSON.stringify(params.prompt)
+      } else if (params.messages && params.messages.length > 0) {
+        // 如果是 messages 格式，转换为字符串
+        legacyMessages = JSON.stringify(params.messages)
+      } else {
+        legacyMessages = ''
+      }
+
+      const legacyParams: CompletionsParams = {
+        callType: 'summary', // 话题命名使用 summary 类型
+        messages: legacyMessages,
+        assistant: config.assistant,
+        streamOutput: false,
+        topicId: config.topicId,
+        mcpTools: config.mcpTools,
+        enableWebSearch: config.enableWebSearch
+      }
+
+      logger.info('[TopicNaming] Using legacy implementation for non-streaming', {
+        modelId: this.model?.id,
+        providerId: this.config?.providerId,
+        messagesType: params.prompt ? 'prompt' : 'messages',
+        messagesLength: legacyMessages.length
       })
 
-      // 强制消费流,不然await streamResult.text会阻塞
-      await streamResult?.consumeStream()
-
-      const finalText = await streamResult.text
-      const usage = await streamResult.totalUsage
-
-      return {
-        getText: () => finalText,
-        usage
-      }
+      return await this.legacyProvider.completions(legacyParams)
     }
   }
 

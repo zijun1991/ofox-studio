@@ -18,6 +18,7 @@ const logger = loggerService.withContext('OfoxProviderService')
  */
 class OfoxProviderService {
   private static instance: OfoxProviderService
+  private initialized = false
 
   private constructor() {}
 
@@ -26,6 +27,48 @@ class OfoxProviderService {
       OfoxProviderService.instance = new OfoxProviderService()
     }
     return OfoxProviderService.instance
+  }
+
+  /**
+   * 初始化 Ofox providers（不依赖网络请求）
+   * 在应用启动时立即调用，创建带有空模型列表的 providers
+   * @param dispatch Redux dispatch 函数
+   */
+  initializeProviders(dispatch: AppDispatch): void {
+    if (this.initialized) {
+      return
+    }
+
+    logger.info('Initializing Ofox providers...')
+
+    const currentProviders = (window.store?.getState() as RootState)?.llm?.providers || []
+
+    for (const protocol of OFOX_SUPPORTED_PROTOCOLS) {
+      const config = OFOX_PROVIDER_CONFIGS[protocol]
+      const providerId = config.id
+
+      // 检查供应商是否已存在
+      const existingProvider = currentProviders.find((p) => p.id === providerId)
+
+      if (!existingProvider) {
+        // 创建空的 provider，models 列表为空
+        const newProvider: Provider = {
+          id: providerId,
+          name: config.name,
+          type: config.type,
+          apiKey: OFOX_API_KEY,
+          apiHost: config.apiHost,
+          models: [],
+          enabled: true,
+          isSystem: false
+        }
+        dispatch(addProvider(newProvider))
+        logger.info(`Initialized empty provider ${providerId}`)
+      }
+    }
+
+    this.initialized = true
+    logger.info('Ofox providers initialization completed')
   }
 
   /**
@@ -64,11 +107,12 @@ class OfoxProviderService {
         const existingProvider = currentProviders.find((p) => p.id === providerId)
 
         if (existingProvider) {
-          // 更新现有供应商的模型
+          // 更新现有供应商的模型和 apiHost（确保配置同步）
           dispatch(
             updateProvider({
               id: providerId,
-              models: convertedModels
+              models: convertedModels,
+              apiHost: config.apiHost
             })
           )
           logger.debug(`Updated provider ${providerId} with ${convertedModels.length} models`)

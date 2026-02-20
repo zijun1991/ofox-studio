@@ -294,7 +294,6 @@ export function validateProvider(provider: Provider): boolean {
 
 export const getProviderAnthropicModelChecker = (providerId: string): ((m: Model) => boolean) => {
   switch (providerId) {
-    case 'cherryin':
     case 'new-api':
       return (m: Model) => m.endpoint_type === 'anthropic'
     case 'aihubmix':

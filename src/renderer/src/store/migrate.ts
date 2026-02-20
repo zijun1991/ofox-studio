@@ -24,10 +24,9 @@ import {
 } from '@renderer/config/constant'
 import { allMinApps } from '@renderer/config/minapps'
 import {
+  glm47FlashModel,
   isFunctionCallingModel,
   isNotSupportTextDeltaModel,
-  qwen3Next80BModel,
-  qwen38bModel,
   SYSTEM_MODELS
 } from '@renderer/config/models'
 import { BUILTIN_OCR_PROVIDERS, BUILTIN_OCR_PROVIDERS_MAP, DEFAULT_OCR_PROVIDER } from '@renderer/config/ocr'
@@ -2689,7 +2688,7 @@ const migrateConfig = {
     try {
       addProvider(state, 'sophnet')
       state.llm.providers = moveProvider(state.llm.providers, 'sophnet', 17)
-      state.settings.defaultPaintingProvider = 'cherryin'
+      state.settings.defaultPaintingProvider = 'silicon'
       return state
     } catch (error) {
       logger.error('migrate 170 error', error as Error)
@@ -2967,7 +2966,7 @@ const migrateConfig = {
   '183': (state: RootState) => {
     try {
       state.llm.providers.forEach((provider) => {
-        if (provider.id === SystemProviderIds.cherryin) {
+        if (provider.id === 'cherryin') {
           provider.apiHost = 'https://open.cherryin.cc'
           provider.anthropicApiHost = 'https://open.cherryin.cc'
         }
@@ -3169,20 +3168,20 @@ const migrateConfig = {
     try {
       const GLM_4_5_FLASH_MODEL = 'glm-4.5-flash'
       if (state.llm.defaultModel?.provider === 'cherryai' && state.llm.defaultModel?.id === GLM_4_5_FLASH_MODEL) {
-        state.llm.defaultModel = qwen3Next80BModel
+        state.llm.defaultModel = glm47FlashModel
       }
       if (state.llm.quickModel?.provider === 'cherryai' && state.llm.quickModel?.id === GLM_4_5_FLASH_MODEL) {
-        state.llm.quickModel = qwen38bModel
+        state.llm.quickModel = glm47FlashModel
       }
       if (state.llm.translateModel?.provider === 'cherryai' && state.llm.translateModel?.id === GLM_4_5_FLASH_MODEL) {
-        state.llm.translateModel = qwen3Next80BModel
+        state.llm.translateModel = glm47FlashModel
       }
       state.assistants.assistants.forEach((assistant) => {
         if (assistant.model?.provider === 'cherryai' && assistant.model?.id === GLM_4_5_FLASH_MODEL) {
-          assistant.model = qwen3Next80BModel
+          assistant.model = glm47FlashModel
         }
         if (assistant.defaultModel?.provider === 'cherryai' && assistant.defaultModel?.id === GLM_4_5_FLASH_MODEL) {
-          assistant.defaultModel = qwen3Next80BModel
+          assistant.defaultModel = glm47FlashModel
         }
       })
       return state
@@ -3242,6 +3241,78 @@ const migrateConfig = {
       return state
     } catch (error) {
       logger.error('migrate 198 error', error as Error)
+      return state
+    }
+  },
+  '199': (state: RootState) => {
+    try {
+      // Migrate default models from 'anthropic' to 'ofox-anthropic' provider
+      const GLM_47_FLASH_MODEL_ID = 'z-ai/glm-4.7-flash:free'
+      if (state.llm.defaultModel?.provider === 'anthropic' && state.llm.defaultModel?.id === GLM_47_FLASH_MODEL_ID) {
+        state.llm.defaultModel.provider = 'ofox-anthropic'
+      }
+      if (state.llm.quickModel?.provider === 'anthropic' && state.llm.quickModel?.id === GLM_47_FLASH_MODEL_ID) {
+        state.llm.quickModel.provider = 'ofox-anthropic'
+      }
+      if (
+        state.llm.translateModel?.provider === 'anthropic' &&
+        state.llm.translateModel?.id === GLM_47_FLASH_MODEL_ID
+      ) {
+        state.llm.translateModel.provider = 'ofox-anthropic'
+      }
+      logger.info('migrate 199 success')
+      return state
+    } catch (error) {
+      logger.error('migrate 199 error', error as Error)
+      return state
+    }
+  },
+  '200': (state: RootState) => {
+    try {
+      // Set default quickModel and translateModel if empty or invalid
+      const isValidModel = (model: any) => {
+        if (!model || !model.id || !model.provider) return false
+        // Check if provider exists
+        const providerExists = state.llm.providers?.some((p) => p.id === model.provider)
+        return providerExists
+      }
+
+      if (!isValidModel(state.llm.quickModel)) {
+        state.llm.quickModel = glm47FlashModel
+        logger.info('migrate 200: set quickModel to glm47FlashModel')
+      }
+      if (!isValidModel(state.llm.translateModel)) {
+        state.llm.translateModel = glm47FlashModel
+        logger.info('migrate 200: set translateModel to glm47FlashModel')
+      }
+      logger.info('migrate 200 success')
+      return state
+    } catch (error) {
+      logger.error('migrate 200 error', error as Error)
+      return state
+    }
+  },
+  '201': (state: RootState) => {
+    // Re-run model validation with improved logic
+    try {
+      const isValidModel = (model: any) => {
+        if (!model || !model.id || !model.provider) return false
+        const providerExists = state.llm.providers?.some((p) => p.id === model.provider)
+        return providerExists
+      }
+
+      if (!isValidModel(state.llm.quickModel)) {
+        state.llm.quickModel = glm47FlashModel
+        logger.info('migrate 201: set quickModel to glm47FlashModel')
+      }
+      if (!isValidModel(state.llm.translateModel)) {
+        state.llm.translateModel = glm47FlashModel
+        logger.info('migrate 201: set translateModel to glm47FlashModel')
+      }
+      logger.info('migrate 201 success')
+      return state
+    } catch (error) {
+      logger.error('migrate 201 error', error as Error)
       return state
     }
   }

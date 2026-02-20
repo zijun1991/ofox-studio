@@ -32,7 +32,8 @@ const STATIC_PROVIDER_MAPPING: Record<string, ProviderId> = {
   'openai-response': 'openai', // OpenAI Responses -> openai
   grok: 'xai', // Grok -> xai
   copilot: 'github-copilot-openai-compatible',
-  tokenflux: 'openrouter' // TokenFlux -> openrouter (fully compatible)
+  tokenflux: 'openrouter', // TokenFlux -> openrouter (fully compatible)
+  'ofox-anthropic': 'anthropic' // Ofox Anthropic uses native anthropic provider with custom fetch for Bearer auth
 }
 
 /**
@@ -95,8 +96,6 @@ export async function createAiSdkProvider(config: AiSdkConfig): Promise<AiSdkPro
       config.providerId = `${config.providerId}-chat`
     } else if (config.providerId === 'azure' && config.options?.mode === 'responses') {
       config.providerId = `${config.providerId}-responses`
-    } else if (config.providerId === 'cherryin' && config.options?.mode === 'chat') {
-      config.providerId = 'cherryin-chat'
     }
     localProvider = await createProviderCore(config.providerId, config.options)
 

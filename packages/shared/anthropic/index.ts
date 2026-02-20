@@ -88,10 +88,16 @@ export function getSdkClient(
       }
     })
   }
-  const baseURL =
+  let baseURL =
     provider.type === 'anthropic'
       ? provider.apiHost
       : (provider.anthropicApiHost && provider.anthropicApiHost.trim()) || provider.apiHost
+
+  // 官方 SDK @anthropic-ai/sdk 会自动追加 /v1/messages
+  // 如果 baseURL 已经包含 /v1，需要移除以避免 /v1/v1/messages
+  if (baseURL.endsWith('/v1')) {
+    baseURL = baseURL.slice(0, -3)
+  }
 
   logger.debug('Anthropic API baseURL', { baseURL, providerId: provider.id })
 

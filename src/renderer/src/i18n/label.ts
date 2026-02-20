@@ -35,7 +35,6 @@ const providerKeyMap = {
   'baidu-cloud': 'provider.baidu-cloud',
   burncloud: 'provider.burncloud',
   cephalon: 'provider.cephalon',
-  cherryin: 'provider.cherryin',
   copilot: 'provider.copilot',
   dashscope: 'provider.dashscope',
   deepseek: 'provider.deepseek',
@@ -187,7 +186,8 @@ const sidebarIconKeyMap = {
   files: 'files.title',
   code_tools: 'code.title',
   notes: 'notes.title',
-  openclaw: 'openclaw.title'
+  openclaw: 'openclaw.title',
+  tools: 'tools.title'
 } as const
 
 export const getSidebarIconLabel = (key: string): string => {

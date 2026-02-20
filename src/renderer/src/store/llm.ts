@@ -47,10 +47,6 @@ type LlmSettings = {
     apiKey: string
     region: string
   }
-  cherryIn: {
-    accessToken: string
-    refreshToken: string
-  }
 }
 
 export interface LlmState {
@@ -95,10 +91,6 @@ export const initialState: LlmState = {
       secretAccessKey: '',
       apiKey: '',
       region: ''
-    },
-    cherryIn: {
-      accessToken: '',
-      refreshToken: ''
     }
   }
 }
@@ -240,24 +232,6 @@ const llmSlice = createSlice({
     setAwsBedrockRegion: (state, action: PayloadAction<string>) => {
       state.settings.awsBedrock.region = action.payload
     },
-    setCherryInTokens: (state, action: PayloadAction<{ accessToken: string; refreshToken?: string }>) => {
-      if (!state.settings.cherryIn) {
-        state.settings.cherryIn = {
-          accessToken: '',
-          refreshToken: ''
-        }
-      }
-
-      state.settings.cherryIn.accessToken = action.payload.accessToken
-
-      if (action.payload.refreshToken !== undefined) {
-        state.settings.cherryIn.refreshToken = action.payload.refreshToken
-      }
-    },
-    clearCherryInTokens: (state) => {
-      state.settings.cherryIn.accessToken = ''
-      state.settings.cherryIn.refreshToken = ''
-    },
     updateModel: (
       state,
       action: PayloadAction<{
@@ -299,8 +273,6 @@ export const {
   setAwsBedrockSecretAccessKey,
   setAwsBedrockApiKey,
   setAwsBedrockRegion,
-  setCherryInTokens,
-  clearCherryInTokens,
   updateModel
 } = llmSlice.actions
 

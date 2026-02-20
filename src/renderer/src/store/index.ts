@@ -49,6 +49,7 @@ import settings from './settings'
 import shortcuts from './shortcuts'
 import tabs from './tabs'
 import toolPermissions from './toolPermissions'
+import tools from './tools'
 import translate from './translate'
 import websearch from './websearch'
 
@@ -66,6 +67,7 @@ const rootReducer = combineReducers({
   shortcuts,
   knowledge,
   minapps,
+  tools,
   websearch,
   mcp,
   memory,
@@ -88,7 +90,7 @@ const persistedReducer = persistReducer(
   {
     key: 'cherry-studio',
     storage,
-    version: 198,
+    version: 201,
     blacklist: ['runtime', 'messages', 'messageBlocks', 'tabs', 'toolPermissions', 'ofox'],
     migrate
   },

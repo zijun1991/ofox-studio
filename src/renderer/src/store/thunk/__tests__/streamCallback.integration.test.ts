@@ -45,17 +45,11 @@ vi.mock('@renderer/config/models', async (importOriginal) => {
   const actual = (await importOriginal()) as Record<string, unknown>
   return {
     ...actual,
-    glm45FlashModel: {
-      id: 'glm-4.5-flash',
-      name: 'GLM-4.5-Flash',
-      provider: 'cherryai',
-      group: 'GLM-4.5'
-    },
-    qwen38bModel: {
-      id: 'Qwen/Qwen3-8B',
-      name: 'Qwen3-8B',
-      provider: 'cherryai',
-      group: 'Qwen'
+    glm47FlashModel: {
+      id: 'z-ai/glm-4.7-flash:free',
+      name: 'GLM-4.7-Flash',
+      provider: 'anthropic',
+      group: 'GLM'
     },
     SYSTEM_MODELS: {
       defaultModel: [{}, {}, {}],

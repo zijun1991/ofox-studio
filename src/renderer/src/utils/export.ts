@@ -700,7 +700,7 @@ export const exportMarkdownToYuque = async (title: string, content: string): Pro
       headers: {
         'Content-Type': 'application/json',
         'X-Auth-Token': yuqueToken,
-        'User-Agent': 'CherryAI'
+        'User-Agent': 'OfoxStudio'
       },
       body: JSON.stringify({
         title: title,
@@ -722,7 +722,7 @@ export const exportMarkdownToYuque = async (title: string, content: string): Pro
       headers: {
         'Content-Type': 'application/json',
         'X-Auth-Token': yuqueToken,
-        'User-Agent': 'CherryAI'
+        'User-Agent': 'OfoxStudio'
       },
       body: JSON.stringify({
         action: 'appendNode',

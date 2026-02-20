@@ -420,7 +420,7 @@ export const initialState: SettingsState = {
   localBackupSyncInterval: 0,
   localBackupMaxBackups: 0,
   localBackupSkipBackupFile: false,
-  defaultPaintingProvider: 'cherryin',
+  defaultPaintingProvider: 'silicon',
   s3: {
     endpoint: '',
     region: '',

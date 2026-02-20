@@ -5385,6 +5385,43 @@
     "store": "Assistant Library",
     "translate": "Translate"
   },
+  "tools": {
+    "custom": {
+      "duplicate_ids": "Tool ID \"{{ids}}\" already exists",
+      "edit_title": "Add Custom Tool",
+      "id": "Tool ID",
+      "id_error": "Please enter tool ID",
+      "id_placeholder": "e.g., my-tool",
+      "logo": "Tool Logo",
+      "logo_file": "Upload File",
+      "logo_upload_button": "Select Image",
+      "logo_upload_error": "Failed to upload logo",
+      "logo_upload_label": "Upload Logo",
+      "logo_upload_success": "Logo uploaded successfully",
+      "logo_url": "Logo URL",
+      "logo_url_label": "Logo URL",
+      "logo_url_placeholder": "Enter logo URL (optional)",
+      "name": "Tool Name",
+      "name_error": "Please enter tool name",
+      "name_placeholder": "e.g., My Tool",
+      "save": "Save",
+      "save_error": "Failed to save custom tool",
+      "save_success": "Custom tool saved successfully",
+      "title": "Custom",
+      "url": "Tool URL",
+      "url_error": "Please enter tool URL",
+      "url_placeholder": "e.g., https://example.com"
+    },
+    "settings": {
+      "custom_tools_description": "Manage your custom tools",
+      "custom_tools_title": "Custom Tools",
+      "delete_confirm_description": "Are you sure you want to delete tool \"{{name}}\"?",
+      "delete_confirm_title": "Delete Tool",
+      "display_title": "Tools Settings",
+      "no_custom_tools": "No custom tools"
+    },
+    "title": "Tools"
+  },
   "trace": {
     "backList": "Back To List",
     "edasSupport": "Powered by Alibaba Cloud EDAS",

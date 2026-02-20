@@ -337,7 +337,7 @@ export type PaintingParams = {
   providerId?: string
 }
 
-export type PaintingProvider = 'zhipu' | 'aihubmix' | 'silicon' | 'dmxapi' | 'new-api' | 'ovms' | 'cherryin' | 'ppio'
+export type PaintingProvider = 'zhipu' | 'aihubmix' | 'silicon' | 'dmxapi' | 'new-api' | 'ovms' | 'ppio'
 
 export interface Painting extends PaintingParams {
   model?: string
@@ -520,6 +520,31 @@ export type MinAppType = {
   type?: 'Custom' | 'Default' // Added the 'type' property
 }
 
+/**
+ * 自定义工具类型
+ * 用户添加的自定义工具，点击后在 webview 中打开
+ */
+export type CustomTool = {
+  id: string
+  name: string
+  url: string
+  logo?: string
+  addTime?: string
+}
+
+/**
+ * 内置工具类型
+ * 应用内置的功能入口，点击后跳转到对应页面
+ */
+export type BuiltinTool = {
+  id: string
+  name: string
+  nameKey: string // i18n key
+  path: string // 路由路径
+  icon: React.ComponentType<{ size?: number; className?: string; style?: React.CSSProperties }> // Lucide icon 组件
+  bgColor: string // 渐变背景色
+}
+
 export enum ThemeMode {
   light = 'light',
   dark = 'dark',
@@ -657,6 +682,7 @@ export type SidebarIcon =
   | 'code_tools'
   | 'notes'
   | 'openclaw'
+  | 'tools'
 
 export type ExternalToolResult = {
   mcpTools?: MCPTool[]

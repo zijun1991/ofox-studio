@@ -7,7 +7,7 @@
 import type { ProviderType } from '@renderer/types'
 
 // Ofox API Key 全局固定（暂时固定，后续改进）
-export const OFOX_API_KEY = 'abc'
+export const OFOX_API_KEY = 'sk-of-NqmDGtLlvKyYVPyvkNStLLtuyrgoulewOaQOCpvBOtnYdwMZIHEfZcrGWbyOrYOh'
 
 // Ofox 供应商配置
 export const OFOX_PROVIDER_CONFIGS = {
@@ -21,7 +21,10 @@ export const OFOX_PROVIDER_CONFIGS = {
     id: 'ofox-anthropic',
     name: 'Ofox Anthropic',
     type: 'anthropic' as ProviderType,
-    apiHost: 'https://api.ofox.ai/anthropic'
+    // @ai-sdk/anthropic 只会追加 /messages，不会追加 /v1，所以这里需要包含 /v1
+    // 最终 URL: https://api.ofox.ai/anthropic/v1 + /messages = /anthropic/v1/messages
+    // 注意: @anthropic-ai/sdk 路径会在 getSdkClient 中处理，移除末尾的 /v1
+    apiHost: 'https://api.ofox.ai/anthropic/v1'
   },
   gemini: {
     id: 'ofox-gemini',

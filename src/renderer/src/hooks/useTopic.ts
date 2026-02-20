@@ -171,7 +171,7 @@ export const autoRenameTopic = async (assistant: Assistant, topicId: string) => 
           applyTopicName(summaryText)
         } else {
           if (error) {
-            window.toast?.error(`${i18n.t('message.error.fetchTopicName')}: ${error}`)
+            console.warn(`[TopicNaming] Failed to fetch topic name: ${error}`)
           }
           const fallbackName = getFirstMessageName()
           if (fallbackName) {

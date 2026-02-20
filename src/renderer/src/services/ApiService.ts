@@ -5,6 +5,7 @@ import { loggerService } from '@logger'
 import type { AiSdkMiddlewareConfig } from '@renderer/aiCore/middleware/AiSdkMiddlewareBuilder'
 import { buildStreamTextParams } from '@renderer/aiCore/prepareParams'
 import { isDedicatedImageGenerationModel, isEmbeddingModel, isFunctionCallingModel } from '@renderer/config/models'
+import { OFOX_API_KEY, OFOX_PROVIDER_IDS } from '@renderer/config/ofox'
 import { getStoreSetting } from '@renderer/hooks/useSettings'
 import i18n from '@renderer/i18n'
 import store from '@renderer/store'
@@ -24,6 +25,7 @@ import { isPromptToolUse, isSupportedToolUse } from '@renderer/utils/mcp-tools'
 import { findFileBlocks, getMainTextContent } from '@renderer/utils/messageUtils/find'
 import { containsSupportedVariables, replacePromptVariables } from '@renderer/utils/prompt'
 import { NOT_SUPPORT_API_KEY_PROVIDER_TYPES, NOT_SUPPORT_API_KEY_PROVIDERS } from '@renderer/utils/provider'
+import { NoOutputGeneratedError } from 'ai'
 import { isEmpty, takeRight } from 'lodash'
 
 import type { ModernAiProviderConfig } from '../aiCore/index_new'
@@ -367,6 +369,13 @@ export async function fetchMessagesSummary({
     mcpTools: []
   }
   try {
+    logger.info('[TopicNaming] Starting fetchMessagesSummary', {
+      modelId: model.id,
+      providerId: provider.id,
+      providerType: provider.type,
+      apiHost: provider.apiHost
+    })
+
     // 从 messages 中找到有 traceId 的助手消息，用于绑定现有 trace
     const messageWithTrace = messages.find((m) => m.role === 'assistant' && m.traceId)
 
@@ -386,9 +395,23 @@ export async function fetchMessagesSummary({
     trackTokenUsage({ usage, model })
 
     const text = getText()
+    logger.info('[TopicNaming] completions success', {
+      textLength: text?.length,
+      hasUsage: !!usage
+    })
+
     const result = removeSpecialCharactersForTopicName(text)
     return result ? { text: result } : { text: null, error: i18n.t('error.no_response') }
   } catch (error: any) {
+    logger.error('[TopicNaming] fetchMessagesSummary failed', error, {
+      modelId: model.id,
+      providerId: provider.id,
+      errorMessage: error?.message
+    })
+    // NoOutputGeneratedError 表示 AI 返回了空响应，使用友好的错误信息
+    if (NoOutputGeneratedError.isInstance(error)) {
+      return { text: null, error: i18n.t('error.no_response') }
+    }
     return { text: null, error: getErrorMessage(error) }
   }
 }
@@ -563,7 +586,12 @@ export async function fetchGenerate({
 
 export function hasApiKey(provider: Provider) {
   if (!provider) return false
-  if (provider.id === 'cherryai') return true
+
+  // Ofox Provider 代码中已硬编码 API Key，始终有效
+  if ((OFOX_PROVIDER_IDS as string[]).includes(provider.id)) {
+    return true
+  }
+
   if (
     (isSystemProvider(provider) && NOT_SUPPORT_API_KEY_PROVIDERS.includes(provider.id)) ||
     NOT_SUPPORT_API_KEY_PROVIDER_TYPES.includes(provider.type)
@@ -577,6 +605,11 @@ export function hasApiKey(provider: Provider) {
  * Returns empty string for providers that don't require API keys
  */
 function getRotatedApiKey(provider: Provider): string {
+  // Ofox Provider 优先使用代码中定义的 API Key
+  if ((OFOX_PROVIDER_IDS as string[]).includes(provider.id)) {
+    return OFOX_API_KEY
+  }
+
   // Handle providers that don't require API keys
   if (!provider.apiKey || provider.apiKey.trim() === '') {
     return ''

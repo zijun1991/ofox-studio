@@ -9,6 +9,7 @@ import { useFullscreen } from '@renderer/hooks/useFullscreen'
 import { useMinappPopup } from '@renderer/hooks/useMinappPopup'
 import { useMinapps } from '@renderer/hooks/useMinapps'
 import { useSettings } from '@renderer/hooks/useSettings'
+import { useTools } from '@renderer/hooks/useTools'
 import { getThemeModeLabel, getTitleLabel } from '@renderer/i18n/label'
 import UpdateAppButton from '@renderer/pages/home/components/UpdateAppButton'
 import tabsService from '@renderer/services/TabsService'
@@ -16,6 +17,7 @@ import { useAppDispatch, useAppSelector } from '@renderer/store'
 import type { Tab } from '@renderer/store/tabs'
 import { addTab, removeTab, setActiveTab, setTabs } from '@renderer/store/tabs'
 import type { MinAppType } from '@renderer/types'
+import type { CustomTool } from '@renderer/types'
 import { ThemeMode } from '@renderer/types'
 import { classNames } from '@renderer/utils'
 import { Tooltip } from 'antd'
@@ -55,7 +57,8 @@ const logger = loggerService.withContext('TabContainer')
 const getTabIcon = (
   tabId: string,
   minapps: MinAppType[],
-  minAppsCache?: LRUCache<string, MinAppType>
+  minAppsCache?: LRUCache<string, MinAppType>,
+  customTools?: CustomTool[]
 ): React.ReactNode | undefined => {
   // Check if it's a minapp tab (format: apps:appId)
   if (tabId.startsWith('apps:')) {
@@ -83,6 +86,16 @@ const getTabIcon = (
     }
 
     // Fallback: If no app found (cache evicted), show default icon
+    return <LayoutGrid size={14} />
+  }
+
+  // Check if it's a custom tool tab (format: tools:toolId)
+  if (tabId.startsWith('tools:')) {
+    const toolId = tabId.replace('tools:', '')
+    const tool = customTools?.find((t) => t.id === toolId)
+    if (tool?.logo) {
+      return <img src={tool.logo} alt={tool.name} style={{ width: 14, height: 14, borderRadius: 4 }} />
+    }
     return <LayoutGrid size={14} />
   }
 
@@ -127,6 +140,7 @@ const TabsContainer: React.FC<TabsContainerProps> = ({ children }) => {
   const { settedTheme, toggleTheme } = useTheme()
   const { hideMinappPopup, minAppsCache } = useMinappPopup()
   const { minapps } = useMinapps()
+  const { customTools } = useTools()
   const { useSystemTitleBar } = useSettings()
   const { t } = useTranslation()
 
@@ -136,6 +150,10 @@ const TabsContainer: React.FC<TabsContainerProps> = ({ children }) => {
     // Handle minapp paths: /apps/appId -> apps:appId
     if (segments[1] === 'apps' && segments[2]) {
       return `apps:${segments[2]}`
+    }
+    // Handle custom tool paths: /tools/toolId -> tools:toolId
+    if (segments[1] === 'tools' && segments[2]) {
+      return `tools:${segments[2]}`
     }
     return segments[1] // 获取第一个路径段作为 id
   }
@@ -162,6 +180,14 @@ const TabsContainer: React.FC<TabsContainerProps> = ({ children }) => {
       // Return app name if found, otherwise use fallback with appId
       return app ? app.name : `MinApp-${appId}`
     }
+
+    // Check if it's a custom tool tab
+    if (tabId.startsWith('tools:')) {
+      const toolId = tabId.replace('tools:', '')
+      const tool = customTools.find((t) => t.id === toolId)
+      return tool ? tool.name : `Tool-${toolId}`
+    }
+
     return getTitleLabel(tabId)
   }
 
@@ -253,7 +279,7 @@ const TabsContainer: React.FC<TabsContainerProps> = ({ children }) => {
                   }
                 }}>
                 <TabHeader>
-                  {tab.id && <TabIcon>{getTabIcon(tab.id, minapps, minAppsCache)}</TabIcon>}
+                  {tab.id && <TabIcon>{getTabIcon(tab.id, minapps, minAppsCache, customTools)}</TabIcon>}
                   <TabTitle>{getTabTitle(tab.id)}</TabTitle>
                 </TabHeader>
                 {tab.id !== 'home' && (

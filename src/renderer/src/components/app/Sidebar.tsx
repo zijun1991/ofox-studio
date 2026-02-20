@@ -17,6 +17,7 @@ import {
   Code,
   FileSearch,
   Folder,
+  Grid3x3,
   Languages,
   LayoutGrid,
   MessageSquare,
@@ -138,7 +139,8 @@ const MainMenus: FC = () => {
     files: <Folder size={18} className="icon" />,
     notes: <NotepadText size={18} className="icon" />,
     code_tools: <Code size={18} className="icon" />,
-    openclaw: <OpenClawSidebarIcon style={{ width: 18, height: 18 }} className="icon" />
+    openclaw: <OpenClawSidebarIcon style={{ width: 18, height: 18 }} className="icon" />,
+    tools: <Grid3x3 size={18} className="icon" />
   }
 
   const pathMap = {
@@ -151,7 +153,8 @@ const MainMenus: FC = () => {
     files: '/files',
     code_tools: '/code',
     notes: '/notes',
-    openclaw: '/openclaw'
+    openclaw: '/openclaw',
+    tools: '/tools'
   }
 
   return sidebarIcons.visible.map((icon) => {

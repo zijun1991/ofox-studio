@@ -9,9 +9,7 @@ import {
 } from '@renderer/hooks/useAwsBedrock'
 import { createVertexProvider, isVertexAIConfigured } from '@renderer/hooks/useVertexAI'
 import { getProviderByModel } from '@renderer/services/AssistantService'
-import { getProviderById } from '@renderer/services/ProviderService'
 import store from '@renderer/store'
-import type { EndpointType } from '@renderer/types'
 import { isSystemProvider, type Model, type Provider, SystemProviderIds } from '@renderer/types'
 import type { OpenAICompletionsStreamOptions } from '@renderer/types/aiCoreTypes'
 import {
@@ -25,7 +23,6 @@ import {
 import {
   isAnthropicProvider,
   isAzureOpenAIProvider,
-  isCherryAIProvider,
   isGeminiProvider,
   isNewApiProvider,
   isOllamaProvider,
@@ -81,8 +78,12 @@ export function formatProviderApiHost(provider: Provider): Provider {
 
   if (isAnthropicProvider(provider)) {
     const baseHost = formatted.anthropicApiHost || formatted.apiHost
-    // AI SDK needs /v1 in baseURL, Anthropic SDK will strip it in getSdkClient
-    formatted.apiHost = formatApiHost(baseHost, appendApiVersion)
+    // AI SDK 的 @ai-sdk/anthropic provider 会自动添加 /v1
+    // 对于代理服务（如 Ofox），URL 格式是 /anthropic，AI SDK 会变成 /anthropic/v1/messages
+    // 所以这里不需要额外添加 /v1，否则会变成 /anthropic/v1/v1/messages
+    // 但对于标准 Anthropic API (api.anthropic.com)，需要 /v1
+    const isAnthropicProxy = !baseHost.includes('api.anthropic.com')
+    formatted.apiHost = formatApiHost(baseHost, !isAnthropicProxy && appendApiVersion)
     if (!formatted.anthropicApiHost) {
       formatted.anthropicApiHost = formatted.apiHost
     }
@@ -96,8 +97,6 @@ export function formatProviderApiHost(provider: Provider): Provider {
     formatted.apiHost = formatAzureOpenAIApiHost(formatted.apiHost)
   } else if (isVertexProvider(formatted)) {
     formatted.apiHost = formatVertexApiHost(formatted)
-  } else if (isCherryAIProvider(formatted)) {
-    formatted.apiHost = formatApiHost(formatted.apiHost, false)
   } else if (isPerplexityProvider(formatted)) {
     formatted.apiHost = formatApiHost(formatted.apiHost, false)
   } else {
@@ -175,13 +174,7 @@ interface VertexExtraOptions extends BaseExtraOptions {
   }
 }
 
-interface CherryInExtraOptions extends BaseExtraOptions {
-  endpointType?: EndpointType
-  anthropicBaseURL?: string
-  geminiBaseURL?: string
-}
-
-type ExtraOptions = BedrockExtraOptions | AzureOpenAIExtraOptions | VertexExtraOptions | CherryInExtraOptions
+type ExtraOptions = BedrockExtraOptions | AzureOpenAIExtraOptions | VertexExtraOptions | BaseExtraOptions
 
 /**
  * 将 Provider 配置转换为新 AI SDK 格式
@@ -249,11 +242,7 @@ export function providerToAiSdkConfig(actualProvider: Provider, model: Model): A
     aiSdkProviderId === 'azure-responses'
   ) {
     mode = 'responses'
-  } else if (
-    aiSdkProviderId === 'openai' ||
-    (aiSdkProviderId === 'cherryin' && actualProvider.type === 'openai') ||
-    aiSdkProviderId === 'azure'
-  ) {
+  } else if (aiSdkProviderId === 'openai' || aiSdkProviderId === 'azure') {
     mode = 'chat'
   }
 
@@ -334,22 +323,6 @@ export function providerToAiSdkConfig(actualProvider: Provider, model: Model): A
       }
     } satisfies VertexExtraOptions
     baseConfig.baseURL += aiSdkProviderId === 'google-vertex' ? '/publishers/google' : '/publishers/anthropic/models'
-  } else if (aiSdkProviderId === 'cherryin') {
-    // CherryIN API Host
-    const cherryinProvider = getProviderById(SystemProviderIds.cherryin)
-    const endpointType: EndpointType | undefined = model.endpoint_type
-    let anthropicBaseURL: string | undefined
-    let geminiBaseURL: string | undefined
-    if (cherryinProvider) {
-      anthropicBaseURL = cherryinProvider.anthropicApiHost + '/v1'
-      geminiBaseURL = cherryinProvider.apiHost + '/v1beta/models'
-    }
-    extraOptions = {
-      ...baseExtraOptions,
-      endpointType,
-      anthropicBaseURL,
-      geminiBaseURL
-    } satisfies CherryInExtraOptions
   } else {
     extraOptions = baseExtraOptions
   }
@@ -471,25 +444,6 @@ export async function prepareSpecialProviderConfig(
       }
       break
     }
-    case 'cherryai': {
-      config.options.fetch = async (url, options) => {
-        // 在这里对最终参数进行签名
-        const signature = await window.api.cherryai.generateSignature({
-          method: 'POST',
-          path: '/chat/completions',
-          query: '',
-          body: JSON.parse(options.body)
-        })
-        return fetch(url, {
-          ...options,
-          headers: {
-            ...options.headers,
-            ...signature
-          }
-        })
-      }
-      break
-    }
     case 'anthropic': {
       if (provider.authType === 'oauth') {
         const oauthToken = await window.api.anthropic_oauth.getAccessToken()
@@ -505,6 +459,25 @@ export async function prepareSpecialProviderConfig(
           apiKey: ''
         }
       }
+      break
+    }
+    case 'ofox-anthropic': {
+      // Ofox 需要 Bearer 认证，而 @ai-sdk/anthropic 使用 x-api-key
+      // 使用自定义 fetch 将 x-api-key 转换为 Authorization: Bearer
+      const originalFetch = (config.options.fetch as typeof fetch | undefined) || fetch
+      config.options.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+        if (init?.headers) {
+          const headers = new Headers(init.headers)
+          const apiKey = headers.get('x-api-key')
+          if (apiKey) {
+            headers.delete('x-api-key')
+            headers.set('Authorization', `Bearer ${apiKey}`)
+          }
+          init.headers = headers
+        }
+        return originalFetch(input, init)
+      }
+      break
     }
   }
 

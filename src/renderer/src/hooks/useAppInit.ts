@@ -60,6 +60,10 @@ export function useAppInit() {
     // Initialize MemoryService after app is ready
     MemoryService.getInstance()
 
+    // Initialize Ofox providers immediately (synchronous, no network request)
+    // This ensures providers exist before any API calls are made
+    OfoxProviderService.getInstance().initializeProviders(dispatch)
+
     // Check Ofox login status on app startup
     const checkOfoxLogin = async () => {
       try {

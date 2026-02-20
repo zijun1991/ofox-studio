@@ -182,17 +182,18 @@ const OfoxLoginModal: FC<OfoxLoginModalProps> = ({ onLoginSuccess, onLoginCancel
     onLoginCancel?.()
   }, [dispatch, onLoginCancel])
 
-  // 如果正在检查登录状态，显示全屏 loading
+  // 如果登录弹窗未显示，不渲染任何内容
+  if (!showLoginModal) {
+    return null
+  }
+
+  // 如果正在检查登录状态（且弹窗已显示），显示全屏 loading
   if (isChecking) {
     return (
       <FullScreenLoading>
         <Spin size="large" tip="正在检查登录状态..." />
       </FullScreenLoading>
     )
-  }
-
-  if (!showLoginModal) {
-    return null
   }
 
   return (

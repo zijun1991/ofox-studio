@@ -30,9 +30,7 @@ describe('Provider Schemas', () => {
         'azure',
         'azure-responses',
         'deepseek',
-        'openrouter',
-        'cherryin',
-        'cherryin-chat'
+        'openrouter'
       ]
       const actualIds = baseProviders.map((p) => p.id)
       expectedIds.forEach((id) => {

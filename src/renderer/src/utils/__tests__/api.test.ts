@@ -270,15 +270,15 @@ describe('api', () => {
     })
 
     it('extract OpenAI images generations endpoint', () => {
-      expect(routeToEndpoint('https://open.cherryin.net/v1/images/generations#')).toEqual({
-        baseURL: 'https://open.cherryin.net/v1',
+      expect(routeToEndpoint('https://api.example.com/v1/images/generations#')).toEqual({
+        baseURL: 'https://api.example.com/v1',
         endpoint: 'images/generations'
       })
     })
 
     it('extract Gemini images generation endpoint', () => {
-      expect(routeToEndpoint('https://open.cherryin.net/v1beta/models/imagen-4.0-generate-001:predict#')).toEqual({
-        baseURL: 'https://open.cherryin.net/v1beta/models/imagen-4.0-generate-001',
+      expect(routeToEndpoint('https://api.example.com/v1beta/models/imagen-4.0-generate-001:predict#')).toEqual({
+        baseURL: 'https://api.example.com/v1beta/models/imagen-4.0-generate-001',
         endpoint: 'predict'
       })
     })
@@ -577,11 +577,11 @@ describe('api', () => {
     })
 
     it('handles complex real-world URLs', () => {
-      expect(isWithTrailingSharp('https://open.cherryin.net/v1/chat/completions#')).toBe(true)
+      expect(isWithTrailingSharp('https://api.example.com/v1/chat/completions#')).toBe(true)
       expect(isWithTrailingSharp('https://api.openai.com/v1/engines/gpt-4#')).toBe(true)
       expect(isWithTrailingSharp('https://gateway.ai.cloudflare.com/v1/xxx/v1beta#')).toBe(true)
 
-      expect(isWithTrailingSharp('https://open.cherryin.net/v1/chat/completions')).toBe(false)
+      expect(isWithTrailingSharp('https://api.example.com/v1/chat/completions')).toBe(false)
       expect(isWithTrailingSharp('https://api.openai.com/v1/engines/gpt-4')).toBe(false)
       expect(isWithTrailingSharp('https://gateway.ai.cloudflare.com/v1/xxx/v1beta')).toBe(false)
     })

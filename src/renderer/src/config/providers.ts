@@ -13,7 +13,6 @@ import BailianProviderLogo from '@renderer/assets/images/providers/bailian.png'
 import BurnCloudProviderLogo from '@renderer/assets/images/providers/burncloud.png'
 import CephalonProviderLogo from '@renderer/assets/images/providers/cephalon.jpeg'
 import CerebrasProviderLogo from '@renderer/assets/images/providers/cerebras.webp'
-import CherryInProviderLogo from '@renderer/assets/images/providers/cherryin.png'
 import DeepSeekProviderLogo from '@renderer/assets/images/providers/deepseek.png'
 import DmxapiProviderLogo from '@renderer/assets/images/providers/DMXAPI.png'
 import FireworksProviderLogo from '@renderer/assets/images/providers/fireworks.png'
@@ -64,31 +63,9 @@ import type { AtLeast, SystemProvider, SystemProviderId } from '@renderer/types'
 import { OpenAIServiceTiers } from '@renderer/types'
 
 import { TOKENFLUX_HOST } from './constant'
-import { qwen3Next80BModel, qwen38bModel, SYSTEM_MODELS } from './models'
-
-export const CHERRYAI_PROVIDER: SystemProvider = {
-  id: 'cherryai' as SystemProviderId,
-  name: 'CherryAI',
-  type: 'openai',
-  apiKey: '',
-  apiHost: 'https://api.cherry-ai.com',
-  models: [qwen38bModel, qwen3Next80BModel],
-  isSystem: true,
-  enabled: true
-}
+import { SYSTEM_MODELS } from './models'
 
 export const SYSTEM_PROVIDERS_CONFIG: Record<SystemProviderId, SystemProvider> = {
-  cherryin: {
-    id: 'cherryin',
-    name: 'CherryIN',
-    type: 'openai',
-    apiKey: '',
-    apiHost: 'https://open.cherryin.net',
-    anthropicApiHost: 'https://open.cherryin.net',
-    models: [],
-    isSystem: true,
-    enabled: true
-  },
   silicon: {
     id: 'silicon',
     name: 'Silicon',
@@ -714,7 +691,6 @@ export const SYSTEM_PROVIDERS_CONFIG: Record<SystemProviderId, SystemProvider> =
 export const SYSTEM_PROVIDERS: SystemProvider[] = Object.values(SYSTEM_PROVIDERS_CONFIG)
 
 export const PROVIDER_LOGO_MAP: AtLeast<SystemProviderId, string> = {
-  cherryin: CherryInProviderLogo,
   ph8: Ph8ProviderLogo,
   '302ai': Ai302ProviderLogo,
   openai: OpenAiProviderLogo,
@@ -801,17 +777,6 @@ type ProviderUrls = {
 }
 
 export const PROVIDER_URLS: Record<SystemProviderId, ProviderUrls> = {
-  cherryin: {
-    api: {
-      url: 'https://open.cherryin.net'
-    },
-    websites: {
-      official: 'https://open.cherryin.ai',
-      apiKey: 'https://open.cherryin.ai/console/token',
-      docs: 'https://open.cherryin.ai',
-      models: 'https://open.cherryin.ai/pricing'
-    }
-  },
   ph8: {
     api: {
       url: 'https://ph8.co'

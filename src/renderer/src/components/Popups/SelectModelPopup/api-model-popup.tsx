@@ -1,4 +1,3 @@
-import { FreeTrialModelTag } from '@renderer/components/FreeTrialModelTag'
 import { HStack } from '@renderer/components/Layout'
 import ModelTagsWithLabel from '@renderer/components/ModelTagsWithLabel'
 import { TopView } from '@renderer/components/TopView'
@@ -98,7 +97,6 @@ const PopupContainer: React.FC<Props> = ({ model, apiFilter, modelFilter, showTa
   const createModelItem = useCallback(
     (model: AdaptedApiModel): FlatListApiModel => {
       const modelId = getModelUniqId(model)
-      const isCherryAi = model.provider === 'cherryai'
 
       return {
         key: modelId,
@@ -106,7 +104,6 @@ const PopupContainer: React.FC<Props> = ({ model, apiFilter, modelFilter, showTa
         name: (
           <ModelName>
             <HStack alignItems="center">{model.name}</HStack>
-            {isCherryAi && <FreeTrialModelTag model={model} showLabel={false} />}
           </ModelName>
         ),
         tags: (

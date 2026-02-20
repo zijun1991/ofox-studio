@@ -5385,6 +5385,43 @@
     "store": "助手库",
     "translate": "翻译"
   },
+  "tools": {
+    "custom": {
+      "duplicate_ids": "工具 ID \"{{ids}}\" 已存在",
+      "edit_title": "添加自定义工具",
+      "id": "工具 ID",
+      "id_error": "请输入工具 ID",
+      "id_placeholder": "例如：my-tool",
+      "logo": "工具图标",
+      "logo_file": "上传文件",
+      "logo_upload_button": "选择图片",
+      "logo_upload_error": "上传图标失败",
+      "logo_upload_label": "上传图标",
+      "logo_upload_success": "图标上传成功",
+      "logo_url": "图标 URL",
+      "logo_url_label": "图标 URL",
+      "logo_url_placeholder": "输入图标 URL（可选）",
+      "name": "工具名称",
+      "name_error": "请输入工具名称",
+      "name_placeholder": "例如：我的工具",
+      "save": "保存",
+      "save_error": "保存自定义工具失败",
+      "save_success": "自定义工具保存成功",
+      "title": "自定义",
+      "url": "工具 URL",
+      "url_error": "请输入工具 URL",
+      "url_placeholder": "例如：https://example.com"
+    },
+    "settings": {
+      "custom_tools_description": "管理已添加的自定义工具",
+      "custom_tools_title": "自定义工具",
+      "delete_confirm_description": "确定要删除工具 \"{{name}}\" 吗？",
+      "delete_confirm_title": "删除工具",
+      "display_title": "应用设置",
+      "no_custom_tools": "暂无自定义工具"
+    },
+    "title": "应用"
+  },
   "trace": {
     "backList": "返回列表",
     "edasSupport": "Powered by Alibaba Cloud EDAS",

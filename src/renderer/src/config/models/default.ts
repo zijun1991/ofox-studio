@@ -1,31 +1,23 @@
 import type { Model, SystemProviderId } from '@renderer/types'
 
-export const qwen38bModel: Model = {
-  id: 'Qwen/Qwen3-8B',
-  name: 'Qwen3-8B',
-  provider: 'cherryai',
-  group: 'Qwen'
-}
-
-export const qwen3Next80BModel: Model = {
-  id: 'Qwen/Qwen3-Next-80B-A3B-Instruct',
-  name: 'Qwen3-Next-80B',
-  provider: 'cherryai',
-  group: 'Qwen'
+export const glm47FlashModel: Model = {
+  id: 'z-ai/glm-4.7-flash:free',
+  name: 'GLM-4.7-Flash',
+  provider: 'ofox-anthropic',
+  group: 'GLM'
 }
 
 export const SYSTEM_MODELS: Record<SystemProviderId | 'defaultModel', Model[]> = {
   defaultModel: [
     // Default assistant model
-    qwen3Next80BModel,
+    glm47FlashModel,
     // Default topic naming model
-    qwen38bModel,
+    glm47FlashModel,
     // Default translation model
-    qwen3Next80BModel,
+    glm47FlashModel,
     // Default quick assistant model
-    qwen3Next80BModel
+    glm47FlashModel
   ],
-  cherryin: [],
   vertexai: [],
   sophnet: [],
   '302ai': [

@@ -50,7 +50,6 @@ vi.mock('@renderer/utils/provider', async (importOriginal) => {
   const actual = (await importOriginal()) as any
   return {
     ...actual,
-    isCherryAIProvider: vi.fn(),
     isPerplexityProvider: vi.fn(),
     isAnthropicProvider: vi.fn(() => false),
     isAzureOpenAIProvider: vi.fn(() => false),
@@ -79,7 +78,7 @@ vi.mock('@renderer/services/AssistantService', () => ({
 import { getProviderByModel } from '@renderer/services/AssistantService'
 import type { Model, Provider } from '@renderer/types'
 import { formatApiHost } from '@renderer/utils/api'
-import { isAzureOpenAIProvider, isCherryAIProvider, isPerplexityProvider } from '@renderer/utils/provider'
+import { isAzureOpenAIProvider, isPerplexityProvider } from '@renderer/utils/provider'
 
 import { COPILOT_DEFAULT_HEADERS, COPILOT_EDITOR_VERSION, isCopilotResponsesModel } from '../constants'
 import { getActualProvider, providerToAiSdkConfig } from '../providerConfig'
@@ -111,16 +110,6 @@ const createModel = (id: string, name = id, provider = 'copilot'): Model => ({
   name,
   provider,
   group: provider
-})
-
-const createCherryAIProvider = (): Provider => ({
-  id: 'cherryai',
-  type: 'openai',
-  name: 'CherryAI',
-  apiKey: 'test-key',
-  apiHost: 'https://api.cherryai.com',
-  models: [],
-  isSystem: false
 })
 
 const createPerplexityProvider = (): Provider => ({
@@ -189,87 +178,6 @@ describe('Copilot responses routing', () => {
   })
 })
 
-describe('CherryAI provider configuration', () => {
-  beforeEach(() => {
-    ;(globalThis as any).window = {
-      ...(globalThis as any).window,
-      keyv: createWindowKeyv()
-    }
-    mockGetState.mockReturnValue({
-      copilot: { defaultHeaders: {} },
-      settings: {
-        openAI: {
-          streamOptions: {
-            includeUsage: undefined
-          }
-        }
-      }
-    })
-    vi.clearAllMocks()
-  })
-
-  it('formats CherryAI provider apiHost with false parameter', () => {
-    const provider = createCherryAIProvider()
-    const model = createModel('gpt-4', 'GPT-4', 'cherryai')
-
-    // Mock the functions to simulate CherryAI provider detection
-    vi.mocked(isCherryAIProvider).mockReturnValue(true)
-    vi.mocked(getProviderByModel).mockReturnValue(provider)
-
-    // Call getActualProvider which should trigger formatProviderApiHost
-    const actualProvider = getActualProvider(model)
-
-    // Verify that formatApiHost was called with false as the second parameter
-    expect(formatApiHost).toHaveBeenCalledWith('https://api.cherryai.com', false)
-    expect(actualProvider.apiHost).toBe('https://api.cherryai.com')
-  })
-
-  it('does not format non-CherryAI provider with false parameter', () => {
-    const provider = {
-      id: 'openai',
-      type: 'openai',
-      name: 'OpenAI',
-      apiKey: 'test-key',
-      apiHost: 'https://api.openai.com',
-      models: [],
-      isSystem: false
-    } as Provider
-    const model = createModel('gpt-4', 'GPT-4', 'openai')
-
-    // Mock the functions to simulate non-CherryAI provider
-    vi.mocked(isCherryAIProvider).mockReturnValue(false)
-    vi.mocked(getProviderByModel).mockReturnValue(provider)
-    // Mock isWithTrailingSharp to return false for this test
-    vi.mocked(formatApiHost as any).mockImplementation((host, isSupportedAPIVersion = true) => {
-      if (isSupportedAPIVersion === false) {
-        return host
-      }
-      return `${host}/v1`
-    })
-
-    // Call getActualProvider
-    const actualProvider = getActualProvider(model)
-
-    // Verify that formatApiHost was called with appendApiVersion parameter
-    expect(formatApiHost).toHaveBeenCalledWith('https://api.openai.com', true)
-    expect(actualProvider.apiHost).toBe('https://api.openai.com/v1')
-  })
-
-  it('handles CherryAI provider with empty apiHost', () => {
-    const provider = createCherryAIProvider()
-    provider.apiHost = ''
-    const model = createModel('gpt-4', 'GPT-4', 'cherryai')
-
-    vi.mocked(isCherryAIProvider).mockReturnValue(true)
-    vi.mocked(getProviderByModel).mockReturnValue(provider)
-
-    const actualProvider = getActualProvider(model)
-
-    expect(formatApiHost).toHaveBeenCalledWith('', false)
-    expect(actualProvider.apiHost).toBe('')
-  })
-})
-
 describe('Perplexity provider configuration', () => {
   beforeEach(() => {
     ;(globalThis as any).window = {
@@ -294,7 +202,6 @@ describe('Perplexity provider configuration', () => {
     const model = createModel('sonar', 'Sonar', 'perplexity')
 
     // Mock the functions to simulate Perplexity provider detection
-    vi.mocked(isCherryAIProvider).mockReturnValue(false)
     vi.mocked(isPerplexityProvider).mockReturnValue(true)
     vi.mocked(getProviderByModel).mockReturnValue(provider)
 
@@ -319,7 +226,6 @@ describe('Perplexity provider configuration', () => {
     const model = createModel('gpt-4', 'GPT-4', 'openai')
 
     // Mock the functions to simulate non-Perplexity provider
-    vi.mocked(isCherryAIProvider).mockReturnValue(false)
     vi.mocked(isPerplexityProvider).mockReturnValue(false)
     vi.mocked(getProviderByModel).mockReturnValue(provider)
     // Mock isWithTrailingSharp to return false for this test
@@ -343,7 +249,6 @@ describe('Perplexity provider configuration', () => {
     provider.apiHost = ''
     const model = createModel('sonar', 'Sonar', 'perplexity')
 
-    vi.mocked(isCherryAIProvider).mockReturnValue(false)
     vi.mocked(isPerplexityProvider).mockReturnValue(true)
     vi.mocked(getProviderByModel).mockReturnValue(provider)
 

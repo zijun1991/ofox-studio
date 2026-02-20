@@ -5385,6 +5385,43 @@
     "store": "Bibliothèque d'assistants",
     "translate": "Traduire"
   },
+  "tools": {
+    "custom": {
+      "duplicate_ids": "[to be translated]:Tool ID \"{{ids}}\" already exists",
+      "edit_title": "[to be translated]:Add Custom Tool",
+      "id": "[to be translated]:Tool ID",
+      "id_error": "[to be translated]:Please enter tool ID",
+      "id_placeholder": "[to be translated]:e.g., my-tool",
+      "logo": "[to be translated]:Tool Logo",
+      "logo_file": "[to be translated]:Upload File",
+      "logo_upload_button": "[to be translated]:Select Image",
+      "logo_upload_error": "[to be translated]:Failed to upload logo",
+      "logo_upload_label": "[to be translated]:Upload Logo",
+      "logo_upload_success": "[to be translated]:Logo uploaded successfully",
+      "logo_url": "[to be translated]:Logo URL",
+      "logo_url_label": "[to be translated]:Logo URL",
+      "logo_url_placeholder": "[to be translated]:Enter logo URL (optional)",
+      "name": "[to be translated]:Tool Name",
+      "name_error": "[to be translated]:Please enter tool name",
+      "name_placeholder": "[to be translated]:e.g., My Tool",
+      "save": "[to be translated]:Save",
+      "save_error": "[to be translated]:Failed to save custom tool",
+      "save_success": "[to be translated]:Custom tool saved successfully",
+      "title": "[to be translated]:Custom",
+      "url": "[to be translated]:Tool URL",
+      "url_error": "[to be translated]:Please enter tool URL",
+      "url_placeholder": "[to be translated]:e.g., https://example.com"
+    },
+    "settings": {
+      "custom_tools_description": "[to be translated]:Manage your custom tools",
+      "custom_tools_title": "[to be translated]:Custom Tools",
+      "delete_confirm_description": "[to be translated]:Are you sure you want to delete tool \"{{name}}\"?",
+      "delete_confirm_title": "[to be translated]:Delete Tool",
+      "display_title": "[to be translated]:Tools Settings",
+      "no_custom_tools": "[to be translated]:No custom tools"
+    },
+    "title": "[to be translated]:Tools"
+  },
   "trace": {
     "backList": "Retour à la liste",
     "edasSupport": "Propulsé par Alibaba Cloud EDAS",

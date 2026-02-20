@@ -6,7 +6,6 @@ import { AihubmixAPIClient } from './aihubmix/AihubmixAPIClient'
 import { AnthropicAPIClient } from './anthropic/AnthropicAPIClient'
 import { AwsBedrockAPIClient } from './aws/AwsBedrockAPIClient'
 import type { BaseApiClient } from './BaseApiClient'
-import { CherryAiAPIClient } from './cherryai/CherryAiAPIClient'
 import { GeminiAPIClient } from './gemini/GeminiAPIClient'
 import { VertexAPIClient } from './gemini/VertexAPIClient'
 import { NewAPIClient } from './newapi/NewAPIClient'
@@ -36,11 +35,6 @@ export class ApiClientFactory {
     let instance: BaseApiClient
 
     // 首先检查特殊的 Provider ID
-    if (provider.id === 'cherryai') {
-      instance = new CherryAiAPIClient(provider) as BaseApiClient
-      return instance
-    }
-
     if (provider.id === 'aihubmix') {
       logger.debug(`Creating AihubmixAPIClient for provider: ${provider.id}`)
       instance = new AihubmixAPIClient(provider) as BaseApiClient

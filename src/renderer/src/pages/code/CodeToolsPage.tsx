@@ -83,10 +83,6 @@ const CodeToolsPage: FC = () => {
         return false
       }
 
-      if (m.provider === 'cherryai') {
-        return false
-      }
-
       if (selectedCliTool === codeTools.claudeCode) {
         if (m.supported_endpoint_types) {
           return m.supported_endpoint_types.includes('anthropic')
