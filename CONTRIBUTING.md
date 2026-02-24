@@ -1,8 +1,8 @@
 [中文](docs/zh/guides/contributing.md) | [English](CONTRIBUTING.md)
 
-# Cherry Studio Contributor Guide
+# Ofox Claw Contributor Guide
 
-Welcome to the Cherry Studio contributor community! We are committed to making Cherry Studio a project that provides long-term value and hope to invite more developers to join us. Whether you are an experienced developer or a beginner just starting out, your contributions will help us better serve users and improve software quality.
+Welcome to the Ofox Claw contributor community! We are committed to making Ofox Claw a project that provides long-term value and hope to invite more developers to join us. Whether you are an experienced developer or a beginner just starting out, your contributions will help us better serve users and improve software quality.
 
 ## How to Contribute
 
@@ -20,7 +20,7 @@ Here are several ways you can participate:
 
 6.  **Community Maintenance**: Participate in community discussions, help answer user questions, and promote community activity.
 
-7.  **Promote Usage**: Promote Cherry Studio through blogs, social media, and other channels to attract more users and developers.
+7.  **Promote Usage**: Promote Ofox Claw through blogs, social media, and other channels to attract more users and developers.
 
 ## Before You Start
 
@@ -28,7 +28,7 @@ Please make sure you have read the [Code of Conduct](CODE_OF_CONDUCT.md) and the
 
 ## Getting Started
 
-To help you get familiar with the codebase, we recommend tackling issues tagged with one or more of the following labels: [good-first-issue](https://github.com/CherryHQ/cherry-studio/labels/good%20first%20issue), [help-wanted](https://github.com/CherryHQ/cherry-studio/labels/help%20wanted), or [kind/bug](https://github.com/CherryHQ/cherry-studio/labels/kind%2Fbug). Any help is welcome.
+To help you get familiar with the codebase, we recommend tackling issues tagged with one or more of the following labels: [good-first-issue](https://github.com/ofox/ofox-claw/labels/good%20first%20issue), [help-wanted](https://github.com/ofox/ofox-claw/labels/help%20wanted), or [kind/bug](https://github.com/ofox/ofox-claw/labels/kind%2Fbug). Any help is welcome.
 
 ### Testing
 
@@ -36,7 +36,7 @@ Features without tests are considered non-existent. To ensure code is truly effe
 
 ### Automated Testing for Pull Requests
 
-Automated tests are triggered on pull requests (PRs) opened by members of the Cherry Studio organization, except for draft PRs. PRs opened by new contributors will initially be marked with the `needs-ok-to-test` label and will not be automatically tested. Once a Cherry Studio organization member adds `/ok-to-test` to the PR, the test pipeline will be created.
+Automated tests are triggered on pull requests (PRs) opened by members of the Ofox Claw organization, except for draft PRs. PRs opened by new contributors will initially be marked with the `needs-ok-to-test` label and will not be automatically tested. Once a Ofox Claw organization member adds `/ok-to-test` to the PR, the test pipeline will be created.
 
 ### Consider Opening Your Pull Request as a Draft
 
@@ -77,7 +77,7 @@ Please review the following critical information before submitting your Pull Req
 Our core team is currently focused on significant architectural updates that involve these data structures. To ensure stability and focus during this period, contributions of this nature will be temporarily managed internally.
 
 *   **PRs that require changes to Redux state shape or IndexedDB schemas will be closed.**
-*   **This restriction is temporary and will be lifted with the release of `v2.0.0`.** You can track the progress of `v2.0.0` and its related discussions on issue [#10162](https://github.com/CherryHQ/cherry-studio/pull/10162).
+*   **This restriction is temporary and will be lifted with the release of `v2.0.0`.** You can track the progress of `v2.0.0` and its related discussions on issue [#10162](https://github.com/ofox/ofox-claw/pull/10162).
 
 We highly encourage contributions for:
 *   Bug fixes 🐞
@@ -93,6 +93,6 @@ We appreciate your understanding and continued support during this important dev
 If you have any questions or suggestions, feel free to contact us through the following ways:
 
 - WeChat: kangfenmao
-- [GitHub Issues](https://github.com/CherryHQ/cherry-studio/issues)
+- [GitHub Issues](https://github.com/ofox/ofox-claw/issues)
 
-Thank you for your support and contributions! We look forward to working with you to make Cherry Studio a better product.
+Thank you for your support and contributions! We look forward to working with you to make Ofox Claw a better product.

@@ -1,9 +1,9 @@
-# Cherry Studio 局域网传输协议规范
+# Ofox Claw 局域网传输协议规范
 
 > 版本: 1.0
 > 最后更新: 2025-12
 
-本文档定义了 Cherry Studio 桌面客户端（Electron）与移动端（Expo）之间的局域网文件传输协议。
+本文档定义了 Ofox Claw 桌面客户端（Electron）与移动端（Expo）之间的局域网文件传输协议。
 
 ---
 
@@ -63,9 +63,9 @@
 
 | 属性         | 值                   |
 | ------------ | -------------------- |
-| 服务类型     | `cherrystudio`       |
+| 服务类型     | `ofoxclaw`       |
 | 协议         | `tcp`                |
-| 完整服务标识 | `_cherrystudio._tcp` |
+| 完整服务标识 | `_ofoxclaw._tcp` |
 
 ### 2.2 服务发布（移动端）
 
@@ -74,8 +74,8 @@
 ```typescript
 // 服务发布参数
 {
-  name: "Cherry Studio Mobile",    // 设备名称
-  type: "cherrystudio",            // 服务类型
+  name: "Ofox Claw Mobile",    // 设备名称
+  type: "ofoxclaw",            // 服务类型
   protocol: "tcp",                 // 协议
   port: 53317,                     // TCP 监听端口
   txt: {                           // TXT 记录（可选）
@@ -143,7 +143,7 @@ type LanTransferHandshakeMessage = {
 ```json
 {
   "type": "handshake",
-  "deviceName": "Cherry Studio 1.7.2",
+  "deviceName": "Ofox Claw 1.7.2",
   "version": "1",
   "platform": "darwin",
   "appVersion": "1.7.2"
@@ -555,8 +555,8 @@ function cleanup(): void {
 export const LAN_TRANSFER_PROTOCOL_VERSION = "1";
 
 // 服务发现
-export const LAN_TRANSFER_SERVICE_TYPE = "cherrystudio";
-export const LAN_TRANSFER_SERVICE_FULL_NAME = "_cherrystudio._tcp";
+export const LAN_TRANSFER_SERVICE_TYPE = "ofoxclaw";
+export const LAN_TRANSFER_SERVICE_FULL_NAME = "_ofoxclaw._tcp";
 
 // TCP 端口
 export const LAN_TRANSFER_TCP_PORT = 53317;
@@ -659,7 +659,7 @@ export const LAN_TRANSFER_ALLOWED_MIME_TYPES = [
 
 1. **mDNS 服务发布**
 
-   - 发布 `_cherrystudio._tcp` 服务
+   - 发布 `_ofoxclaw._tcp` 服务
    - 提供 TCP 端口号 `53317`
    - 可选：TXT 记录（版本、平台信息）
 
