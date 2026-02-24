@@ -1,4 +1,5 @@
 import { loggerService } from '@logger'
+import OfoxApiKeyModal from '@renderer/components/OfoxApiKeyModal'
 import { isMac } from '@renderer/config/constant'
 import { isLocalAi } from '@renderer/config/env'
 import { useTheme } from '@renderer/context/ThemeProvider'
@@ -7,15 +8,17 @@ import i18n, { setDayjsLocale } from '@renderer/i18n'
 import KnowledgeQueue from '@renderer/queue/KnowledgeQueue'
 import MemoryService from '@renderer/services/MemoryService'
 import OfoxProviderService from '@renderer/services/OfoxProviderService'
-import { handleSaveData, useAppDispatch, useAppSelector } from '@renderer/store'
+import store, { handleSaveData, useAppDispatch, useAppSelector } from '@renderer/store'
+import { setChannelStatus } from '@renderer/store/channels'
 import { selectMemoryConfig } from '@renderer/store/memory'
-import { setChecking, setShowLoginModal, setUser } from '@renderer/store/ofoxStore'
+import { setApiKey, setChecking } from '@renderer/store/ofoxStore'
 import { setAvatar, setFilesPath, setResourcesPath, setUpdateState } from '@renderer/store/runtime'
 import {
   type ToolPermissionRequestPayload,
   type ToolPermissionResultPayload,
   toolPermissionsActions
 } from '@renderer/store/toolPermissions'
+import type { ChannelStatusEvent } from '@renderer/types/channel'
 import { delay, runAsyncFunction } from '@renderer/utils'
 import { checkDataLimit } from '@renderer/utils'
 import { defaultLanguage } from '@shared/config/constant'
@@ -64,45 +67,58 @@ export function useAppInit() {
     // This ensures providers exist before any API calls are made
     OfoxProviderService.getInstance().initializeProviders(dispatch)
 
-    // Check Ofox login status on app startup
-    const checkOfoxLogin = async () => {
+    // Check OFOX API Key on app startup (临时方案，替代登录检查)
+    // TODO: 后续会整体移除，替换为正式登录流程
+    // 注意：apiKey 已经在 store 创建时从 localStorage 同步初始化，此处只需要检查是否需要显示输入弹窗
+    const checkApiKey = async () => {
       try {
         dispatch(setChecking(true))
-        const response = await window.api.ofox.getSession()
-        logger.debug('Ofox session check response:', response)
 
-        if (response.success && response.data?.user) {
-          dispatch(
-            setUser({
-              id: response.data.user.id,
-              email: response.data.user.email,
-              name: response.data.user.name,
-              image: response.data.user.image,
-              emailVerified: response.data.user.emailVerified
-            })
-          )
-          logger.info('Ofox user logged in:', response.data.user.email)
+        // apiKey 已经在 store 创建时从 localStorage 同步初始化
+        // 此处只需要检查 store 中是否有值，没有则显示输入弹窗
+        const { apiKey } = store.getState().ofox
 
-          // Sync Ofox providers and models
-          OfoxProviderService.getInstance()
-            .syncProviders(dispatch)
-            .catch((err) => logger.error('Failed to sync Ofox providers:', err as Error))
+        if (apiKey) {
+          logger.info('OFOX API Key already initialized from localStorage')
         } else {
-          // Not logged in, show login modal
-          logger.info('Ofox user not logged in, showing login modal')
-          dispatch(setShowLoginModal(true))
+          // 无缓存，显示 API Key 输入弹窗
+          logger.info('No cached API Key found, showing input modal')
+          const inputApiKey = await OfoxApiKeyModal.show()
+
+          if (inputApiKey) {
+            // 保存到 localStorage 和 Redux store
+            localStorage.setItem('ofox_api_key', inputApiKey)
+            dispatch(setApiKey(inputApiKey))
+            logger.info('API Key saved successfully')
+          } else {
+            // 用户取消输入，保持未登录状态
+            logger.warn('User cancelled API Key input')
+          }
         }
       } catch (error) {
-        logger.error('Failed to check Ofox login status:', error as Error)
-        dispatch(setShowLoginModal(true))
+        logger.error('Failed to check API Key:', error as Error)
       } finally {
         dispatch(setChecking(false))
       }
     }
 
-    checkOfoxLogin()
+    checkApiKey()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Sync channel config to Main Process on startup and listen for status updates
+  useEffect(() => {
+    const channels = store.getState().channels.channels
+    window.api.channels.syncConfig(channels)
+
+    const removeStatusListener = window.api.channels.onStatusChanged(
+      (_event: Electron.IpcRendererEvent, event: ChannelStatusEvent) => {
+        dispatch(setChannelStatus({ id: event.channelId, status: event.status, error: event.error }))
+      }
+    )
+
+    return () => removeStatusListener()
+  }, [dispatch])
 
   useEffect(() => {
     window.api.getDataPathFromArgs().then((dataPath) => {

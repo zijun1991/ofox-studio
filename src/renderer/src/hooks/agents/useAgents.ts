@@ -70,6 +70,17 @@ export const useAgents = () => {
   const deleteAgent = useCallback(
     async (id: string) => {
       try {
+        // Check if agent is channel-bound
+        const boundChannel = window.store.getState().channels.channels.find((c) => c.agentId === id)
+        if (boundChannel) {
+          window.toast.error(
+            t('agent.delete.error.channel_bound', 'Cannot delete agent bound to channel "{{name}}"', {
+              name: boundChannel.name
+            })
+          )
+          return
+        }
+
         await client.deleteAgent(id)
         dispatch(setActiveSessionIdAction({ agentId: id, sessionId: null }))
         if (activeAgentId === id) {
