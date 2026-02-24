@@ -85,7 +85,6 @@ vi.mock('electron-updater', () => ({
 }))
 
 // Import after mocks
-import { UpdateMirror } from '@shared/config/constant'
 import { app, net } from 'electron'
 
 import AppUpdater from '../AppUpdater'
@@ -289,8 +288,7 @@ describe('AppUpdater', () => {
             latest: {
               version: '1.6.7',
               feedUrls: {
-                github: 'https://github.com/test/v1.6.7',
-                gitcode: 'https://gitcode.com/test/v1.6.7'
+                production: 'https://releases.ofox.app/v1.6.7'
               }
             },
             rc: null,
@@ -300,29 +298,16 @@ describe('AppUpdater', () => {
       }
     }
 
-    it('should fetch config from GitHub mirror', async () => {
+    it('should fetch config from production server', async () => {
       vi.mocked(net.fetch).mockResolvedValue({
         ok: true,
         json: async () => mockConfig
       } as any)
 
-      const result = await (appUpdater as any)._fetchUpdateConfig(UpdateMirror.GITHUB)
+      const result = await (appUpdater as any)._fetchUpdateConfig()
 
       expect(result).toEqual(mockConfig)
-      expect(net.fetch).toHaveBeenCalledWith(expect.stringContaining('github'), expect.any(Object))
-    })
-
-    it('should fetch config from GitCode mirror', async () => {
-      vi.mocked(net.fetch).mockResolvedValue({
-        ok: true,
-        json: async () => mockConfig
-      } as any)
-
-      const result = await (appUpdater as any)._fetchUpdateConfig(UpdateMirror.GITCODE)
-
-      expect(result).toEqual(mockConfig)
-      // GitCode URL may vary, just check that fetch was called
-      expect(net.fetch).toHaveBeenCalledWith(expect.any(String), expect.any(Object))
+      expect(net.fetch).toHaveBeenCalledWith(expect.stringContaining('ofox.app'), expect.any(Object))
     })
 
     it('should return null on HTTP error', async () => {
@@ -331,7 +316,7 @@ describe('AppUpdater', () => {
         status: 404
       } as any)
 
-      const result = await (appUpdater as any)._fetchUpdateConfig(UpdateMirror.GITHUB)
+      const result = await (appUpdater as any)._fetchUpdateConfig()
 
       expect(result).toBeNull()
     })
@@ -339,7 +324,7 @@ describe('AppUpdater', () => {
     it('should return null on network error', async () => {
       vi.mocked(net.fetch).mockRejectedValue(new Error('Network error'))
 
-      const result = await (appUpdater as any)._fetchUpdateConfig(UpdateMirror.GITHUB)
+      const result = await (appUpdater as any)._fetchUpdateConfig()
 
       expect(result).toBeNull()
     })
@@ -356,22 +341,19 @@ describe('AppUpdater', () => {
             latest: {
               version: '1.6.7',
               feedUrls: {
-                github: 'https://github.com/test/v1.6.7',
-                gitcode: 'https://gitcode.com/test/v1.6.7'
+                production: 'https://releases.ofox.app/v1.6.7'
               }
             },
             rc: {
               version: '1.7.0-rc.1',
               feedUrls: {
-                github: 'https://github.com/test/v1.7.0-rc.1',
-                gitcode: 'https://gitcode.com/test/v1.7.0-rc.1'
+                production: 'https://releases.ofox.app/v1.7.0-rc.1'
               }
             },
             beta: {
               version: '1.7.0-beta.3',
               feedUrls: {
-                github: 'https://github.com/test/v1.7.0-beta.3',
-                gitcode: 'https://gitcode.com/test/v1.7.0-beta.3'
+                production: 'https://releases.ofox.app/v1.7.0-beta.3'
               }
             }
           }
@@ -396,8 +378,7 @@ describe('AppUpdater', () => {
       expect(result?.config).toEqual({
         version: '1.6.7',
         feedUrls: {
-          github: 'https://github.com/test/v1.6.7',
-          gitcode: 'https://gitcode.com/test/v1.6.7'
+          production: 'https://releases.ofox.app/v1.6.7'
         }
       })
       expect(result?.channel).toBe('latest')
@@ -411,8 +392,7 @@ describe('AppUpdater', () => {
       expect(result?.config).toEqual({
         version: '1.7.0-rc.1',
         feedUrls: {
-          github: 'https://github.com/test/v1.7.0-rc.1',
-          gitcode: 'https://gitcode.com/test/v1.7.0-rc.1'
+          production: 'https://releases.ofox.app/v1.7.0-rc.1'
         }
       })
       expect(result?.channel).toBe('rc')
@@ -426,8 +406,7 @@ describe('AppUpdater', () => {
       expect(result?.config).toEqual({
         version: '1.7.0-beta.3',
         feedUrls: {
-          github: 'https://github.com/test/v1.7.0-beta.3',
-          gitcode: 'https://gitcode.com/test/v1.7.0-beta.3'
+          production: 'https://releases.ofox.app/v1.7.0-beta.3'
         }
       })
       expect(result?.channel).toBe('beta')
@@ -444,15 +423,13 @@ describe('AppUpdater', () => {
               latest: {
                 version: '1.7.0',
                 feedUrls: {
-                  github: 'https://github.com/test/v1.7.0',
-                  gitcode: 'https://gitcode.com/test/v1.7.0'
+                  production: 'https://releases.ofox.app/v1.7.0'
                 }
               },
               rc: {
                 version: '1.7.0-rc.1',
                 feedUrls: {
-                  github: 'https://github.com/test/v1.7.0-rc.1',
-                  gitcode: 'https://gitcode.com/test/v1.7.0-rc.1'
+                  production: 'https://releases.ofox.app/v1.7.0-rc.1'
                 }
               },
               beta: null
@@ -467,8 +444,7 @@ describe('AppUpdater', () => {
       expect(result?.config).toEqual({
         version: '1.7.0',
         feedUrls: {
-          github: 'https://github.com/test/v1.7.0',
-          gitcode: 'https://gitcode.com/test/v1.7.0'
+          production: 'https://releases.ofox.app/v1.7.0'
         }
       })
       expect(result?.channel).toBe('latest') // ✅ 返回 latest 频道
@@ -486,9 +462,7 @@ describe('AppUpdater', () => {
                 version: '1.7.0',
 
                 feedUrls: {
-                  github: 'https://github.com/test/v1.7.0',
-
-                  gitcode: 'https://gitcode.com/test/v1.7.0'
+                  production: 'https://releases.ofox.app/v1.7.0'
                 }
               },
               rc: null,
@@ -496,9 +470,7 @@ describe('AppUpdater', () => {
                 version: '1.6.8-beta.1',
 
                 feedUrls: {
-                  github: 'https://github.com/test/v1.6.8-beta.1',
-
-                  gitcode: 'https://gitcode.com/test/v1.6.8-beta.1'
+                  production: 'https://releases.ofox.app/v1.6.8-beta.1'
                 }
               }
             }
@@ -513,9 +485,7 @@ describe('AppUpdater', () => {
         version: '1.7.0',
 
         feedUrls: {
-          github: 'https://github.com/test/v1.7.0',
-
-          gitcode: 'https://gitcode.com/test/v1.7.0'
+          production: 'https://releases.ofox.app/v1.7.0'
         }
       })
     })
@@ -532,18 +502,14 @@ describe('AppUpdater', () => {
                 version: '1.7.0',
 
                 feedUrls: {
-                  github: 'https://github.com/test/v1.7.0',
-
-                  gitcode: 'https://gitcode.com/test/v1.7.0'
+                  production: 'https://releases.ofox.app/v1.7.0'
                 }
               },
               rc: {
                 version: '1.7.0-rc.1',
 
                 feedUrls: {
-                  github: 'https://github.com/test/v1.7.0-rc.1',
-
-                  gitcode: 'https://gitcode.com/test/v1.7.0-rc.1'
+                  production: 'https://releases.ofox.app/v1.7.0-rc.1'
                 }
               },
               beta: null
@@ -559,9 +525,7 @@ describe('AppUpdater', () => {
         version: '1.7.0',
 
         feedUrls: {
-          github: 'https://github.com/test/v1.7.0',
-
-          gitcode: 'https://gitcode.com/test/v1.7.0'
+          production: 'https://releases.ofox.app/v1.7.0'
         }
       })
     })
@@ -578,18 +542,14 @@ describe('AppUpdater', () => {
                 version: '1.6.7',
 
                 feedUrls: {
-                  github: 'https://github.com/test/v1.6.7',
-
-                  gitcode: 'https://gitcode.com/test/v1.6.7'
+                  production: 'https://releases.ofox.app/v1.6.7'
                 }
               },
               rc: {
                 version: '1.7.0-rc.1',
 
                 feedUrls: {
-                  github: 'https://github.com/test/v1.7.0-rc.1',
-
-                  gitcode: 'https://gitcode.com/test/v1.7.0-rc.1'
+                  production: 'https://releases.ofox.app/v1.7.0-rc.1'
                 }
               },
               beta: null
@@ -605,9 +565,7 @@ describe('AppUpdater', () => {
         version: '1.7.0-rc.1',
 
         feedUrls: {
-          github: 'https://github.com/test/v1.7.0-rc.1',
-
-          gitcode: 'https://gitcode.com/test/v1.7.0-rc.1'
+          production: 'https://releases.ofox.app/v1.7.0-rc.1'
         }
       })
     })
@@ -624,9 +582,7 @@ describe('AppUpdater', () => {
                 version: '1.6.7',
 
                 feedUrls: {
-                  github: 'https://github.com/test/v1.6.7',
-
-                  gitcode: 'https://gitcode.com/test/v1.6.7'
+                  production: 'https://releases.ofox.app/v1.6.7'
                 }
               },
               rc: null,
@@ -634,9 +590,7 @@ describe('AppUpdater', () => {
                 version: '1.7.0-beta.5',
 
                 feedUrls: {
-                  github: 'https://github.com/test/v1.7.0-beta.5',
-
-                  gitcode: 'https://gitcode.com/test/v1.7.0-beta.5'
+                  production: 'https://releases.ofox.app/v1.7.0-beta.5'
                 }
               }
             }
@@ -651,9 +605,7 @@ describe('AppUpdater', () => {
         version: '1.7.0-beta.5',
 
         feedUrls: {
-          github: 'https://github.com/test/v1.7.0-beta.5',
-
-          gitcode: 'https://gitcode.com/test/v1.7.0-beta.5'
+          production: 'https://releases.ofox.app/v1.7.0-beta.5'
         }
       })
     })
@@ -668,9 +620,7 @@ describe('AppUpdater', () => {
         version: '1.6.7',
 
         feedUrls: {
-          github: 'https://github.com/test/v1.6.7',
-
-          gitcode: 'https://gitcode.com/test/v1.6.7'
+          production: 'https://releases.ofox.app/v1.6.7'
         }
       })
     })
@@ -692,9 +642,7 @@ describe('AppUpdater', () => {
         version: '1.7.0-rc.1',
 
         feedUrls: {
-          github: 'https://github.com/test/v1.7.0-rc.1',
-
-          gitcode: 'https://gitcode.com/test/v1.7.0-rc.1'
+          production: 'https://releases.ofox.app/v1.7.0-rc.1'
         }
       })
     })
@@ -711,9 +659,7 @@ describe('AppUpdater', () => {
                 version: '1.6.7',
 
                 feedUrls: {
-                  github: 'https://github.com/test/v1.6.7',
-
-                  gitcode: 'https://gitcode.com/test/v1.6.7'
+                  production: 'https://releases.ofox.app/v1.6.7'
                 }
               },
               rc: null,
@@ -741,27 +687,21 @@ describe('AppUpdater', () => {
               version: '1.6.7',
 
               feedUrls: {
-                github: 'https://github.com/test/v1.6.7',
-
-                gitcode: 'https://gitcode.com/test/v1.6.7'
+                production: 'https://releases.ofox.app/v1.6.7'
               }
             },
             rc: {
               version: '1.7.0-rc.1',
 
               feedUrls: {
-                github: 'https://github.com/test/v1.7.0-rc.1',
-
-                gitcode: 'https://gitcode.com/test/v1.7.0-rc.1'
+                production: 'https://releases.ofox.app/v1.7.0-rc.1'
               }
             },
             beta: {
               version: '1.7.0-beta.3',
 
               feedUrls: {
-                github: 'https://github.com/test/v1.7.0-beta.3',
-
-                gitcode: 'https://gitcode.com/test/v1.7.0-beta.3'
+                production: 'https://releases.ofox.app/v1.7.0-beta.3'
               }
             }
           }
@@ -785,9 +725,7 @@ describe('AppUpdater', () => {
         version: '1.6.7',
 
         feedUrls: {
-          github: 'https://github.com/test/v1.6.7',
-
-          gitcode: 'https://gitcode.com/test/v1.6.7'
+          production: 'https://releases.ofox.app/v1.6.7'
         }
       })
     })
@@ -800,9 +738,7 @@ describe('AppUpdater', () => {
         version: '1.6.7',
 
         feedUrls: {
-          github: 'https://github.com/test/v1.6.7',
-
-          gitcode: 'https://gitcode.com/test/v1.6.7'
+          production: 'https://releases.ofox.app/v1.6.7'
         }
       })
     })
@@ -820,9 +756,7 @@ describe('AppUpdater', () => {
                 version: '2.0.0',
 
                 feedUrls: {
-                  github: 'https://github.com/test/v2.0.0',
-
-                  gitcode: 'https://gitcode.com/test/v2.0.0'
+                  production: 'https://releases.ofox.app/v2.0.0'
                 }
               },
               rc: null,
@@ -838,9 +772,7 @@ describe('AppUpdater', () => {
         version: '2.0.0',
 
         feedUrls: {
-          github: 'https://github.com/test/v2.0.0',
-
-          gitcode: 'https://gitcode.com/test/v2.0.0'
+          production: 'https://releases.ofox.app/v2.0.0'
         }
       })
     })
@@ -858,9 +790,7 @@ describe('AppUpdater', () => {
               version: '1.7.5',
 
               feedUrls: {
-                github: 'https://github.com/test/v1.7.5',
-
-                gitcode: 'https://gitcode.com/test/v1.7.5'
+                production: 'https://releases.ofox.app/v1.7.5'
               }
             },
             rc: null,
@@ -875,9 +805,7 @@ describe('AppUpdater', () => {
               version: '2.0.0',
 
               feedUrls: {
-                github: 'https://github.com/test/v2.0.0',
-
-                gitcode: 'https://gitcode.com/test/v2.0.0'
+                production: 'https://releases.ofox.app/v2.0.0'
               }
             },
             rc: null,
@@ -892,9 +820,7 @@ describe('AppUpdater', () => {
               version: '2.1.6',
 
               feedUrls: {
-                github: 'https://github.com/test/latest',
-
-                gitcode: 'https://gitcode.com/test/latest'
+                production: 'https://releases.ofox.app/latest'
               }
             },
             rc: null,
@@ -911,9 +837,7 @@ describe('AppUpdater', () => {
         version: '1.7.5',
 
         feedUrls: {
-          github: 'https://github.com/test/v1.7.5',
-
-          gitcode: 'https://gitcode.com/test/v1.7.5'
+          production: 'https://releases.ofox.app/v1.7.5'
         }
       })
     })
@@ -925,9 +849,7 @@ describe('AppUpdater', () => {
         version: '2.0.0',
 
         feedUrls: {
-          github: 'https://github.com/test/v2.0.0',
-
-          gitcode: 'https://gitcode.com/test/v2.0.0'
+          production: 'https://releases.ofox.app/v2.0.0'
         }
       })
     })
@@ -939,9 +861,7 @@ describe('AppUpdater', () => {
         version: '2.1.6',
 
         feedUrls: {
-          github: 'https://github.com/test/latest',
-
-          gitcode: 'https://gitcode.com/test/latest'
+          production: 'https://releases.ofox.app/latest'
         }
       })
     })
