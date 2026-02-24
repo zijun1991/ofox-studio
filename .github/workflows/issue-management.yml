@@ -11,7 +11,7 @@ env:
 
 jobs:
   stale:
-    if: github.repository_owner == 'CherryHQ'
+    if: github.repository_owner == 'ofox'
     runs-on: ubuntu-latest
     permissions:
       actions: write # Workaround for https://github.com/actions/stale/issues/1090
