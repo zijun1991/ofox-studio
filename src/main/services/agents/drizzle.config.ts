@@ -10,8 +10,8 @@
  * Any non-critical changes will conflict with the ongoing work.
  *
  * 🔗 Context & Status:
- * - Contribution Hold: https://github.com/CherryHQ/cherry-studio/issues/10954
- * - v2 Refactor PR   : https://github.com/CherryHQ/cherry-studio/pull/10162
+ * - Contribution Hold: https://github.com/ofox/ofox-claw/issues/10954
+ * - v2 Refactor PR   : https://github.com/ofox/ofox-claw/pull/10162
  * --------------------------------------------------------------------------
  */
 /**
@@ -26,7 +26,7 @@ import { app } from 'electron'
 
 function getDbPath() {
   if (process.env.NODE_ENV === 'development') {
-    return path.join(os.homedir(), '.cherrystudio', 'data', 'agents.db')
+    return path.join(os.homedir(), '.ofoxclaw', 'data', 'agents.db')
   }
   return path.join(app.getPath('userData'), 'Data', 'agents.db')
 }

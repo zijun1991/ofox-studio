@@ -110,7 +110,11 @@ export class PluginService {
   private config: PluginServiceConfig
   private readonly cacheStore: PluginCacheStore
   private readonly installer: PluginInstaller
-  private readonly agentService: AgentService
+
+  // Lazy getter to break circular dependency with AgentService
+  private get agentService(): AgentService {
+    return AgentService.getInstance()
+  }
 
   // Max folder/file name length to prevent Windows MAX_PATH (260 chars) issues.
   // Applied cross-platform for consistency with cloud-synced workdirs.
@@ -122,7 +126,6 @@ export class PluginService {
     this.config = {
       maxFileSize: config?.maxFileSize ?? 1024 * 1024 // 1MB default
     }
-    this.agentService = AgentService.getInstance()
     this.cacheStore = new PluginCacheStore({
       allowedExtensions: this.ALLOWED_EXTENSIONS,
       getPluginDirectoryName: this.getPluginDirectoryName.bind(this),
@@ -400,7 +403,7 @@ export class PluginService {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'CherryStudio'
+        'User-Agent': 'OfoxClaw'
       },
       body: JSON.stringify({
         target,
@@ -485,7 +488,7 @@ export class PluginService {
 
   private async createMarketplaceTempDir(identifier: MarketplaceIdentifier): Promise<string> {
     const safeName = this.sanitizeFolderName(`${identifier.owner}-${identifier.repository}-${identifier.name}`)
-    const tempDir = path.join(app.getPath('temp'), 'cherry-studio', 'marketplace-install', `${safeName}-${Date.now()}`)
+    const tempDir = path.join(app.getPath('temp'), 'ofox-claw', 'marketplace-install', `${safeName}-${Date.now()}`)
     await fs.promises.mkdir(tempDir, { recursive: true })
     return tempDir
   }
@@ -830,7 +833,7 @@ export class PluginService {
     await this.validateWorkdir(agent, workdir)
     await this.validateZipFile(zipFilePath)
 
-    const tempDir = path.join(app.getPath('temp'), 'cherry-studio', 'plugin-upload', `plugin-${Date.now()}`)
+    const tempDir = path.join(app.getPath('temp'), 'ofox-claw', 'plugin-upload', `plugin-${Date.now()}`)
     await fs.promises.mkdir(tempDir, { recursive: true })
 
     try {

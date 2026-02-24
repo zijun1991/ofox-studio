@@ -2,7 +2,7 @@
  * Drizzle ORM schema for agents table
  */
 
-import { index, sqliteTable, text } from 'drizzle-orm/sqlite-core'
+import { index, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 
 export const agentsTable = sqliteTable('agents', {
   id: text('id').primaryKey(),
@@ -21,6 +21,8 @@ export const agentsTable = sqliteTable('agents', {
   allowed_tools: text('allowed_tools'), // JSON array of allowed tool IDs (whitelist)
 
   configuration: text('configuration'), // JSON, extensible settings
+
+  is_system: integer('is_system', { mode: 'boolean' }).default(false), // System agent flag (cannot be deleted)
 
   created_at: text('created_at').notNull(),
   updated_at: text('updated_at').notNull()

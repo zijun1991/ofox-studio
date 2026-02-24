@@ -1,5 +1,5 @@
 /**
- * Cherry Studio AI Core - 新版本入口
+ * Ofox Claw AI Core - 新版本入口
  * 集成 @cherrystudio/ai-core 库的渐进式重构方案
  *
  * 融合方案：简化实现，专注于核心功能

@@ -24,7 +24,7 @@ const logger = loggerService.withContext('ProviderFactory')
 
 /**
  * 静态Provider映射表
- * 处理Cherry Studio特有的provider ID到AI SDK标准ID的映射
+ * 处理Ofox Claw特有的provider ID到AI SDK标准ID的映射
  */
 const STATIC_PROVIDER_MAPPING: Record<string, ProviderId> = {
   gemini: 'google', // Google Gemini -> google

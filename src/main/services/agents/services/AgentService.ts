@@ -1,3 +1,4 @@
+import os from 'node:os'
 import path from 'node:path'
 
 import { loggerService } from '@logger'
@@ -21,6 +22,9 @@ import type { AgentModelField } from '../errors'
 
 const logger = loggerService.withContext('AgentService')
 
+// System agent constants
+export const TURBO_AGENT_ID = 'agent_turbo_system'
+
 export class AgentService extends BaseService {
   private static instance: AgentService | null = null
   private readonly modelFields: AgentModelField[] = ['model', 'plan_model', 'small_model']
@@ -32,9 +36,43 @@ export class AgentService extends BaseService {
     return AgentService.instance
   }
 
+  /**
+   * Ensure the Turbo (Speedy Mode) system agent exists
+   * Called on app startup to create the default system agent
+   */
+  async ensureTurboAgentExists(): Promise<void> {
+    const existing = await this.getAgent(TURBO_AGENT_ID)
+    if (existing) {
+      logger.debug('Turbo agent already exists')
+      return
+    }
+
+    logger.info('Creating Turbo agent for Speedy Mode')
+
+    const defaultPath = path.join(os.homedir(), 'Documents', 'Ofox Claw')
+    const now = new Date().toISOString()
+
+    const insertData: InsertAgentRow = {
+      id: TURBO_AGENT_ID,
+      type: 'claude-code',
+      name: '极速模式',
+      description: '快速响应的极速助手，适用于简单任务',
+      instructions: 'You are a fast and efficient assistant.',
+      model: '', // User will configure
+      accessible_paths: JSON.stringify(this.ensurePathsExist([defaultPath])),
+      is_system: true,
+      created_at: now,
+      updated_at: now
+    }
+
+    const database = await this.getDatabase()
+    await database.insert(agentsTable).values(insertData)
+    logger.info('Turbo agent created successfully')
+  }
+
   // Agent Methods
-  async createAgent(req: CreateAgentRequest): Promise<CreateAgentResponse> {
-    const id = `agent_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
+  async createAgent(req: CreateAgentRequest & { id?: string; is_system?: boolean }): Promise<CreateAgentResponse> {
+    const id = req.id || `agent_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`
     const now = new Date().toISOString()
 
     if (!req.accessible_paths || req.accessible_paths.length === 0) {
@@ -65,6 +103,7 @@ export class AgentService extends BaseService {
       small_model: req.small_model,
       configuration: serializedReq.configuration,
       accessible_paths: serializedReq.accessible_paths,
+      is_system: req.is_system ?? false,
       created_at: now,
       updated_at: now
     }
@@ -197,6 +236,12 @@ export class AgentService extends BaseService {
   }
 
   async deleteAgent(id: string): Promise<boolean> {
+    // Check if this is a system agent
+    const agent = await this.getAgent(id)
+    if (agent?.is_system) {
+      throw new Error('Cannot delete system agent')
+    }
+
     const database = await this.getDatabase()
     const result = await database.delete(agentsTable).where(eq(agentsTable.id, id))
 
