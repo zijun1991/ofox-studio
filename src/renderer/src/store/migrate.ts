@@ -10,8 +10,8 @@
  * Any non-critical changes will conflict with the ongoing work.
  *
  * 🔗 Context & Status:
- * - Contribution Hold: https://github.com/CherryHQ/cherry-studio/issues/10954
- * - v2 Refactor PR   : https://github.com/CherryHQ/cherry-studio/pull/10162
+ * - Contribution Hold: https://github.com/ofox/ofox-claw/issues/10954
+ * - v2 Refactor PR   : https://github.com/ofox/ofox-claw/pull/10162
  * --------------------------------------------------------------------------
  */
 import { loggerService } from '@logger'
@@ -3313,6 +3313,16 @@ const migrateConfig = {
       return state
     } catch (error) {
       logger.error('migrate 201 error', error as Error)
+      return state
+    }
+  },
+  '202': (state: RootState) => {
+    try {
+      addShortcuts(state, ['cycle_permission_mode'], 'last')
+      logger.info('migrate 202 success')
+      return state
+    } catch (error) {
+      logger.error('migrate 202 error', error as Error)
       return state
     }
   }

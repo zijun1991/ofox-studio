@@ -10,8 +10,8 @@
  * Any non-critical changes will conflict with the ongoing work.
  *
  * 🔗 Context & Status:
- * - Contribution Hold: https://github.com/CherryHQ/cherry-studio/issues/10954
- * - v2 Refactor PR   : https://github.com/CherryHQ/cherry-studio/pull/10162
+ * - Contribution Hold: https://github.com/ofox/ofox-claw/issues/10954
+ * - v2 Refactor PR   : https://github.com/ofox/ofox-claw/pull/10162
  * --------------------------------------------------------------------------
  */
 import { loggerService } from '@logger'
@@ -40,8 +40,10 @@ import {
   extractAgentSessionIdFromTopicId,
   isAgentSessionTopicId
 } from '@renderer/utils/agentSession'
+import { serializeError } from '@renderer/utils/error'
 import {
   createAssistantMessage,
+  createErrorBlock,
   createTranslationBlock,
   resetAssistantMessage
 } from '@renderer/utils/messageUtils/create'
@@ -156,17 +158,7 @@ export const renameAgentSessionIfNeeded = async (
       return
     }
 
-    const { messages } = await dbFacade.fetchMessages(topicId, true)
-    if (!messages.length) {
-      return
-    }
-
-    const { text: summary } = await fetchMessagesSummary({ messages, assistant })
-    const summaryText = summary?.trim()
-    if (!summaryText) {
-      return
-    }
-
+    // 1. 先获取 session 信息，检查是否已有非默认名称
     const baseURL = buildAgentBaseURL(apiServer)
     const client = new AgentApiClient({
       baseURL,
@@ -174,8 +166,6 @@ export const renameAgentSessionIfNeeded = async (
         Authorization: `Bearer ${apiServer.apiKey}`
       }
     })
-
-    agentSessionRenameLocks.add(lockId)
 
     let session: GetAgentSessionResponse
     try {
@@ -186,10 +176,31 @@ export const renameAgentSessionIfNeeded = async (
     }
 
     const currentName = (session.name ?? '').trim()
-    if (currentName === summaryText) {
+
+    // 2. 如果 session 已有非默认名称，直接返回，不调用 LLM
+    // 默认名称判断：空字符串、"未命名"、"Unnamed" 等
+    const defaultNames = ['', '未命名', 'Unnamed']
+    if (currentName && !defaultNames.includes(currentName)) {
+      logger.debug(`[AgentSession] Session already has name: ${currentName}, skipping rename`)
       return
     }
 
+    // 3. 检查消息数量（至少需要 2 条消息：用户 + 助手）
+    const { messages } = await dbFacade.fetchMessages(topicId, true)
+    if (messages.length < 2) {
+      return
+    }
+
+    // 4. 只有在需要时才调用 LLM
+    const { text: summary } = await fetchMessagesSummary({ messages, assistant })
+    const summaryText = summary?.trim()
+    if (!summaryText) {
+      return
+    }
+
+    agentSessionRenameLocks.add(lockId)
+
+    // 5. 更新 session 名称
     let updatedSession: GetAgentSessionResponse
     try {
       updatedSession = await client.updateSession(agentSession.agentId, {
@@ -276,9 +287,19 @@ const createSSEReadableStream = (
 
         try {
           const parsed = JSON.parse(dataPayload) as TextStreamPart<Record<string, any>>
+          // Check if this is an error chunk from the server
+          if (parsed.type === 'error' && parsed.error) {
+            const errorMessage = (parsed.error as { message?: string }).message || 'Unknown stream error'
+            throw new Error(errorMessage)
+          }
           controller.enqueue(parsed)
         } catch (error) {
-          logger.warn('Failed to parse agent SSE chunk', { dataPayload })
+          if (error instanceof SyntaxError) {
+            logger.warn('Failed to parse agent SSE chunk', { dataPayload })
+          } else {
+            // Re-throw other errors (including our error chunk error)
+            throw error
+          }
         }
         return false
       }
@@ -692,10 +713,34 @@ const fetchAndProcessAgentResponseImpl = async (
     await renameAgentSessionIfNeeded(agentSession, assistant, topicId, getState)
   } catch (error: any) {
     logger.error('Error in fetchAndProcessAgentResponseImpl:', error)
+    endSpan({ topicId, error: error, modelName: assistant.model?.name })
+
+    // 确保错误被渲染到消息列表
     try {
-      callbacks.onError?.(error)
+      if (callbacks.onError) {
+        await callbacks.onError(error)
+      } else {
+        // 如果 callbacks 不可用，直接创建错误块
+        const serializableError = serializeError(error)
+        const errorBlock = createErrorBlock(assistantMessage.id, serializableError, {
+          status: MessageBlockStatus.SUCCESS
+        })
+
+        // 添加错误块到消息
+        dispatch(upsertOneBlock(errorBlock))
+        dispatch(
+          newMessagesActions.updateMessage({
+            topicId,
+            messageId: assistantMessage.id,
+            updates: { status: AssistantMessageStatus.ERROR }
+          })
+        )
+
+        // 保存到数据库
+        await saveUpdatesToDB(assistantMessage.id, topicId, { status: AssistantMessageStatus.ERROR }, [errorBlock])
+      }
     } catch (callbackError) {
-      logger.error('Error in agent onError callback:', callbackError as Error)
+      logger.error('Error in error handling:', callbackError as Error)
     }
   } finally {
     dispatch(newMessagesActions.setTopicLoading({ topicId, loading: false }))
@@ -851,7 +896,28 @@ const fetchAndProcessAssistantResponseImpl = async (
     })
     // 统一错误处理：确保 loading 状态被正确设置，避免队列任务卡住
     try {
-      callbacks.onError?.(error)
+      if (callbacks.onError) {
+        await callbacks.onError(error)
+      } else {
+        // 如果 callbacks 不可用，直接创建错误块
+        const serializableError = serializeError(error)
+        const errorBlock = createErrorBlock(assistantMsgId, serializableError, {
+          status: MessageBlockStatus.SUCCESS
+        })
+
+        // 添加错误块到消息
+        dispatch(upsertOneBlock(errorBlock))
+        dispatch(
+          newMessagesActions.updateMessage({
+            topicId,
+            messageId: assistantMsgId,
+            updates: { status: AssistantMessageStatus.ERROR }
+          })
+        )
+
+        // 保存到数据库
+        await saveUpdatesToDB(assistantMsgId, topicId, { status: AssistantMessageStatus.ERROR }, [errorBlock])
+      }
     } catch (callbackError) {
       logger.error('Error in onError callback:', callbackError as Error)
     } finally {

@@ -10,8 +10,8 @@
  * Any non-critical changes will conflict with the ongoing work.
  *
  * 🔗 Context & Status:
- * - Contribution Hold: https://github.com/CherryHQ/cherry-studio/issues/10954
- * - v2 Refactor PR   : https://github.com/CherryHQ/cherry-studio/pull/10162
+ * - Contribution Hold: https://github.com/ofox/ofox-claw/issues/10954
+ * - v2 Refactor PR   : https://github.com/ofox/ofox-claw/pull/10162
  * --------------------------------------------------------------------------
  */
 import { loggerService } from '@logger'
@@ -24,6 +24,7 @@ import storage from 'redux-persist/lib/storage'
 import storeSyncService from '../services/StoreSyncService'
 import assistants from './assistants'
 import backup from './backup'
+import channels from './channels'
 import codeTools from './codeTools'
 import copilot from './copilot'
 import inputToolsReducer from './inputTools'
@@ -34,6 +35,7 @@ import memory from './memory'
 import messageBlocksReducer from './messageBlock'
 import migrate from './migrate'
 import minapps from './minapps'
+import modelEmployee from './modelEmployee'
 import newMessagesReducer from './newMessage'
 import { setNotesPath } from './note'
 import note from './note'
@@ -47,17 +49,20 @@ import runtime from './runtime'
 import selectionStore from './selectionStore'
 import settings from './settings'
 import shortcuts from './shortcuts'
+import skins from './skins'
 import tabs from './tabs'
 import toolPermissions from './toolPermissions'
 import tools from './tools'
 import translate from './translate'
 import websearch from './websearch'
+import workspace from './workspace'
 
 const logger = loggerService.withContext('Store')
 
 const rootReducer = combineReducers({
   assistants,
   backup,
+  channels,
   codeTools,
   nutstore,
   paintings,
@@ -65,6 +70,7 @@ const rootReducer = combineReducers({
   settings,
   runtime,
   shortcuts,
+  skins,
   knowledge,
   minapps,
   tools,
@@ -83,15 +89,17 @@ const rootReducer = combineReducers({
   ocr,
   note,
   toolPermissions,
-  ofox
+  ofox,
+  modelEmployee,
+  workspace
 })
 
 const persistedReducer = persistReducer(
   {
-    key: 'cherry-studio',
+    key: 'ofox-claw',
     storage,
-    version: 201,
-    blacklist: ['runtime', 'messages', 'messageBlocks', 'tabs', 'toolPermissions', 'ofox'],
+    version: 202,
+    blacklist: ['runtime', 'messages', 'messageBlocks', 'tabs', 'toolPermissions', 'ofox', 'workspace'],
     migrate
   },
   rootReducer

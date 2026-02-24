@@ -10,8 +10,8 @@
  * Any non-critical changes will conflict with the ongoing work.
  *
  * 🔗 Context & Status:
- * - Contribution Hold: https://github.com/CherryHQ/cherry-studio/issues/10954
- * - v2 Refactor PR   : https://github.com/CherryHQ/cherry-studio/pull/10162
+ * - Contribution Hold: https://github.com/ofox/ofox-claw/issues/10954
+ * - v2 Refactor PR   : https://github.com/ofox/ofox-claw/pull/10162
  * --------------------------------------------------------------------------
  */
 import type { PayloadAction } from '@reduxjs/toolkit'
@@ -37,6 +37,7 @@ import type {
   OpenAIReasoningSummary,
   OpenAIVerbosity
 } from '@renderer/types/aiCoreTypes'
+import type { BackgroundConfig } from '@renderer/types/skin'
 import { uuid } from '@renderer/utils'
 import { API_SERVER_DEFAULTS, UpgradeChannel } from '@shared/config/constant'
 
@@ -55,6 +56,12 @@ export type UserTheme = {
   colorPrimary: string
   userFontFamily: string
   userCodeFontFamily: string
+  // 新增：背景配置
+  background?: BackgroundConfig
+  sidebarBackground?: BackgroundConfig
+  cardBackground?: BackgroundConfig
+  // 当前使用的皮肤 ID
+  activeSkinId?: string
 }
 
 export interface SettingsState {
@@ -326,7 +333,7 @@ export const initialState: SettingsState = {
   webdavHost: '',
   webdavUser: '',
   webdavPass: '',
-  webdavPath: '/cherry-studio',
+  webdavPath: '/ofox-claw',
   webdavAutoSync: false,
   webdavSyncInterval: 0,
   webdavMaxBackups: 0,
