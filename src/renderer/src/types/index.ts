@@ -16,17 +16,21 @@ import type { KnowledgeBase, KnowledgeReference } from './knowledge'
 import type { MCPConfigSample, MCPServerInstallSource, McpServerType } from './mcp'
 import type { Message } from './newMessage'
 import type { BaseTool, MCPTool } from './tool'
+import type { SpeedyTopicConfig } from './workspace'
 
 export * from './agent'
 export * from './apiModels'
 export * from './apiServer'
+export * from './channel'
 export * from './knowledge'
 export * from './mcp'
+export * from './modelEmployee'
 export * from './notification'
 export * from './ocr'
 export * from './ofox'
 export * from './plugin'
 export * from './provider'
+export * from './workspace'
 
 export type McpMode = 'disabled' | 'auto' | 'manual'
 
@@ -268,6 +272,7 @@ export type Topic = {
   pinned?: boolean
   prompt?: string
   isNameManuallyEdited?: boolean
+  speedyConfig?: SpeedyTopicConfig
 }
 
 export type User = {

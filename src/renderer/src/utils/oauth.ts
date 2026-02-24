@@ -62,7 +62,7 @@ export const oauthWithAihubmix = async (setKey) => {
 }
 
 export const oauthWithPPIO = async (setKey) => {
-  const redirectUri = 'cherrystudio://'
+  const redirectUri = 'ofoxclaw://'
   const authUrl = `https://ppio.com/oauth/authorize?invited_by=JYT9GD&client_id=${PPIO_CLIENT_ID}&scope=api%20openid&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}`
 
   window.open(
@@ -152,7 +152,7 @@ export const oauthWithTokenFlux = async () => {
   )
 }
 export const oauthWith302AI = async (setKey) => {
-  const authUrl = 'https://dash.302.ai/sso/login?app=cherry-ai.com&name=Cherry%20Studio'
+  const authUrl = 'https://dash.302.ai/sso/login?app=ofox.ai&name=Ofox%20Claw'
 
   const popup = window.open(
     authUrl,
@@ -216,7 +216,7 @@ export const providerCharge = async (provider: string) => {
       height: 700
     },
     ppio: {
-      url: 'https://ppio.com/user/register?invited_by=JYT9GD&utm_source=github_cherry-studio&redirect=/billing',
+      url: 'https://ppio.com/user/register?invited_by=JYT9GD&utm_source=github_ofox-claw&redirect=/billing',
       width: 900,
       height: 700
     },
@@ -259,7 +259,7 @@ export const providerBills = async (provider: string) => {
       height: 700
     },
     ppio: {
-      url: 'https://ppio.com/user/register?invited_by=JYT9GD&utm_source=github_cherry-studio&redirect=/billing/billing-details',
+      url: 'https://ppio.com/user/register?invited_by=JYT9GD&utm_source=github_ofox-claw&redirect=/billing/billing-details',
       width: 900,
       height: 700
     },

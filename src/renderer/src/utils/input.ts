@@ -87,7 +87,7 @@ export const getSendMessageShortcutLabel = (shortcut: SendMessageShortcut) => {
 
 // check if the send message key is pressed in textarea
 export const isSendMessageKeyPressed = (
-  event: React.KeyboardEvent<HTMLTextAreaElement>,
+  event: React.KeyboardEvent<HTMLTextAreaElement | HTMLDivElement>,
   shortcut: SendMessageShortcut
 ) => {
   let isSendMessageKeyPressed = false

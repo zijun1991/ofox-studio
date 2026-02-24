@@ -69,7 +69,7 @@ export const AgentBaseSchema = z.object({
   // Basic info
   name: z.string().optional(),
   description: z.string().optional(),
-  accessible_paths: z.array(z.string()).nonempty(), // Array of directory paths the agent can access
+  accessible_paths: z.array(z.string()), // Array of directory paths the agent can access
 
   // Instructions for the agent
   instructions: z.string().optional(), // System prompt
@@ -110,6 +110,8 @@ export const isAgentBaseWithId = (value: unknown): value is AgentBaseWithId => {
 export const AgentEntitySchema = AgentBaseSchema.extend({
   id: z.string(),
   type: AgentTypeSchema,
+  is_system: z.boolean().optional().default(false), // System agent flag (cannot be deleted)
+  channel_bound: z.boolean().optional().default(false), // Channel-bound agent flag (cannot be deleted directly)
   created_at: z.iso.datetime(),
   updated_at: z.iso.datetime()
 })
@@ -132,6 +134,7 @@ export const AgentSessionEntitySchema = AgentBaseSchema.extend({
   id: z.string(),
   agent_id: z.string(), // Primary agent ID for the session
   agent_type: AgentTypeSchema,
+  channel_bound: z.boolean().optional().default(false), // Channel-bound session flag (cannot be deleted directly)
   // sub_agent_ids?: string[] // Array of sub-agent IDs involved in the session
 
   created_at: z.iso.datetime(),
@@ -381,6 +384,7 @@ export const CreateSessionMessageRequestSchema = z.object({
 
 export type PermissionModeCard = {
   mode: PermissionMode
+  icon: string
   titleKey: string
   titleFallback: string
   descriptionKey: string
