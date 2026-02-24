@@ -282,7 +282,8 @@ const api = {
   },
   fs: {
     read: (pathOrUrl: string, encoding?: BufferEncoding) => ipcRenderer.invoke(IpcChannel.Fs_Read, pathOrUrl, encoding),
-    readText: (pathOrUrl: string): Promise<string> => ipcRenderer.invoke(IpcChannel.Fs_ReadText, pathOrUrl)
+    readText: (pathOrUrl: string): Promise<string> => ipcRenderer.invoke(IpcChannel.Fs_ReadText, pathOrUrl),
+    exists: (path: string): Promise<boolean> => ipcRenderer.invoke(IpcChannel.Fs_Exists, path)
   },
   export: {
     toWord: (markdown: string, fileName: string) => ipcRenderer.invoke(IpcChannel.Export_Word, markdown, fileName)
@@ -692,6 +693,25 @@ const api = {
     isLoginComplete: (url: string) => ipcRenderer.invoke(IpcChannel.Ofox_IsLoginComplete, url),
     logout: () => ipcRenderer.invoke(IpcChannel.Ofox_Logout),
     getModels: () => ipcRenderer.invoke(IpcChannel.Ofox_GetModels)
+  },
+  channels: {
+    syncConfig: (channels: any[]) => ipcRenderer.invoke(IpcChannel.Channel_SyncConfig, channels),
+    start: (channelId: string) => ipcRenderer.invoke(IpcChannel.Channel_Start, channelId),
+    stop: (channelId: string) => ipcRenderer.invoke(IpcChannel.Channel_Stop, channelId),
+    testConnection: (channel: any) => ipcRenderer.invoke(IpcChannel.Channel_TestConnection, channel),
+    getStatuses: () => ipcRenderer.invoke(IpcChannel.Channel_GetStatuses),
+    onStatusChanged: (callback: (_event: Electron.IpcRendererEvent, data: any) => void) => {
+      ipcRenderer.on(IpcChannel.Channel_StatusChanged, callback)
+      return () => {
+        ipcRenderer.removeListener(IpcChannel.Channel_StatusChanged, callback)
+      }
+    },
+    onMessageEvent: (callback: (_event: Electron.IpcRendererEvent, data: any) => void) => {
+      ipcRenderer.on(IpcChannel.Channel_MessageEvent, callback)
+      return () => {
+        ipcRenderer.removeListener(IpcChannel.Channel_MessageEvent, callback)
+      }
+    }
   }
 }
 

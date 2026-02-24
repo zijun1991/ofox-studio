@@ -99,25 +99,25 @@ export class AppMenuService {
           {
             label: appMenu.website,
             click: () => {
-              shell.openExternal('https://cherry-ai.com')
+              shell.openExternal('https://ofox.ai')
             }
           },
           {
             label: appMenu.documentation,
             click: () => {
-              shell.openExternal('https://cherry-ai.com/docs')
+              shell.openExternal('https://docs.ofox.ai')
             }
           },
           {
             label: appMenu.feedback,
             click: () => {
-              shell.openExternal('https://github.com/CherryHQ/cherry-studio/issues/new/choose')
+              shell.openExternal('https://ofox.ai/feedback')
             }
           },
           {
             label: appMenu.releases,
             click: () => {
-              shell.openExternal('https://github.com/CherryHQ/cherry-studio/releases')
+              shell.openExternal('https://releases.ofox.app')
             }
           }
         ]

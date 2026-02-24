@@ -10,12 +10,12 @@ const swaggerOptions: swaggerJSDoc.Options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Cherry Studio API',
+      title: 'Ofox Claw API',
       version: '1.0.0',
-      description: 'OpenAI-compatible API for Cherry Studio with additional Cherry-specific endpoints',
+      description: 'OpenAI-compatible API for Ofox Claw with additional endpoints',
       contact: {
-        name: 'Cherry Studio',
-        url: 'https://github.com/CherryHQ/cherry-studio'
+        name: 'Ofox Claw',
+        url: 'https://ofox.ai'
       }
     },
     servers: [
@@ -30,7 +30,7 @@ const swaggerOptions: swaggerJSDoc.Options = {
           type: 'http',
           scheme: 'bearer',
           bearerFormat: 'JWT',
-          description: 'Use the API key from Cherry Studio settings'
+          description: 'Use the API key from Ofox Claw settings'
         }
       },
       schemas: {
@@ -193,7 +193,7 @@ export function setupOpenAPIDocumentation(app: Express) {
         .swagger-ui .topbar { display: none; }
         .swagger-ui .info .title { color: #1890ff; }
       `,
-        customSiteTitle: 'Cherry Studio API Documentation'
+        customSiteTitle: 'Ofox Claw API Documentation'
       })
     )
 

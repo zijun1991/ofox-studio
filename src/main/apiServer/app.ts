@@ -8,6 +8,7 @@ import { authMiddleware } from './middleware/auth'
 import { errorHandler } from './middleware/error'
 import { setupOpenAPIDocumentation } from './middleware/openapi'
 import { agentsRoutes } from './routes/agents'
+import { channelRoutes } from './routes/channels'
 import { chatRoutes } from './routes/chat'
 import { mcpRoutes } from './routes/mcp'
 import { messagesProviderRoutes, messagesRoutes } from './routes/messages'
@@ -108,7 +109,7 @@ app.get('/health', (_req, res) => {
  *               properties:
  *                 name:
  *                   type: string
- *                   example: Cherry Studio API
+ *                   example: Ofox Claw API
  *                 version:
  *                   type: string
  *                   example: 1.0.0
@@ -117,7 +118,7 @@ app.get('/health', (_req, res) => {
  */
 app.get('/', (_req, res) => {
   res.json({
-    name: 'Cherry Studio API',
+    name: 'Ofox Claw API',
     version: '1.0.0',
     endpoints: {
       health: 'GET /health'
@@ -130,6 +131,9 @@ setupOpenAPIDocumentation(app)
 
 // Provider-specific messages route requires authentication
 app.use('/:provider/v1/messages', authMiddleware, extendMessagesTimeout, messagesProviderRoutes)
+
+// Channel webhook routes (uses per-channel HMAC auth, not global Bearer token)
+app.use('/v1/channels', channelRoutes)
 
 // API v1 routes with auth
 const apiRouter = express.Router()

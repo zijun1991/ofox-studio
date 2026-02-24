@@ -131,15 +131,14 @@ export default class AppUpdater {
   }
 
   /**
-   * Fetch update configuration from GitHub or GitCode based on mirror
-   * @param mirror - Mirror to fetch config from
+   * Fetch update configuration from production server
    * @returns UpdateConfig object or null if fetch fails
    */
-  private async _fetchUpdateConfig(mirror: UpdateMirror): Promise<UpdateConfig | null> {
-    const configUrl = mirror === UpdateMirror.GITCODE ? UpdateConfigUrl.GITCODE : UpdateConfigUrl.GITHUB
+  private async _fetchUpdateConfig(): Promise<UpdateConfig | null> {
+    const configUrl = UpdateConfigUrl.PRODUCTION
 
     try {
-      logger.info(`Fetching update config from ${configUrl} (mirror: ${mirror})`)
+      logger.info(`Fetching update config from ${configUrl}`)
       const response = await net.fetch(configUrl, {
         headers: {
           'User-Agent': generateUserAgent(),
@@ -229,14 +228,14 @@ export default class AppUpdater {
 
     // Determine mirror based on IP country
     const ipCountry = await getIpCountry()
-    const mirror = ipCountry.toLowerCase() === 'cn' ? UpdateMirror.GITCODE : UpdateMirror.GITHUB
+    const mirror = UpdateMirror.PRODUCTION
 
     logger.info(
-      `Setting feed URL for version ${currentVersion}, testPlan: ${testPlan}, requested channel: ${requestedChannel}, mirror: ${mirror} (IP country: ${ipCountry})`
+      `Setting feed URL for version ${currentVersion}, testPlan: ${testPlan}, requested channel: ${requestedChannel} (IP country: ${ipCountry})`
     )
 
     // Try to fetch update config from remote
-    const config = await this._fetchUpdateConfig(mirror)
+    const config = await this._fetchUpdateConfig()
 
     if (config) {
       // Use new config-based system
@@ -246,7 +245,7 @@ export default class AppUpdater {
         const { config: channelConfig, channel: actualChannel } = result
         const feedUrl = channelConfig.feedUrls[mirror]
         logger.info(
-          `Using config-based feed URL: ${feedUrl} for channel ${actualChannel} (requested: ${requestedChannel}, mirror: ${mirror})`
+          `Using config-based feed URL: ${feedUrl} for channel ${actualChannel} (requested: ${requestedChannel})`
         )
         this._setChannel(actualChannel, feedUrl)
         return
@@ -254,8 +253,8 @@ export default class AppUpdater {
     }
 
     logger.info('Failed to fetch update config, falling back to default feed URL')
-    // Fallback: use default feed URL based on mirror
-    const defaultFeedUrl = mirror === UpdateMirror.GITCODE ? FeedUrl.PRODUCTION : FeedUrl.GITHUB_LATEST
+    // Fallback: use default feed URL
+    const defaultFeedUrl = FeedUrl.PRODUCTION
 
     logger.info(`Using fallback feed URL: ${defaultFeedUrl}`)
     this._setChannel(UpgradeChannel.LATEST, defaultFeedUrl)

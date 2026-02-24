@@ -573,6 +573,18 @@ export const deleteAgent = async (req: Request, res: Response): Promise<Response
     logger.info('Agent deleted', { agentId })
     return res.status(204).send()
   } catch (error: any) {
+    // Handle system agent deletion attempt
+    if (error.message === 'Cannot delete system agent') {
+      logger.warn('Attempted to delete system agent', { agentId: req.params.agentId })
+      return res.status(403).json({
+        error: {
+          message: 'Cannot delete system agent',
+          type: 'forbidden',
+          code: 'cannot_delete_system_agent'
+        }
+      })
+    }
+
     logger.error('Error deleting agent', { error, agentId: req.params.agentId })
     return res.status(500).json({
       error: {

@@ -675,6 +675,7 @@ export async function registerIpc(mainWindow: BrowserWindow, app: Electron.App) 
   // fs
   ipcMain.handle(IpcChannel.Fs_Read, FileService.readFile.bind(FileService))
   ipcMain.handle(IpcChannel.Fs_ReadText, FileService.readTextFileWithAutoEncoding.bind(FileService))
+  ipcMain.handle(IpcChannel.Fs_Exists, FileService.exists.bind(FileService))
 
   // export
   ipcMain.handle(IpcChannel.Export_Word, exportService.exportToWord.bind(exportService))
@@ -1167,4 +1168,12 @@ export async function registerIpc(mainWindow: BrowserWindow, app: Electron.App) 
   ipcMain.handle(IpcChannel.Ofox_IsLoginComplete, (_, url: string) => ofoxService.isLoginComplete(url))
   ipcMain.handle(IpcChannel.Ofox_Logout, () => ofoxService.logout())
   ipcMain.handle(IpcChannel.Ofox_GetModels, () => ofoxService.getModels())
+
+  // Channels
+  const { channelManager } = await import('./services/channels')
+  ipcMain.handle(IpcChannel.Channel_SyncConfig, (_, channels) => channelManager.syncChannels(channels))
+  ipcMain.handle(IpcChannel.Channel_Start, (_, channelId: string) => channelManager.startChannel(channelId))
+  ipcMain.handle(IpcChannel.Channel_Stop, (_, channelId: string) => channelManager.stopChannel(channelId))
+  ipcMain.handle(IpcChannel.Channel_TestConnection, (_, channel) => channelManager.testConnection(channel))
+  ipcMain.handle(IpcChannel.Channel_GetStatuses, () => channelManager.getChannelStatuses())
 }

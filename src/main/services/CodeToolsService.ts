@@ -126,7 +126,7 @@ class CodeToolsService {
    * Generate opencode.json config file for OpenCode CLI
    * Merge approach:
    * 1. Parse existing config (if any) with JSONC support
-   * 2. Merge CherryStudio provider into provider object
+   * 2. Merge OfoxClaw provider into provider object
    * 3. Preserve other fields like $schema, model, etc.
    */
   private async generateOpenCodeConfig(
@@ -215,7 +215,7 @@ class CodeToolsService {
     }
     this.openCodeConfigBackups.set(configPath, backupContent)
 
-    // config with env variable Build CherryStudio provider reference for security
+    // config with env variable Build OfoxClaw provider reference for security
     const envVarKey = `OPENCODE_API_KEY_${providerName.toUpperCase().replace(/-/g, '_')}`
     const cherryProviderConfig = {
       npm: npmPackage,
@@ -1001,7 +1001,7 @@ class CodeToolsService {
         const command = envPrefix ? `${envPrefix} && ${baseCommand}` : baseCommand
 
         // Create temp bat file for debugging and avoid complex command line escaping issues
-        const tempDir = path.join(os.tmpdir(), 'cherrystudio')
+        const tempDir = path.join(os.tmpdir(), 'ofoxclaw')
         const timestamp = Date.now()
         const batFileName = `launch_${cliTool}_${timestamp}.bat`
         const batFilePath = path.join(tempDir, batFileName)
@@ -1015,9 +1015,9 @@ class CodeToolsService {
         const batContent = [
           '@echo off',
           'chcp 65001 >nul 2>&1', // Switch to UTF-8 code page for international path support
-          `title ${cliTool} - Cherry Studio`, // Set window title in bat file
+          `title ${cliTool} - Ofox Claw`, // Set window title in bat file
           'echo ================================================',
-          'echo Cherry Studio CLI Tool Launcher',
+          'echo Ofox Claw CLI Tool Launcher',
           `echo Tool: ${cliTool}`,
           `echo Directory: ${directory}`,
           `echo Time: ${new Date().toLocaleString()}`,

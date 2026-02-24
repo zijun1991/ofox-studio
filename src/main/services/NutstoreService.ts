@@ -37,14 +37,14 @@ interface WebDAVResponse {
 
 export async function getNutstoreSSOUrl() {
   return await createOAuthUrl({
-    app: 'cherrystudio'
+    app: 'ofoxclaw'
   })
 }
 
 export async function decryptToken(token: string) {
   try {
     const decrypted = await decryptSecret({
-      app: 'cherrystudio',
+      app: 'ofoxclaw',
       s: token
     })
     return JSON.parse(decrypted) as OAuthResponse

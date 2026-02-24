@@ -25,7 +25,7 @@ class AnalyticsService {
 
     this.client = new AnalyticsClient({
       clientId: configManager.getClientId(),
-      channel: 'cherry-studio',
+      channel: 'ofox-claw',
       onError: (error) => logger.error('Analytics error:', error)
     })
     logger.info('Analytics service initialized')
