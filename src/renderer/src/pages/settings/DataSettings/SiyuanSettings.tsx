@@ -48,7 +48,7 @@ const SiyuanSettings: FC = () => {
     openSmartMinapp({
       id: 'siyuan-help',
       name: 'Siyuan Help',
-      url: 'https://docs.cherry-ai.com/advanced-basic/siyuan',
+      url: 'https://docs.ofox.ai/advanced-basic/siyuan',
       logo: AppLogo
     })
   }

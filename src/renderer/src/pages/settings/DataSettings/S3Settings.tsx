@@ -67,7 +67,7 @@ const S3Settings: FC = () => {
     openSmartMinapp({
       id: 's3-help',
       name: 'S3 Compatible Storage Help',
-      url: 'https://docs.cherry-ai.com/data-settings/s3-compatible',
+      url: 'https://docs.ofox.ai/data-settings/s3-compatible',
       logo: AppLogo
     })
   }

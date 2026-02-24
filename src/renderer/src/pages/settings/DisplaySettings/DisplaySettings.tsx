@@ -1,6 +1,7 @@
 import CodeEditor from '@renderer/components/CodeEditor'
 import { ResetIcon } from '@renderer/components/Icons'
 import { HStack } from '@renderer/components/Layout'
+import SkinSelector from '@renderer/components/SkinSelector'
 import TextBadge from '@renderer/components/TextBadge'
 import { isLinux, isMac, THEME_COLOR_PRESETS } from '@renderer/config/constant'
 import { DEFAULT_SIDEBAR_ICONS } from '@renderer/config/sidebar'
@@ -295,6 +296,11 @@ const DisplaySettings: FC = () => {
         )}
       </SettingGroup>
       <SettingGroup theme={theme}>
+        <SettingTitle>{t('settings.skin.title')}</SettingTitle>
+        <SettingDivider />
+        <SkinSelector />
+      </SettingGroup>
+      <SettingGroup theme={theme}>
         <SettingTitle style={{ justifyContent: 'flex-start', gap: 5 }}>
           {t('settings.display.navbar.title')} <TextBadge text="New" />
         </SettingTitle>
@@ -472,7 +478,7 @@ const DisplaySettings: FC = () => {
       <SettingGroup theme={theme}>
         <SettingTitle>
           {t('settings.display.custom.css.label')}
-          <TitleExtra onClick={() => window.api.openWebsite('https://cherrycss.com/')}>
+          <TitleExtra onClick={() => window.api.openWebsite('https://ofox.ai/themes/')}>
             {t('settings.display.custom.css.cherrycss')}
           </TitleExtra>
         </SettingTitle>

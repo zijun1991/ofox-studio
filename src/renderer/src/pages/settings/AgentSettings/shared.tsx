@@ -19,6 +19,7 @@ import type { ModalProps } from 'antd'
 import { Menu, Modal } from 'antd'
 import type { ReactNode } from 'react'
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 import { SettingDivider } from '..'
@@ -91,6 +92,7 @@ export type AgentLabelProps = {
 }
 
 export const AgentLabel: React.FC<AgentLabelProps> = ({ agent, classNames, hideIcon }) => {
+  const { t } = useTranslation()
   const emoji = agent?.configuration?.avatar
 
   return (
@@ -99,6 +101,11 @@ export const AgentLabel: React.FC<AgentLabelProps> = ({ agent, classNames, hideI
       <span className={cn('truncate', 'text-[var(--color-text)]', classNames?.name)}>
         {agent?.name ?? (agent?.type ? getAgentTypeLabel(agent.type) : '')}
       </span>
+      {agent?.is_system && (
+        <span className="rounded bg-gradient-to-r from-blue-500 to-cyan-500 px-1.5 py-0.5 font-medium text-white text-xs">
+          {t('agent.turbo.tag')}
+        </span>
+      )}
     </div>
   )
 }
