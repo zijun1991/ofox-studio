@@ -3,17 +3,13 @@ import path from 'path'
 import semver from 'semver'
 
 type UpgradeChannel = 'latest' | 'rc' | 'beta'
-type UpdateMirror = 'github' | 'gitcode'
+type UpdateMirror = 'production'
 
 const CHANNELS: UpgradeChannel[] = ['latest', 'rc', 'beta']
-const MIRRORS: UpdateMirror[] = ['github', 'gitcode']
-const GITHUB_REPO = 'CherryHQ/cherry-studio'
-const GITCODE_REPO = 'CherryHQ/cherry-studio'
+const MIRRORS: UpdateMirror[] = ['production']
 const DEFAULT_FEED_TEMPLATES: Record<UpdateMirror, string> = {
-  github: `https://github.com/${GITHUB_REPO}/releases/download/{{tag}}`,
-  gitcode: `https://gitcode.com/${GITCODE_REPO}/releases/download/{{tag}}`
+  production: 'https://releases.ofox.app'
 }
-const GITCODE_LATEST_FALLBACK = 'https://releases.cherry-ai.com'
 
 interface CliOptions {
   tag?: string
@@ -422,18 +418,8 @@ async function applyChannelUpdate(
     console.warn(
       `[update-app-upgrade-config] Skipping release availability validation for ${releaseInfo.version} (${releaseInfo.channel}).`
     )
-  } else {
-    const availability = await ensureReleaseAvailability(releaseInfo)
-    if (!availability.github) {
-      return false
-    }
-    if (releaseInfo.channel === 'latest' && !availability.gitcode) {
-      console.warn(
-        `[update-app-upgrade-config] gitcode release page not ready for ${releaseInfo.tag}. Falling back to ${GITCODE_LATEST_FALLBACK}.`
-      )
-      feedUrls.gitcode = GITCODE_LATEST_FALLBACK
-    }
   }
+  // Note: Release availability checks removed - using production server only
 
   entry.channels[releaseInfo.channel] = {
     version: releaseInfo.version,
@@ -455,10 +441,6 @@ function buildFeedUrls(segment: SegmentDefinition, releaseInfo: ReleaseInfo): Re
 }
 
 function resolveFeedTemplate(segment: SegmentDefinition, releaseInfo: ReleaseInfo, mirror: UpdateMirror): string {
-  if (mirror === 'gitcode' && releaseInfo.channel !== 'latest') {
-    return segment.channelTemplates?.[releaseInfo.channel]?.feedTemplates?.github ?? DEFAULT_FEED_TEMPLATES.github
-  }
-
   return segment.channelTemplates?.[releaseInfo.channel]?.feedTemplates?.[mirror] ?? DEFAULT_FEED_TEMPLATES[mirror]
 }
 
@@ -477,54 +459,7 @@ function sortVersionMap(versions: Record<string, VersionEntry>): Record<string, 
   )
 }
 
-interface ReleaseAvailability {
-  github: boolean
-  gitcode: boolean
-}
-
-async function ensureReleaseAvailability(releaseInfo: ReleaseInfo): Promise<ReleaseAvailability> {
-  const mirrorsToCheck: UpdateMirror[] = releaseInfo.channel === 'latest' ? MIRRORS : ['github']
-  const availability: ReleaseAvailability = {
-    github: false,
-    gitcode: releaseInfo.channel === 'latest' ? false : true
-  }
-
-  for (const mirror of mirrorsToCheck) {
-    const url = getReleasePageUrl(mirror, releaseInfo.tag)
-    try {
-      const response = await fetch(url, {
-        method: mirror === 'github' ? 'HEAD' : 'GET',
-        redirect: 'follow'
-      })
-
-      if (response.ok) {
-        availability[mirror] = true
-      } else {
-        console.warn(
-          `[update-app-upgrade-config] ${mirror} release not available for ${releaseInfo.tag} (status ${response.status}, ${url}).`
-        )
-        availability[mirror] = false
-      }
-    } catch (error) {
-      console.warn(
-        `[update-app-upgrade-config] Failed to verify ${mirror} release page for ${releaseInfo.tag} (${url}). Continuing.`,
-        error
-      )
-      availability[mirror] = false
-    }
-  }
-
-  return availability
-}
-
-function getReleasePageUrl(mirror: UpdateMirror, tag: string): string {
-  if (mirror === 'github') {
-    return `https://github.com/${GITHUB_REPO}/releases/tag/${encodeURIComponent(tag)}`
-  }
-  // Use latest.yml download URL for GitCode to check if release exists
-  // Note: GitCode returns 401 for HEAD requests, so we use GET in ensureReleaseAvailability
-  return `https://gitcode.com/${GITCODE_REPO}/releases/download/${encodeURIComponent(tag)}/latest.yml`
-}
+// Release availability check removed - using production server only
 
 main().catch((error) => {
   console.error('❌ Failed to update app-upgrade-config:', error)

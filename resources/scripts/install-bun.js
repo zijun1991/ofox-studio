@@ -6,7 +6,7 @@ const StreamZip = require('node-stream-zip')
 const { downloadWithRedirects } = require('./download')
 
 // Base URL for downloading bun binaries
-const BUN_RELEASE_BASE_URL = 'https://gitcode.com/CherryHQ/bun/releases/download'
+const BUN_RELEASE_BASE_URL = 'https://gitcode.com/ofox/bun/releases/download'
 const DEFAULT_BUN_VERSION = '1.3.1' // Default fallback version
 
 // Mapping of platform+arch to binary package name
@@ -47,7 +47,7 @@ async function downloadBunBinary(platform, arch, version = DEFAULT_BUN_VERSION, 
   }
 
   // Create output directory structure
-  const binDir = path.join(os.homedir(), '.cherrystudio', 'bin')
+  const binDir = path.join(os.homedir(), '.ofoxclaw', 'bin')
   // Ensure directories exist
   fs.mkdirSync(binDir, { recursive: true })
 

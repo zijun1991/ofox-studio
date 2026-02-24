@@ -6,7 +6,7 @@ const StreamZip = require('node-stream-zip')
 const { downloadWithRedirects } = require('./download')
 
 // Base URL for downloading uv binaries
-const UV_RELEASE_BASE_URL = 'https://gitcode.com/CherryHQ/uv/releases/download'
+const UV_RELEASE_BASE_URL = 'https://gitcode.com/ofox/uv/releases/download'
 const DEFAULT_UV_VERSION = '0.9.5'
 
 // Mapping of platform+arch to binary package name
@@ -49,7 +49,7 @@ async function downloadUvBinary(platform, arch, version = DEFAULT_UV_VERSION, is
   }
 
   // Create output directory structure
-  const binDir = path.join(os.homedir(), '.cherrystudio', 'bin')
+  const binDir = path.join(os.homedir(), '.ofoxclaw', 'bin')
   // Ensure directories exist
   fs.mkdirSync(binDir, { recursive: true })
 
