@@ -1,0 +1,209 @@
+/* MessageInput Quill v1 样式 - 与 Ant Design TextArea 保持一致 */
+
+/* 基础容器样式 */
+.message-input {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: transparent;
+  transition: all 0.2s ease;
+}
+
+/* Quill 编辑器容器 */
+.message-input .ql-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border: none !important;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* 编辑器内容区域 - 模拟 textarea 样式 */
+.message-input .ql-editor {
+  flex: 1;
+  padding: 0;
+  outline: none;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-y: auto;
+  overflow-x: hidden;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: 1.4;
+  color: var(--color-text);
+  background-color: transparent;
+  resize: none !important;
+  box-sizing: border-box;
+}
+
+/* 占位符样式 - 独立的padding不影响输入区域 */
+.message-input .ql-editor.ql-blank::before {
+  content: attr(data-placeholder);
+  position: absolute;
+  left: 15px;
+  top: 6px;
+  right: 15px;
+  color: #bfbfbf;
+  font-style: normal;
+  pointer-events: none;
+  font-size: inherit;
+  line-height: inherit;
+  /* 占位符自身的padding，不影响输入区域 */
+  padding: 0;
+  display: block;
+}
+
+/* 隐藏 snow 主题的工具栏 */
+.message-input .ql-toolbar {
+  display: none !important;
+}
+
+/* 滚动条样式 - 与 InputbarCore 一致 */
+.message-input .ql-editor::-webkit-scrollbar {
+  width: 3px;
+}
+
+.message-input .ql-editor::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.message-input .ql-editor::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+.message-input .ql-editor::-webkit-scrollbar-thumb:hover {
+  background: var(--color-icon);
+}
+
+/* 选中文字样式 */
+.message-input .ql-editor ::selection {
+  background-color: var(--color-primary-mute);
+}
+
+/* 禁用状态 */
+.message-input.disabled .ql-editor {
+  cursor: not-allowed;
+  user-select: none;
+}
+
+/* 确保内容可编辑区域可拖拽 */
+.message-input .ql-editor {
+  -webkit-app-region: no-drag;
+}
+
+/* 纯文本模式下的 p 标签样式 */
+.message-input .ql-editor > p {
+  margin: 0;
+  padding: 0;
+}
+
+/* 确保换行符正确显示 */
+.message-input .ql-editor br {
+  display: block;
+  content: '';
+}
+
+/* Path Blot 样式 - 路径标签 */
+.ql-path-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: default;
+  user-select: none;
+  margin: 0 4px;
+  vertical-align: middle;
+  position: relative;
+}
+
+/* 目录/文件类型 - 蓝色背景 */
+.ql-path-tag.path-exists {
+  background-color: #1890ff;
+  color: white;
+}
+
+/* 未知类型 - 红色背景 */
+.ql-path-tag.path-unknown {
+  background-color: #ff4d4f;
+  color: white;
+}
+
+/* 类型前缀样式 - 灰色字体 */
+.ql-path-tag .path-type-prefix {
+  color: rgba(255, 255, 255, 0.7);
+  margin-right: 4px;
+}
+
+/* 文件名样式 */
+.ql-path-tag .path-name {
+  color: white;
+}
+
+/* Tooltip 样式 - 使用 fixed 定位避免被父容器裁剪 */
+.ql-path-tag .path-tooltip {
+  position: fixed;
+  bottom: auto;
+  top: auto;
+  left: auto;
+  right: auto;
+  transform: none;
+  padding: 6px 10px;
+  background-color: rgba(0, 0, 0, 0.85);
+  color: white;
+  font-size: 12px;
+  border-radius: 4px;
+  white-space: nowrap;
+  z-index: 99999;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.2s,
+    visibility 0.2s;
+  pointer-events: none;
+  margin-bottom: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Tooltip 箭头 - 使用独立元素 */
+.ql-path-tag .path-tooltip-arrow {
+  position: fixed;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid rgba(0, 0, 0, 0.85);
+  z-index: 99999;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.2s,
+    visibility 0.2s;
+}
+
+/* Hover 时显示 tooltip */
+.ql-path-tag:hover .path-tooltip,
+.ql-path-tag:hover .path-tooltip-arrow {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* 确保 embed blot 在编辑器中正确显示 */
+.message-input .ql-editor .ql-path-tag {
+  pointer-events: auto;
+}
+
+/* 隐藏 Quill 内部的剪贴板容器 */
+.message-input .ql-clipboard {
+  position: absolute;
+  left: -100000px;
+  top: -100000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
