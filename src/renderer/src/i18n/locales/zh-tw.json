@@ -29,6 +29,7 @@
     "delete": {
       "content": "刪除該 Agent 會強制停止並刪除該 Agent 的所有工作階段。確定要刪除嗎？",
       "error": {
+        "channel_bound": "無法刪除已綁定到頻道「{{name}}」的 Agent，請先刪除頻道。",
         "failed": "刪除 Agent 失敗"
       },
       "title": "刪除 Agent"
@@ -77,6 +78,7 @@
         "failed": "無法列出 Agent。"
       }
     },
+    "permission_mode_changed": "權限模式已更改",
     "server": {
       "error": {
         "not_running": "API 伺服器已啟用，但運作不正常。"
@@ -94,6 +96,8 @@
         "select_failed": "無法選擇目錄。"
       },
       "add": {
+        "channel_bound_disabled": "頻道綁定 Agent",
+        "channel_bound_hint": "頻道綁定 Agent 的工作階段會自動建立。",
         "title": "新增工作階段"
       },
       "allowed_tools": {
@@ -101,6 +105,12 @@
         "helper": "預先核准的工具可直接執行；未選取的工具在使用前需要手動核准。",
         "label": "預先授權工具",
         "placeholder": "選擇預先授權的工具"
+      },
+      "channel_bound": {
+        "description": "此工作階段已綁定到頻道「{{name}}」（{{type}}）。訊息會透過頻道自動接收和發送。",
+        "go_to_channel": "前往頻道",
+        "hint": "在 設定 > 頻道 中設定此頻道",
+        "title": "頻道綁定工作階段"
       },
       "create": {
         "error": {
@@ -223,6 +233,7 @@
         "uninstalling": "解除安裝中..."
       },
       "prompt": "提示設定",
+      "title": "智能體設定",
       "tooling": {
         "mcp": {
           "description": "連線 MCP 伺服器即可解鎖更多可在上方預先授權的工具。",
@@ -377,6 +388,11 @@
         }
       }
     },
+    "turbo": {
+      "description": "快速回應的極速助手，適用於簡單任務",
+      "name": "極速模式",
+      "tag": "極速"
+    },
     "type": {
       "label": "Agent 類型",
       "unknown": "未知類型"
@@ -406,7 +422,7 @@
     },
     "authHeaderText": "在授權標頭中使用：",
     "configuration": "設定",
-    "description": "透過 OpenAI 相容的 HTTP API 公開 Cherry Studio 的 AI 功能",
+    "description": "透過 OpenAI 相容的 HTTP API 公開 Ofox Claw 的 AI 功能",
     "documentation": {
       "title": "API 文件"
     },
@@ -726,6 +742,67 @@
     },
     "update_available": "有可用更新",
     "whole_word": "全字比對"
+  },
+  "channels": {
+    "add": "新增頻道",
+    "add_title": "新增頻道",
+    "agent_id": "Agent ID",
+    "binding": "Agent 綁定",
+    "binding_status": "綁定狀態",
+    "binding_create_hint": "建立一個新的 Agent 並綁定到此頻道",
+    "binding_already_bound": "該頻道已綁定到 Agent",
+    "binding_success": "Agent 建立並綁定成功",
+    "binding_error": "建立並綁定 Agent 失敗",
+    "binding_no_agent": "該頻道未綁定 Agent",
+    "binding_edit_error": "無法開啟 Agent 進行編輯",
+    "binding_locked_hint": "Agent 已綁定，點擊可跳轉到 Agent 編輯頁面",
+    "unbound": "未綁定",
+    "create_agent_and_bind": "建立並綁定",
+    "delete_confirm": "確定要刪除此頻道嗎？",
+    "deleted": "頻道已刪除",
+    "email": {
+      "folder": "資料夾",
+      "from_address": "發件人地址",
+      "from_address_placeholder": "預設為 SMTP 使用者",
+      "from_name": "發件人名稱",
+      "host": "主機",
+      "imap": "IMAP（收件）",
+      "password": "密碼",
+      "poll_interval": "輪詢間隔（秒）",
+      "port": "連接埠",
+      "smtp": "SMTP（發件）",
+      "tls": "TLS",
+      "user": "使用者名稱"
+    },
+    "empty": "尚未設定任何頻道。點擊「新增頻道」開始設定。",
+    "enabled": "啟用",
+    "name": "名稱",
+    "name_placeholder": "例如：我的 Webhook",
+    "name_required": "請輸入頻道名稱",
+    "not_found": "找不到頻道",
+    "saved": "頻道已儲存",
+    "session_id": "Session ID",
+    "telegram": {
+      "allowed_chat_ids": "允許的聊天 ID",
+      "allowed_chat_ids_placeholder": "以逗號分隔，留空表示允許所有",
+      "bot_token": "Bot Token",
+      "bot_token_placeholder": "輸入從 @BotFather 取得的 Bot Token",
+      "config": "Telegram Bot 設定",
+      "parse_mode": "解析模式",
+      "parse_mode_none": "無",
+      "poll_interval": "輪詢間隔（秒）"
+    },
+    "test_connection": "測試連線",
+    "title": "頻道",
+    "type": "類型",
+    "type_placeholder": "選擇頻道類型",
+    "type_required": "請選擇頻道類型",
+    "webhook": {
+      "config": "Webhook 設定",
+      "endpoint": "端點",
+      "secret": "HMAC 密鑰",
+      "secret_placeholder": "選填"
+    }
   },
   "chat": {
     "add": {
@@ -1324,6 +1401,7 @@
     },
     "footnote": "引用內容",
     "footnotes": "引用",
+    "free": "免費",
     "fullscreen": "已進入全螢幕模式，按 F11 結束",
     "generate_random_seed": "產生隨機種子",
     "get_embedding_dimension": "取得嵌入維度",
@@ -1346,6 +1424,7 @@
     "next_match": "下一場比賽",
     "no_results": "沒有結果",
     "none": "無",
+    "no": "否",
     "off": "關閉",
     "on": "開啟",
     "open": "開啟",
@@ -1398,6 +1477,7 @@
     "upload_image": "上傳圖片檔案",
     "uploaded_image": "已上傳圖片",
     "warning": "警告",
+    "yes": "是",
     "you": "您"
   },
   "dialog": {
@@ -1763,6 +1843,10 @@
     "urls": "網址",
     "videos": "影片",
     "videos_file": "影片檔案"
+  },
+  "landing": {
+    "enterExpertMode": "進入專家模式",
+    "welcome": "歡迎使用 ofox studio"
   },
   "languages": {
     "arabic": "阿拉伯文",
@@ -2326,6 +2410,14 @@
       "pin": "視窗置頂"
     }
   },
+  "modelEmployee": {
+    "educationLevel": {
+      "high_school": "初級",
+      "master": "高級",
+      "phd": "頂級",
+      "undergraduate": "中級"
+    }
+  },
   "models": {
     "add_parameter": "新增參數",
     "all": "全部",
@@ -2558,7 +2650,7 @@
   },
   "openclaw": {
     "checking_installation": "正在檢查 OpenClaw 安裝狀態...",
-    "description": "使用 Cherry Studio 服務商為 OpenClaw 提供支援，OpenClaw 是您的個人 AI 助手，可在 WhatsApp、Telegram、Slack、Discord 等平台上使用。",
+    "description": "使用 Ofox Claw 服務商為 OpenClaw 提供支援，OpenClaw 是您的個人 AI 助手，可在 WhatsApp、Telegram、Slack、Discord 等平台上使用。",
     "error": {
       "select_provider_model": "請先選擇服務商和模型"
     },
@@ -2591,7 +2683,7 @@
       "title": "模型設定"
     },
     "node_missing": {
-      "description": "OpenClaw 需要 Node.js/npm。請先安裝 Node.js，然後重新啟動 Cherry Studio。",
+      "description": "OpenClaw 需要 Node.js/npm。請先安裝 Node.js，然後重新啟動 Ofox Claw。",
       "download_button": "下載 Node.js",
       "hint": "macOS：brew install node | Windows：從 nodejs.org 下載 LTS 版本",
       "title": "需要 Node.js"
@@ -2651,7 +2743,7 @@
       "stop": "停止 OVMS",
       "stopping": "停止中"
     },
-    "description": "<div><p>1. 下載 OV 模型。</p><p>2. 在 'Manager' 中新增模型。</p><p>僅支援 Windows！</p><p>OVMS 安裝路徑：'%USERPROFILE%\\.cherrystudio\\ovms' 。</p><p>請參考 <a href=https://github.com/openvinotoolkit/model_server/blob/c55551763d02825829337b62c2dcef9339706f79/docs/deploying_server_baremetal.md>Intel OVMS 指南</a></p></dev>",
+    "description": "<div><p>1. 下載 OV 模型。</p><p>2. 在 'Manager' 中新增模型。</p><p>僅支援 Windows！</p><p>OVMS 安裝路徑：'%USERPROFILE%\\.ofoxclaw\\ovms' 。</p><p>請參考 <a href=https://github.com/openvinotoolkit/model_server/blob/c55551763d02825829337b62c2dcef9339706f79/docs/deploying_server_baremetal.md>Intel OVMS 指南</a></p></dev>",
     "download": {
       "button": "下載",
       "error": "下載失敗",
@@ -3372,7 +3464,7 @@
           },
           "description": {
             "0": "劃詞助手需「<strong>輔助使用權限</strong>」才能正常工作。",
-            "1": "請點選「<strong>前往設定</strong>」，並在稍後出現的權限請求對話框中點選「<strong>開啟系統設定</strong>」按鈕，接著在應用程式清單中找到「<strong>Cherry Studio</strong>」，並開啟權限開關。",
+            "1": "請點選「<strong>前往設定</strong>」，並在稍後出現的權限請求對話框中點選「<strong>開啟系統設定</strong>」按鈕，接著在應用程式清單中找到「<strong>Ofox Claw</strong>」，並開啟權限開關。",
             "2": "完成設定後，請再次開啟劃詞助手。"
           },
           "title": "輔助使用權限"
@@ -3384,7 +3476,7 @@
         "title": "應用篩選名單",
         "user_tips": {
           "mac": "請輸入應用程式的 Bundle ID（每行一個、不區分大小寫，可模糊比對）。例如：com.google.Chrome、com.apple.mail 等",
-          "windows": "請輸入應用程式的執行檔名稱（每行一個、不區分大小寫，可模糊比對）。例如：chrome.exe、weixin.exe、Cherry Studio.exe 等"
+          "windows": "請輸入應用程式的執行檔名稱（每行一個、不區分大小寫，可模糊比對）。例如：chrome.exe、weixin.exe、Ofox Claw.exe 等"
         }
       },
       "search_modal": {
@@ -3536,6 +3628,19 @@
         "title": "官方網站"
       }
     },
+    "account": {
+      "api_key": "API 金鑰",
+      "api_key_placeholder": "請輸入您的 API 金鑰",
+      "api_key_required": "請輸入 API 金鑰",
+      "api_key_save": "儲存",
+      "api_key_saved": "API 金鑰已儲存",
+      "available_models": "可用模型",
+      "logged_in": "已登入",
+      "login": "登入",
+      "login_hint": "登入以獲取更多功能",
+      "no_models": "暫無可用模型",
+      "not_logged_in": "未登入"
+    },
     "advanced": {
       "auto_switch_to_topics": "自動切換到話題",
       "title": "進階設定"
@@ -3663,14 +3768,14 @@
             "test_message_received": "收到來自 {{device}} 的 pong",
             "test_message_sent": "已送出 hello world 測試封包"
           },
-          "idle_hint": "掃描已暫停。開始掃描以尋找區域網路中的 Cherry Studio 裝置。",
+          "idle_hint": "掃描已暫停。開始掃描以尋找區域網路中的 Ofox Claw 裝置。",
           "ip_addresses": "IP 位址",
           "last_seen": "上次看到：{{time}}",
           "metadata": "中繼資料",
-          "no_connection_warning": "請在 Cherry Studio 行動裝置開啟區域網路傳輸",
+          "no_connection_warning": "請在 Ofox Claw 行動裝置開啟區域網路傳輸",
           "no_devices": "尚未找到區域網路節點",
           "scan_devices": "掃描裝置",
-          "scanning_hint": "正在掃描區域網路中的 Cherry Studio 裝置...",
+          "scanning_hint": "正在掃描區域網路中的 Ofox Claw 裝置...",
           "send_file": "傳送檔案",
           "status": {
             "completed": "傳輸完成",
@@ -4020,7 +4125,7 @@
         },
         "root": {
           "label": "備份目錄（可選）",
-          "placeholder": "例如：/cherry-studio"
+          "placeholder": "例如：/ofox-claw"
         },
         "secretAccessKey": {
           "label": "Secret Access Key",
@@ -4177,7 +4282,7 @@
       },
       "custom": {
         "css": {
-          "cherrycss": "從 cherrycss.com 取得",
+          "cherrycss": "從 ofox.ai/themes 取得",
           "label": "自訂 CSS",
           "placeholder": "/* 這裡寫自訂 CSS */"
         }
@@ -4452,7 +4557,7 @@
       },
       "oauth": {
         "callback": {
-          "message": "關閉此頁面後即可回到 Cherry Studio",
+          "message": "關閉此頁面後即可回到 Ofox Claw",
           "title": "認證成功"
         }
       },
@@ -4658,6 +4763,48 @@
       "visible": "顯示的小程式"
     },
     "model": "預設模型",
+    "model_employee": {
+      "description": "定義員工並對模型進行使用者友善的封裝",
+      "education_level": {
+        "high_school": "初級",
+        "master": "高級",
+        "phd": "頂級",
+        "undergraduate": "中級"
+      },
+      "employee": {
+        "add": "新增員工",
+        "delete": "刪除員工",
+        "delete_confirm": "確定要刪除員工「{{name}}」嗎？",
+        "description": "描述",
+        "description_placeholder": "描述此員工的能力和使用場景",
+        "edit": "編輯員工",
+        "education_level": "學歷等級",
+        "model": "綁定模型",
+        "name": "員工名稱",
+        "name_duplicate": "員工名稱已存在，請使用其他名稱",
+        "name_placeholder": "例如：智慧助理",
+        "soul": "個性",
+        "soul_placeholder": "描述員工的個性特質和行為風格"
+      },
+      "empty": "暫無員工",
+      "export": {
+        "button": "匯出設定",
+        "success": "設定已匯出"
+      },
+      "import": {
+        "button": "匯入設定",
+        "error": "匯入失敗，請檢查檔案格式",
+        "success": "設定已匯入"
+      },
+      "label": "模型員工",
+      "pricing": {
+        "input": "輸入",
+        "output": "輸出"
+      },
+      "reset": "重置設定",
+      "reset_confirm": "確定要重置所有員工設定嗎？",
+      "title": "模型員工設定"
+    },
     "models": {
       "add": {
         "add_model": "新增模型",
@@ -5043,7 +5190,7 @@
       "remove_invalid_keys": "刪除無效金鑰",
       "search": "搜尋模型平臺...",
       "search_placeholder": "搜尋模型 ID 或名稱",
-      "title": "模型提供者",
+      "title": "我的帳號",
       "vertex_ai": {
         "api_host_help": "Vertex AI 的 API 位址，不建議填寫，通常適用於反向代理",
         "documentation": "檢視官方文件以取得更多設定詳細資訊：",
@@ -5116,6 +5263,7 @@
       "clear_shortcut": "清除快捷鍵",
       "clear_topic": "清除所有訊息",
       "copy_last_message": "複製上一則訊息",
+      "cycle_permission_mode": "切換權限模式",
       "edit_last_user_message": "編輯最後一則使用者訊息",
       "enabled": "啟用",
       "exit_fullscreen": "離開全螢幕",
@@ -5140,6 +5288,42 @@
       "zoom_in": "放大介面",
       "zoom_out": "縮小介面",
       "zoom_reset": "重設縮放"
+    },
+    "skin": {
+      "addCustom": "新增自訂",
+      "background": {
+        "addColor": "新增顏色",
+        "blur": "模糊",
+        "color": "顏色",
+        "colors": "顏色",
+        "direction": "方向",
+        "directions": {
+          "radial": "徑向",
+          "to-bottom": "垂直",
+          "to-bottom-right": "對角",
+          "to-right": "水平"
+        },
+        "opacity": "透明度",
+        "selectImage": "選擇圖片",
+        "size": "大小",
+        "sizeAuto": "自動",
+        "sizeContain": "包含",
+        "sizeCover": "覆蓋",
+        "title": "背景設定",
+        "types": {
+          "gradient": "漸層",
+          "image": "圖片",
+          "solid": "純色"
+        }
+      },
+      "customTitle": "自訂主題",
+      "deleteConfirm": "確定要刪除此主題嗎？",
+      "export": "匯出主題",
+      "import": "匯入主題",
+      "name": "主題名稱",
+      "namePlaceholder": "輸入主題名稱",
+      "primaryColor": "主色調",
+      "title": "主題"
     },
     "theme": {
       "color_primary": "主題顏色",
@@ -5369,6 +5553,18 @@
       "title": "縮放"
     }
   },
+  "speedy": {
+    "chat_placeholder": "開始新對話",
+    "configure_employees": "配置模型員工",
+    "expert_mode": "專家模式",
+    "new_topic": "新建話題",
+    "no_employee_description": "請先配置模型員工以使用極速模式",
+    "no_employee_title": "未配置模型員工",
+    "no_topics": "暫無話題",
+    "select_employee": "選擇模型員工",
+    "title": "極速模式",
+    "topic_list_title": "話題列表"
+  },
   "title": {
     "apps": "小程式",
     "code": "程式碼",
@@ -5387,40 +5583,40 @@
   },
   "tools": {
     "custom": {
-      "duplicate_ids": "[to be translated]:Tool ID \"{{ids}}\" already exists",
-      "edit_title": "[to be translated]:Add Custom Tool",
-      "id": "[to be translated]:Tool ID",
-      "id_error": "[to be translated]:Please enter tool ID",
-      "id_placeholder": "[to be translated]:e.g., my-tool",
-      "logo": "[to be translated]:Tool Logo",
-      "logo_file": "[to be translated]:Upload File",
-      "logo_upload_button": "[to be translated]:Select Image",
-      "logo_upload_error": "[to be translated]:Failed to upload logo",
-      "logo_upload_label": "[to be translated]:Upload Logo",
-      "logo_upload_success": "[to be translated]:Logo uploaded successfully",
-      "logo_url": "[to be translated]:Logo URL",
-      "logo_url_label": "[to be translated]:Logo URL",
-      "logo_url_placeholder": "[to be translated]:Enter logo URL (optional)",
-      "name": "[to be translated]:Tool Name",
-      "name_error": "[to be translated]:Please enter tool name",
-      "name_placeholder": "[to be translated]:e.g., My Tool",
-      "save": "[to be translated]:Save",
-      "save_error": "[to be translated]:Failed to save custom tool",
-      "save_success": "[to be translated]:Custom tool saved successfully",
-      "title": "[to be translated]:Custom",
-      "url": "[to be translated]:Tool URL",
-      "url_error": "[to be translated]:Please enter tool URL",
-      "url_placeholder": "[to be translated]:e.g., https://example.com"
+      "duplicate_ids": "工具 ID「{{ids}}」已存在",
+      "edit_title": "新增自訂工具",
+      "id": "工具 ID",
+      "id_error": "請輸入工具 ID",
+      "id_placeholder": "例如：my-tool",
+      "logo": "工具圖示",
+      "logo_file": "上傳檔案",
+      "logo_upload_button": "選擇圖片",
+      "logo_upload_error": "上傳圖示失敗",
+      "logo_upload_label": "上傳圖示",
+      "logo_upload_success": "圖示上傳成功",
+      "logo_url": "圖示網址",
+      "logo_url_label": "圖示網址",
+      "logo_url_placeholder": "輸入圖示網址（選填）",
+      "name": "工具名稱",
+      "name_error": "請輸入工具名稱",
+      "name_placeholder": "例如：我的工具",
+      "save": "儲存",
+      "save_error": "儲存自訂工具失敗",
+      "save_success": "自訂工具儲存成功",
+      "title": "自訂",
+      "url": "工具網址",
+      "url_error": "請輸入工具網址",
+      "url_placeholder": "例如：https://example.com"
     },
     "settings": {
-      "custom_tools_description": "[to be translated]:Manage your custom tools",
-      "custom_tools_title": "[to be translated]:Custom Tools",
-      "delete_confirm_description": "[to be translated]:Are you sure you want to delete tool \"{{name}}\"?",
-      "delete_confirm_title": "[to be translated]:Delete Tool",
-      "display_title": "[to be translated]:Tools Settings",
-      "no_custom_tools": "[to be translated]:No custom tools"
+      "custom_tools_description": "管理您的自訂工具",
+      "custom_tools_title": "自訂工具",
+      "delete_confirm_description": "確定要刪除工具「{{name}}」嗎？",
+      "delete_confirm_title": "刪除工具",
+      "display_title": "工具設定",
+      "no_custom_tools": "無自訂工具"
     },
-    "title": "[to be translated]:Tools"
+    "title": "工具"
   },
   "trace": {
     "backList": "回到清單",
@@ -5590,5 +5786,31 @@
     "quit": "結束",
     "show_window": "顯示視窗",
     "visualization": "視覺化"
+  },
+  "workspace": {
+    "add_folder": "新增資料夾",
+    "clear": "清空工作區",
+    "clear_confirm_content": "確定要清空工作區嗎？所有檔案引用將被移除。",
+    "clear_confirm_title": "清空工作區",
+    "drop_hint": "釋放以新增檔案",
+    "empty_hint": "拖入檔案或資料夾到此處",
+    "empty_hint_click": "拖入資料夾或點擊新增",
+    "empty_hint_sub": "新增專案目錄到工作區",
+    "exclude_config_title": "排除規則配置",
+    "exclude_description": "以下目錄將在篩選時被排除",
+    "exclude_empty": "暫無排除規則",
+    "exclude_placeholder": "輸入目錄名稱，如: build",
+    "filter_limit_hint": "已顯示前50個結果，請細化搜尋條件",
+    "filter_placeholder": "搜尋檔案或資料夾...",
+    "help_1": "Agent 可讀取、編輯工作區內的檔案",
+    "help_2": "支援拖曳資料夾快速新增",
+    "help_3": "點擊 + 按鈕也可選擇資料夾",
+    "help_footer": "Agent 可讀取、編輯工作區內的檔案。支援拖曳資料夾或點擊 + 新增。僅工作區內的檔案可被存取。",
+    "help_security": "僅工作區內的檔案可被存取，保障資料安全",
+    "help_title": "工作區的作用",
+    "no_results": "未找到符合的結果",
+    "searching": "搜尋中...",
+    "select_folder": "選擇資料夾",
+    "title": "工作區"
   }
 }

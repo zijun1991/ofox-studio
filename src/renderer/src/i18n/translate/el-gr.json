@@ -29,6 +29,7 @@
     "delete": {
       "content": "Η διαγραφή αυτού του Agent θα τερματίσει βίαια και θα διαγράψει όλες τις συνεδρίες υπό αυτόν τον Agent. Είστε σίγουροι;",
       "error": {
+        "channel_bound": "Δεν είναι δυνατή η διαγραφή του πράκτορα που είναι συνδεδεμένος με το κανάλι \"{{name}}\". Παρακαλώ διαγράψτε πρώτα το κανάλι.",
         "failed": "Αποτυχία διαγραφής του πράκτορα"
       },
       "title": "Διαγραφή Agent"
@@ -77,6 +78,7 @@
         "failed": "Αποτυχία καταχώρησης πρακτόρων."
       }
     },
+    "permission_mode_changed": "Η λειτουργία δικαιωμάτων άλλαξε",
     "server": {
       "error": {
         "not_running": "Ο διακομιστής API είναι ενεργοποιημένος αλλά δεν λειτουργεί σωστά."
@@ -94,6 +96,8 @@
         "select_failed": "Αποτυχία επιλογής καταλόγου."
       },
       "add": {
+        "channel_bound_disabled": "Πράκτορας Δεσμευμένος σε Κανάλι",
+        "channel_bound_hint": "Οι συνεδρίες για πράκτορες που είναι δεσμευμένοι σε κανάλι δημιουργούνται αυτόματα.",
         "title": "Προσθήκη συνεδρίας"
       },
       "allowed_tools": {
@@ -101,6 +105,12 @@
         "helper": "Επιλέξτε ποια εργαλεία είναι προεγκεκριμένα. Τα μη επιλεγμένα θα χρειαστούν έγκριση πριν από τη χρήση.",
         "label": "Προεγκεκριμένα εργαλεία",
         "placeholder": "Επιλέξτε προεγκεκριμένα εργαλεία"
+      },
+      "channel_bound": {
+        "description": "Αυτή η συνεδρία είναι δεσμευμένη στο κανάλι \"{{name}}\" ({{type}}). Τα μηνύματα λαμβάνονται και αποστέλλονται αυτόματα μέσω του καναλιού.",
+        "go_to_channel": "Πήγαινε στο Κανάλι",
+        "hint": "Ρυθμίστε αυτό το κανάλι στις Ρυθμίσεις > Κανάλια",
+        "title": "Κανάλι-Δεσμευμένη Σύνοδος"
       },
       "create": {
         "error": {
@@ -223,6 +233,7 @@
         "uninstalling": "Απεγκατάσταση..."
       },
       "prompt": "Ρυθμίσεις Προτροπής",
+      "title": "Ρυθμίσεις πράκτορα",
       "tooling": {
         "mcp": {
           "description": "Συνδέστε διακομιστές MCP για να ξεκλειδώσετε πρόσθετα εργαλεία που μπορείτε να εγκρίνετε παραπάνω.",
@@ -377,6 +388,11 @@
         }
       }
     },
+    "turbo": {
+      "description": "Γρήγορος βοηθός για απλές εργασίες",
+      "name": "Λειτουργία Turbo",
+      "tag": "Turbo"
+    },
     "type": {
       "label": "Τύπος Πράκτορα",
       "unknown": "Άγνωστος Τύπος"
@@ -406,7 +422,7 @@
     },
     "authHeaderText": "Χρήση στην κεφαλίδα εξουσιοδότησης:",
     "configuration": "Διαμόρφωση",
-    "description": "Εκθέτει τις δυνατότητες AI του Cherry Studio μέσω API HTTP συμβατών με OpenAI",
+    "description": "Εκθέτει τις δυνατότητες AI του Ofox Claw μέσω API HTTP συμβατών με OpenAI",
     "documentation": {
       "title": "Τεκμηρίωση API"
     },
@@ -726,6 +742,57 @@
     },
     "update_available": "Υπάρχει διαθέσιμη ενημέρωση",
     "whole_word": "Ταίριασμα ολόκληρης λέξης"
+  },
+  "channels": {
+    "add": "Προσθήκη Καναλιού",
+    "add_title": "Προσθήκη Καναλιού",
+    "agent_id": "ID Πράκτορα",
+    "binding": "Σύνδεση Πράκτορα",
+    "delete_confirm": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το κανάλι;",
+    "deleted": "Κανάλι διαγράφηκε",
+    "email": {
+      "folder": "Φάκελος",
+      "from_address": "Από Διεύθυνση",
+      "from_address_placeholder": "Προεπιλογή χρήστη SMTP",
+      "from_name": "Από Όνομα",
+      "host": "Φιλοξενώ",
+      "imap": "IMAP (Εισερχόμενα)",
+      "password": "Κωδικός πρόσβασης",
+      "poll_interval": "Διάστημα Ψηφοφορίας (δευτ.)",
+      "port": "Λιμάνι",
+      "smtp": "SMTP (Εξερχόμενα)",
+      "tls": "TLS",
+      "user": "Όνομα χρήστη"
+    },
+    "empty": "Δεν έχουν ρυθμιστεί κανάλια. Κάντε κλικ στο \"Προσθήκη καναλιού\" για να ξεκινήσετε.",
+    "enabled": "Ενεργοποιημένο",
+    "name": "Όνομα",
+    "name_placeholder": "π.χ. Το Webhook μου",
+    "name_required": "Παρακαλώ εισάγετε ένα όνομα καναλιού",
+    "not_found": "Κανάλι δεν βρέθηκε",
+    "saved": "Κανάλι αποθηκεύτηκε",
+    "session_id": "Αναγνωριστικό συνεδρίας",
+    "telegram": {
+      "allowed_chat_ids": "Επιτρεπόμενα ID Συνομιλιών",
+      "allowed_chat_ids_placeholder": "Διαχωρισμένα με κόμμα, αφήστε κενό για όλα",
+      "bot_token": "Κωδικός Bot",
+      "bot_token_placeholder": "Εισαγάγετε το token του bot σας από τον @BotFather",
+      "config": "Διαμόρφωση Telegram Bot",
+      "parse_mode": "Λειτουργία Ανάλυσης",
+      "parse_mode_none": "Καμία",
+      "poll_interval": "Διάστημα Ψηφοφορίας (δευτ.)"
+    },
+    "test_connection": "Δοκιμή Σύνδεσης",
+    "title": "Κανάλια",
+    "type": "Τύπος",
+    "type_placeholder": "Επιλέξτε τύπο καναλιού",
+    "type_required": "Παρακαλώ επιλέξτε έναν τύπο καναλιού",
+    "webhook": {
+      "config": "Διαμόρφωση Webhook",
+      "endpoint": "Τελικό σημείο",
+      "secret": "HMAC Μυστικό",
+      "secret_placeholder": "Προαιρετικό"
+    }
   },
   "chat": {
     "add": {
@@ -1324,6 +1391,7 @@
     },
     "footnote": "Παραπομπή",
     "footnotes": "Παραπομπές",
+    "free": "Δωρεάν",
     "fullscreen": "Εισήχθη σε πλήρη οθόνη, πατήστε F11 για να έξω",
     "generate_random_seed": "Δημιουργία τυχαίου σπόρου",
     "get_embedding_dimension": "Λήψη διάστασης ενσωμάτωσης",
@@ -1763,6 +1831,10 @@
     "urls": "Διευθύνσεις",
     "videos": "βίντεο",
     "videos_file": "Αρχείο βίντεο"
+  },
+  "landing": {
+    "enterExpertMode": "Είσοδος σε Λειτουργία Εμπειρογνώμονα",
+    "welcome": "Καλώς ήρθατε στο ofox studio"
   },
   "languages": {
     "arabic": "Αραβικά",
@@ -2326,6 +2398,14 @@
       "pin": "Καρφίτσωμα παραθύρου"
     }
   },
+  "modelEmployee": {
+    "educationLevel": {
+      "high_school": "Junior",
+      "master": "Senior",
+      "phd": "Expert",
+      "undergraduate": "Intermediate"
+    }
+  },
   "models": {
     "add_parameter": "Προσθήκη παραμέτρων",
     "all": "Όλα",
@@ -2558,7 +2638,7 @@
   },
   "openclaw": {
     "checking_installation": "Έλεγχος εγκατάστασης του OpenClaw...",
-    "description": "Ενσωματώστε τους παρόχους Cherry Studio με την πύλη OpenClaw για να ενεργοποιήσετε πράκτορες κωδικοποίησης AI όπως το Claude Code, το Qwen-Coder και άλλοι.",
+    "description": "Ενσωματώστε τους παρόχους Ofox Claw με την πύλη OpenClaw για να ενεργοποιήσετε πράκτορες κωδικοποίησης AI όπως το Claude Code, το Qwen-Coder και άλλοι.",
     "error": {
       "select_provider_model": "Παρακαλώ επιλέξτε πρώτα έναν πάροχο και ένα μοντέλο"
     },
@@ -2591,7 +2671,7 @@
       "title": "Διαμόρφωση Μοντέλου"
     },
     "node_missing": {
-      "description": "Το OpenClaw απαιτεί Node.js/npm. Παρακαλώ εγκαταστήστε πρώτα το Node.js και, στη συνέχεια, επανεκκινήστε το Cherry Studio.",
+      "description": "Το OpenClaw απαιτεί Node.js/npm. Παρακαλώ εγκαταστήστε πρώτα το Node.js και, στη συνέχεια, επανεκκινήστε το Ofox Claw.",
       "download_button": "Κατεβάστε το Node.js",
       "hint": "macOS: brew install node | Windows: Κατεβάστε την έκδοση LTS από το nodejs.org",
       "title": "Απαιτείται Node.js"
@@ -2651,7 +2731,7 @@
       "stop": "Διακοπή OVMS",
       "stopping": "Διακοπή σε εξέλιξη"
     },
-    "description": "<div><p>1. Λήψη μοντέλου OV.</p><p>2. Προσθήκη μοντέλου στο 'Manager'.</p><p>Υποστηρίζεται μόνο στα Windows!</p><p>Διαδρομή εγκατάστασης OVMS: '%USERPROFILE%\\.cherrystudio\\ovms' .</p><p>Ανατρέξτε στον <a href=https://github.com/openvinotoolkit/model_server/blob/c55551763d02825829337b62c2dcef9339706f79/docs/deploying_server_baremetal.md>Οδηγό Intel OVMS</a></p></div>",
+    "description": "<div><p>1. Λήψη μοντέλου OV.</p><p>2. Προσθήκη μοντέλου στο 'Manager'.</p><p>Υποστηρίζεται μόνο στα Windows!</p><p>Διαδρομή εγκατάστασης OVMS: '%USERPROFILE%\\.ofoxclaw\\ovms' .</p><p>Ανατρέξτε στον <a href=https://github.com/openvinotoolkit/model_server/blob/c55551763d02825829337b62c2dcef9339706f79/docs/deploying_server_baremetal.md>Οδηγό Intel OVMS</a></p></div>",
     "download": {
       "button": "Λήψη",
       "error": "Η επιλογή απέτυχε",
@@ -3372,7 +3452,7 @@
           },
           "description": {
             "0": "Το βοήθημα επιλογής λέξεων χρειάζεται «<strong>άδεια πρόσβασης σε δυνατότητες υποστήριξης</strong>» για να λειτουργήσει σωστά.",
-            "1": "Παρακαλούμε κάντε κλικ στο «<strong>Πήγαινε στις ρυθμίσεις</strong>» και, στη συνέχεια, στο παράθυρο αιτήματος αδειών που θα εμφανιστεί, κάντε κλικ στο κουμπί «<strong>Άνοιγμα ρυθμίσεων συστήματος</strong>», βρείτε στη λίστα εφαρμογών που θα ακολουθήσει το «<strong>Cherry Studio</strong>» και ενεργοποιήστε την άδεια.",
+            "1": "Παρακαλούμε κάντε κλικ στο «<strong>Πήγαινε στις ρυθμίσεις</strong>» και, στη συνέχεια, στο παράθυρο αιτήματος αδειών που θα εμφανιστεί, κάντε κλικ στο κουμπί «<strong>Άνοιγμα ρυθμίσεων συστήματος</strong>», βρείτε στη λίστα εφαρμογών που θα ακολουθήσει το «<strong>Ofox Claw</strong>» και ενεργοποιήστε την άδεια.",
             "2": "Μετά την ολοκλήρωση των ρυθμίσεων, ενεργοποιήστε ξανά το βοήθημα επιλογής λέξεων."
           },
           "title": "Άδεια Προσβασιμότητας"
@@ -3384,7 +3464,7 @@
         "title": "Λίστα Εφαρμογών Φιλτραρίσματος",
         "user_tips": {
           "mac": "Παρακαλώ εισαγάγετε το Bundle ID της εφαρμογής, ένα ανά γραμμή, δεν γίνεται διάκριση πεζών/κεφαλαίων, υποστηρίζεται ασαφής αντιστοίχιση. Για παράδειγμα: com.google.Chrome, com.apple.mail κ.λπ.",
-          "windows": "Παρακαλώ εισαγάγετε το όνομα του εκτελέσιμου αρχείου της εφαρμογής, ένα ανά γραμμή, δεν γίνεται διάκριση πεζών/κεφαλαίων, υποστηρίζεται ασαφής αντιστοίχιση. Για παράδειγμα: chrome.exe, weixin.exe, Cherry Studio.exe κ.λπ."
+          "windows": "Παρακαλώ εισαγάγετε το όνομα του εκτελέσιμου αρχείου της εφαρμογής, ένα ανά γραμμή, δεν γίνεται διάκριση πεζών/κεφαλαίων, υποστηρίζεται ασαφής αντιστοίχιση. Για παράδειγμα: chrome.exe, weixin.exe, Ofox Claw.exe κ.λπ."
         }
       },
       "search_modal": {
@@ -3536,6 +3616,19 @@
         "title": "Ιστοσελίδα"
       }
     },
+    "account": {
+      "api_key": "Κλειδί API",
+      "api_key_placeholder": "Εισάγετε το κλειδί API",
+      "api_key_required": "Παρακαλώ εισάγετε ένα κλειδί API",
+      "api_key_save": "Αποθήκευση",
+      "api_key_saved": "Κλειδί API saved",
+      "available_models": "Available Models",
+      "logged_in": "Logged In",
+      "login": "Login",
+      "login_hint": "Login to access more features",
+      "no_models": "No models available",
+      "not_logged_in": "Not Logged In"
+    },
     "advanced": {
       "auto_switch_to_topics": "Αυτόματη μετάβαση σε θέματα",
       "title": "Ρυθμίσεις Ανώτερου Νiveau"
@@ -3637,7 +3730,7 @@
         "lan": {
           "connected": "Συνδεδεμένος",
           "connection_failed": "Η σύνδεση απέτυχε",
-          "content": "Βεβαιωθείτε ότι ο υπολογιστής και το κινητό βρίσκονται στο ίδιο δίκτυο για να χρησιμοποιήσετε τη μεταφορά LAN. Ανοίξτε την εφαρμογή Cherry Studio και σαρώστε αυτόν τον κωδικό QR.",
+          "content": "Βεβαιωθείτε ότι ο υπολογιστής και το κινητό βρίσκονται στο ίδιο δίκτυο για να χρησιμοποιήσετε τη μεταφορά LAN. Ανοίξτε την εφαρμογή Ofox Claw και σαρώστε αυτόν τον κωδικό QR.",
           "device_list_title": "Τοπικές συσκευές δικτύου",
           "discovered_devices": "Ανακαλυφθείσες συσκευές",
           "error": {
@@ -3663,14 +3756,14 @@
             "test_message_received": "Λήφθηκε pong από {{device}}",
             "test_message_sent": "Στάλθηκε δοκιμαστικό φορτίο hello world"
           },
-          "idle_hint": "Η σάρωση διακόπηκε. Ξεκινήστε τη σάρωση για να βρείτε ομότιμους του Cherry Studio στο τοπικό σας δίκτυο.",
+          "idle_hint": "Η σάρωση διακόπηκε. Ξεκινήστε τη σάρωση για να βρείτε ομότιμους του Ofox Claw στο τοπικό σας δίκτυο.",
           "ip_addresses": "Διευθύνσεις IP",
           "last_seen": "Τελευταία φορά εθεάθηκε στις {{time}}",
           "metadata": "Μεταδεδομένα",
-          "no_connection_warning": "Παρακαλώ ανοίξτε τη μεταφορά LAN στο Cherry Studio mobile",
+          "no_connection_warning": "Παρακαλώ ανοίξτε τη μεταφορά LAN στο Ofox Claw mobile",
           "no_devices": "Δεν βρέθηκαν ακόμα συσκευές LAN",
           "scan_devices": "Σάρωση συσκευών",
-          "scanning_hint": "Σάρωση του τοπικού σας δικτύου για ομότιμους του Cherry Studio...",
+          "scanning_hint": "Σάρωση του τοπικού σας δικτύου για ομότιμους του Ofox Claw...",
           "send_file": "Αποστολή Αρχείου",
           "status": {
             "completed": "Η μεταφορά ολοκληρώθηκε",
@@ -4020,7 +4113,7 @@
         },
         "root": {
           "label": "Κατάλογος αντιγράφου ασφαλείας (προαιρετικό)",
-          "placeholder": "Π.χ.: /cherry-studio"
+          "placeholder": "Π.χ.: /ofox-claw"
         },
         "secretAccessKey": {
           "label": "Secret Access Key",
@@ -4177,7 +4270,7 @@
       },
       "custom": {
         "css": {
-          "cherrycss": "Λήψη από cherrycss.com",
+          "cherrycss": "Λήψη από ofox.ai/themes",
           "label": "Προσαρμοστική CSS",
           "placeholder": "/* Γράψτε εδώ την προσαρμοστική CSS */"
         }
@@ -4452,7 +4545,7 @@
       },
       "oauth": {
         "callback": {
-          "message": "Μπορείτε να κλείσετε αυτήν τη σελίδα και να επιστρέψετε στο Cherry Studio",
+          "message": "Μπορείτε να κλείσετε αυτήν τη σελίδα και να επιστρέψετε στο Ofox Claw",
           "title": "Επιτυχής Ταυτοποίηση"
         }
       },
@@ -4658,6 +4751,48 @@
       "visible": "Εμφανιζόμενα μικροπρογράμματα"
     },
     "model": "Πρόεδρος Υπηρεσίας",
+    "model_employee": {
+      "description": "Define employees for user-friendly model packaging",
+      "education_level": {
+        "high_school": "Junior",
+        "master": "Senior",
+        "phd": "Expert",
+        "undergraduate": "Intermediate"
+      },
+      "employee": {
+        "add": "Add Employee",
+        "delete": "Delete Employee",
+        "delete_confirm": "Are you sure you want to delete employee \"{{name}}\"?",
+        "description": "Description",
+        "description_placeholder": "Describe this employee's capabilities and use cases",
+        "edit": "Edit Employee",
+        "education_level": "Education Level",
+        "model": "Bind Model",
+        "name": "Employee Name",
+        "name_duplicate": "Employee name already exists, please use another name",
+        "name_placeholder": "e.g., Smart Assistant",
+        "soul": "Personality",
+        "soul_placeholder": "Describe the employee's personality traits and behavior style"
+      },
+      "empty": "No employees",
+      "export": {
+        "button": "Export Config",
+        "success": "Configuration exported"
+      },
+      "import": {
+        "button": "Import Config",
+        "error": "Import failed, please check the file format",
+        "success": "Configuration imported"
+      },
+      "label": "Model Employees",
+      "pricing": {
+        "input": "Είσοδος",
+        "output": "Έξοδος"
+      },
+      "reset": "Reset Config",
+      "reset_confirm": "Are you sure you want to reset all employee configurations?",
+      "title": "Model Employee Configuration"
+    },
     "models": {
       "add": {
         "add_model": "Προσθήκη μοντέλου",
@@ -5043,7 +5178,7 @@
       "remove_invalid_keys": "Διαγραφή Ακυρωμένων Κλειδιών",
       "search": "Αναζήτηση πλατφόρμας μονάδων...",
       "search_placeholder": "Αναζήτηση ID ή ονόματος μονάδας",
-      "title": "Υπηρεσία μονάδων",
+      "title": "Ο Λογαριασμός Μου",
       "vertex_ai": {
         "api_host_help": "Η διεύθυνση API του Vertex AI, δεν συνιστάται να συμπληρωθεί, συνήθως κατάλληλη για αντίστροφη διαμεσολάβηση",
         "documentation": "Δείτε την επίσημη τεκμηρίωση για περισσότερες λεπτομέρειες ρύθμισης:",
@@ -5116,6 +5251,7 @@
       "clear_shortcut": "Καθαρισμός συντομού πλήκτρου",
       "clear_topic": "Άδειασμα μηνυμάτων",
       "copy_last_message": "Αντιγραφή του τελευταίου μηνύματος",
+      "cycle_permission_mode": "Κυκλική λειτουργία δικαιωμάτων",
       "edit_last_user_message": "Επεξεργασία του τελευταίου μηνύματος χρήστη",
       "enabled": "ενεργοποίηση",
       "exit_fullscreen": "Έξοδος από πλήρη οθόνη",
@@ -5140,6 +5276,42 @@
       "zoom_in": "Μεγέθυνση εμφάνισης",
       "zoom_out": "Σμικρύνση εμφάνισης",
       "zoom_reset": "Επαναφορά εμφάνισης"
+    },
+    "skin": {
+      "addCustom": "Add Custom",
+      "background": {
+        "addColor": "Add Color",
+        "blur": "Blur",
+        "color": "Color",
+        "colors": "Colors",
+        "direction": "Direction",
+        "directions": {
+          "radial": "Radial",
+          "to-bottom": "Vertical",
+          "to-bottom-right": "Diagonal",
+          "to-right": "Horizontal"
+        },
+        "opacity": "Opacity",
+        "selectImage": "Select Image",
+        "size": "Size",
+        "sizeAuto": "Auto",
+        "sizeContain": "Contain",
+        "sizeCover": "Cover",
+        "title": "Background Settings",
+        "types": {
+          "gradient": "Gradient",
+          "image": "Image",
+          "solid": "Solid"
+        }
+      },
+      "customTitle": "Custom Skin",
+      "deleteConfirm": "Are you sure you want to delete this skin?",
+      "export": "Export Skin",
+      "import": "Import Skin",
+      "name": "Skin Name",
+      "namePlaceholder": "Enter skin name",
+      "primaryColor": "Primary Color",
+      "title": "Skin"
     },
     "theme": {
       "color_primary": "Κύριο Χρώμα Θέματος",
@@ -5369,6 +5541,18 @@
       "title": "Κλίμακα"
     }
   },
+  "speedy": {
+    "chat_placeholder": "Ξεκινήστε νέα συνομιλία",
+    "configure_employees": "Ρύθμιση Υπαλλήλων Μοντέλου",
+    "expert_mode": "Εξειδικευμένη Λειτουργία",
+    "new_topic": "Νέο Θέμα",
+    "no_employee_description": "Παρακαλώ ρυθμίστε υπαλλήλους μοντέλου για να χρησιμοποιήσετε τη Λειτουργία Turbo",
+    "no_employee_title": "Χωρίς Υπαλλήλους Μοντέλου",
+    "no_topics": "Δεν υπάρχουν θέματα ακόμα",
+    "select_employee": "Επιλογή Υπαλλήλου Μοντέλου",
+    "title": "Λειτουργία Turbo",
+    "topic_list_title": "Θέματα"
+  },
   "title": {
     "apps": "Εφαρμογές",
     "code": "Κώδικας",
@@ -5387,40 +5571,40 @@
   },
   "tools": {
     "custom": {
-      "duplicate_ids": "[to be translated]:Tool ID \"{{ids}}\" already exists",
-      "edit_title": "[to be translated]:Add Custom Tool",
-      "id": "[to be translated]:Tool ID",
-      "id_error": "[to be translated]:Please enter tool ID",
-      "id_placeholder": "[to be translated]:e.g., my-tool",
-      "logo": "[to be translated]:Tool Logo",
-      "logo_file": "[to be translated]:Upload File",
-      "logo_upload_button": "[to be translated]:Select Image",
-      "logo_upload_error": "[to be translated]:Failed to upload logo",
-      "logo_upload_label": "[to be translated]:Upload Logo",
-      "logo_upload_success": "[to be translated]:Logo uploaded successfully",
-      "logo_url": "[to be translated]:Logo URL",
-      "logo_url_label": "[to be translated]:Logo URL",
-      "logo_url_placeholder": "[to be translated]:Enter logo URL (optional)",
-      "name": "[to be translated]:Tool Name",
-      "name_error": "[to be translated]:Please enter tool name",
-      "name_placeholder": "[to be translated]:e.g., My Tool",
-      "save": "[to be translated]:Save",
-      "save_error": "[to be translated]:Failed to save custom tool",
-      "save_success": "[to be translated]:Custom tool saved successfully",
-      "title": "[to be translated]:Custom",
-      "url": "[to be translated]:Tool URL",
-      "url_error": "[to be translated]:Please enter tool URL",
-      "url_placeholder": "[to be translated]:e.g., https://example.com"
+      "duplicate_ids": "Το ID εργαλείου \"{{ids}}\" υπάρχει ήδη",
+      "edit_title": "Προσθήκη Προσαρμοσμένου Εργαλείου",
+      "id": "ID Εργαλείου",
+      "id_error": "Παρακαλώ εισάγετε ID εργαλείου",
+      "id_placeholder": "π.χ. my-tool",
+      "logo": "Λογότυπο Εργαλείου",
+      "logo_file": "Αποστολή Αρχείου",
+      "logo_upload_button": "Επιλογή Εικόνας",
+      "logo_upload_error": "Η αποστολή λογοτύπου απέτυχε",
+      "logo_upload_label": "Αποστολή Λογοτύπου",
+      "logo_upload_success": "Το λογότυπο αποστάλθηκε επιτυχώς",
+      "logo_url": "URL Λογοτύπου",
+      "logo_url_label": "URL Λογοτύπου",
+      "logo_url_placeholder": "Εισάγετε URL λογοτύπου (προαιρετικό)",
+      "name": "Όνομα Εργαλείου",
+      "name_error": "Παρακαλώ εισάγετε όνομα εργαλείου",
+      "name_placeholder": "π.χ. Το Εργαλείο Μου",
+      "save": "Αποθήκευση",
+      "save_error": "Η αποθήκευση προσαρμοσμένου εργαλείου απέτυχε",
+      "save_success": "Το προσαρμοσμένο εργαλείο αποθηκεύτηκε επιτυχώς",
+      "title": "Προσαρμοσμένο",
+      "url": "URL Εργαλείου",
+      "url_error": "Παρακαλώ εισάγετε URL εργαλείου",
+      "url_placeholder": "π.χ. https://example.com"
     },
     "settings": {
-      "custom_tools_description": "[to be translated]:Manage your custom tools",
-      "custom_tools_title": "[to be translated]:Custom Tools",
-      "delete_confirm_description": "[to be translated]:Are you sure you want to delete tool \"{{name}}\"?",
-      "delete_confirm_title": "[to be translated]:Delete Tool",
-      "display_title": "[to be translated]:Tools Settings",
-      "no_custom_tools": "[to be translated]:No custom tools"
+      "custom_tools_description": "Διαχειριστείτε τα προσαρμοσμένα εργαλεία σας",
+      "custom_tools_title": "Προσαρμοσμένα Εργαλεία",
+      "delete_confirm_description": "Είστε σίγουροι ότι θέλετε να διαγράψετε το εργαλείο \"{{name}}\";",
+      "delete_confirm_title": "Διαγραφή Εργαλείου",
+      "display_title": "Ρυθμίσεις Εργαλείων",
+      "no_custom_tools": "Δεν υπάρχουν προσαρμοσμένα εργαλεία"
     },
-    "title": "[to be translated]:Tools"
+    "title": "Εργαλεία"
   },
   "trace": {
     "backList": "Επιστροφή στη λίστα",
@@ -5590,5 +5774,31 @@
     "quit": "Έξοδος",
     "show_window": "Εμφάνιση Παραθύρου",
     "visualization": "προβολή"
+  },
+  "workspace": {
+    "add_folder": "Προσθήκη Φακέλου",
+    "clear": "Καθαρισμός Χώρου Εργασίας",
+    "clear_confirm_content": "Είστε σίγουροι ότι θέλετε να καθαρίσετε τον χώρο εργασίας; Όλες οι αναφορές αρχείων θα αφαιρεθούν.",
+    "clear_confirm_title": "Καθαρισμός Χώρου Εργασίας",
+    "drop_hint": "Αφήστε για προσθήκη αρχείων",
+    "empty_hint": "Σύρετε αρχεία ή φακέλους εδώ",
+    "empty_hint_click": "Σύρετε φάκελο ή κάντε κλικ για προσθήκη",
+    "empty_hint_sub": "Προσθήκη καταλόγου έργου στον χώρο εργασίας",
+    "exclude_config_title": "Εξαιρούμενα Μοτίβα",
+    "exclude_description": "Οι ακόλουθοι κατάλογοι θα εξαιρεθούν κατά το φιλτράρισμα",
+    "exclude_empty": "Χωρίς πρότυπα εξαίρεσης",
+    "exclude_placeholder": "Εισαγάγετε όνομα καταλόγου, π.χ: build",
+    "filter_limit_hint": "Εμφάνιση των πρώτων 50 αποτελεσμάτων, παρακαλώ βελτιώστε την αναζήτησή σας",
+    "filter_placeholder": "Αναζήτηση αρχείων ή φακέλων...",
+    "help_1": "Ο πράκτορας μπορεί να έχει πρόσβαση σε αρχεία και καταλόγους στο χώρο εργασίας",
+    "help_2": "Σύρετε και αφήστε φακέλους εδώ για να τους προσθέσετε γρήγορα",
+    "help_3": "Ή κάντε κλικ στο κουμπί + για να επιλέξετε ένα φάκελο",
+    "help_footer": "Ο πράκτορας μπορεί να διαβάζει και να επεξεργάζεται αρχεία στον χώρο εργασίας. Σύρετε φακέλους ή κάντε κλικ στο + για προσθήκη. Μόνο τα αρχεία στον χώρο εργασίας είναι προσβάσιμα.",
+    "help_security": "Μόνο τα αρχεία στο χώρο εργασίας είναι προσβάσιμα, διασφαλίζοντας την ασφάλεια των δεδομένων",
+    "help_title": "Σχετικά με τον Χώρο Εργασίας",
+    "no_results": "Δεν βρέθηκαν αποτελέσματα",
+    "searching": "Αναζήτηση...",
+    "select_folder": "Επιλογή Φακέλου",
+    "title": "Χώρος Εργασίας"
   }
 }

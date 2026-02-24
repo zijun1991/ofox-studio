@@ -29,6 +29,7 @@
     "delete": {
       "content": "Ștergerea agentului va opri forțat și va șterge toate sesiunile asociate cu agentul. Ești sigur?",
       "error": {
+        "channel_bound": "Nu se poate șterge agentul asociat canalului \"{{name}}\". Vă rugăm să ștergeți mai întâi canalul.",
         "failed": "Nu s-a putut șterge agentul"
       },
       "title": "Șterge agentul"
@@ -77,6 +78,7 @@
         "failed": "Nu s-a putut afișa lista de agenți."
       }
     },
+    "permission_mode_changed": "Modul de permisiune schimbat",
     "server": {
       "error": {
         "not_running": "Serverul API este activat, dar nu rulează corect."
@@ -94,6 +96,8 @@
         "select_failed": "Nu s-a putut selecta directorul."
       },
       "add": {
+        "channel_bound_disabled": "Agent Legat de Canal",
+        "channel_bound_hint": "Sesiunile pentru agenții legați de canal sunt create automat.",
         "title": "Adaugă o sesiune"
       },
       "allowed_tools": {
@@ -101,6 +105,12 @@
         "helper": "Instrumentele pre-aprobate rulează fără aprobare manuală. Instrumentele neselectate necesită aprobare înainte de utilizare.",
         "label": "Instrumente pre-aprobate",
         "placeholder": "Selectează instrumente pre-aprobate"
+      },
+      "channel_bound": {
+        "description": "Această sesiune este legată de canalul \"{{name}}\" ({{type}}). Mesajele sunt primite și trimise automat prin canal.",
+        "go_to_channel": "Accesează canalul",
+        "hint": "Configurează acest canal în Setări > Canale",
+        "title": "Sesiune Legată de Canal"
       },
       "create": {
         "error": {
@@ -223,6 +233,7 @@
         "uninstalling": "Se dezinstalează..."
       },
       "prompt": "Setări prompt",
+      "title": "Setări agent",
       "tooling": {
         "mcp": {
           "description": "Conectează servere MCP pentru a debloca instrumente suplimentare pe care le poți aproba mai sus.",
@@ -377,6 +388,11 @@
         }
       }
     },
+    "turbo": {
+      "description": "Asistent rapid pentru sarcini simple",
+      "name": "Mod Turbo",
+      "tag": "Turbo"
+    },
     "type": {
       "label": "Tip agent",
       "unknown": "Tip necunoscut"
@@ -406,7 +422,7 @@
     },
     "authHeaderText": "Utilizează în header-ul Authorization:",
     "configuration": "Configurare",
-    "description": "Expune capacitățile AI ale Cherry Studio prin API-uri HTTP compatibile cu OpenAI",
+    "description": "Expune capacitățile AI ale Ofox Claw prin API-uri HTTP compatibile cu OpenAI",
     "documentation": {
       "title": "Documentație API"
     },
@@ -726,6 +742,57 @@
     },
     "update_available": "Actualizare disponibilă",
     "whole_word": "Cuvânt întreg"
+  },
+  "channels": {
+    "add": "Adaugă Canal",
+    "add_title": "Adaugă Canal",
+    "agent_id": "ID Agent",
+    "binding": "Legarea Agentului",
+    "delete_confirm": "Sigur dorești să ștergi acest canal?",
+    "deleted": "Canal șters.",
+    "email": {
+      "folder": "Dosar",
+      "from_address": "De la Adresă",
+      "from_address_placeholder": "Implicit la utilizatorul SMTP",
+      "from_name": "De la Nume",
+      "host": "Gazdă",
+      "imap": "IMAP (Intrare)",
+      "password": "Parolă",
+      "poll_interval": "Interval de sondare (sec)",
+      "port": "Port",
+      "smtp": "SMTP (De ieșire)",
+      "tls": "TLS",
+      "user": "Nume de utilizator"
+    },
+    "empty": "Niciun canal configurat. Faceți clic pe „Adaugă canal” pentru a începe.",
+    "enabled": "Activat",
+    "name": "Nume",
+    "name_placeholder": "ex. Webhook-ul meu",
+    "name_required": "Vă rugăm să introduceți un nume de canal",
+    "not_found": "Canalul nu a fost găsit",
+    "saved": "Canal salvat",
+    "session_id": "ID sesiune",
+    "telegram": {
+      "allowed_chat_ids": "ID-uri de chat permise",
+      "allowed_chat_ids_placeholder": "Separate prin virgulă, lasă liber pentru toate",
+      "bot_token": "Token Bot",
+      "bot_token_placeholder": "Introduceți tokenul botului dvs. de la @BotFather",
+      "config": "Configurarea Botului Telegram",
+      "parse_mode": "Mod de analiză",
+      "parse_mode_none": "Niciuna",
+      "poll_interval": "Intervalul de sondare (sec)"
+    },
+    "test_connection": "Testează Conexiunea",
+    "title": "Canale",
+    "type": "Tip",
+    "type_placeholder": "Selectați tipul canalului",
+    "type_required": "Vă rugăm să selectați un tip de canal",
+    "webhook": {
+      "config": "Configurarea Webhook",
+      "endpoint": "Endpoint",
+      "secret": "Secret HMAC",
+      "secret_placeholder": "Opțional"
+    }
   },
   "chat": {
     "add": {
@@ -1324,6 +1391,7 @@
     },
     "footnote": "Conținut de referință",
     "footnotes": "Referințe",
+    "free": "Gratuit",
     "fullscreen": "S-a intrat în modul ecran complet. Apasă F11 pentru a ieși",
     "generate_random_seed": "Generează sămânță aleatoare",
     "get_embedding_dimension": "Obține dimensiunea de înglobare",
@@ -1763,6 +1831,10 @@
     "urls": "URL-uri",
     "videos": "video",
     "videos_file": "fișier video"
+  },
+  "landing": {
+    "enterExpertMode": "Intră în Modul Expert",
+    "welcome": "Bine ați venit la ofox studio"
   },
   "languages": {
     "arabic": "Arabă",
@@ -2326,6 +2398,14 @@
       "pin": "Menține fereastra deasupra"
     }
   },
+  "modelEmployee": {
+    "educationLevel": {
+      "high_school": "Junior",
+      "master": "Senior",
+      "phd": "Expert",
+      "undergraduate": "Intermediate"
+    }
+  },
   "models": {
     "add_parameter": "Adaugă parametru",
     "all": "Toate",
@@ -2558,7 +2638,7 @@
   },
   "openclaw": {
     "checking_installation": "Verificare instalare OpenClaw...",
-    "description": "Integrează furnizorii Cherry Studio cu Gateway-ul OpenClaw pentru a permite agenților de codificare AI precum Claude Code, Qwen-Coder și alții.",
+    "description": "Integrează furnizorii Ofox Claw cu Gateway-ul OpenClaw pentru a permite agenților de codificare AI precum Claude Code, Qwen-Coder și alții.",
     "error": {
       "select_provider_model": "Vă rugăm să selectați mai întâi un furnizor și un model"
     },
@@ -2651,7 +2731,7 @@
       "stop": "Oprește OVMS",
       "stopping": "Se oprește"
     },
-    "description": "<div><p>1. Descarcă modele OV.</p><p>2. Adaugă modele în 'Manager'.</p><p>Suportă doar Windows!</p><p>Cale instalare OVMS: '%USERPROFILE%\\.cherrystudio\\ovms' .</p><p>Te rugăm să consulți <a href=https://github.com/openvinotoolkit/model_server/blob/c55551763d02825829337b62c2dcef9339706f79/docs/deploying_server_baremetal.md>Ghidul Intel OVMS</a></p></dev>",
+    "description": "<div><p>1. Descarcă modele OV.</p><p>2. Adaugă modele în 'Manager'.</p><p>Suportă doar Windows!</p><p>Cale instalare OVMS: '%USERPROFILE%\\.ofoxclaw\\ovms' .</p><p>Te rugăm să consulți <a href=https://github.com/openvinotoolkit/model_server/blob/c55551763d02825829337b62c2dcef9339706f79/docs/deploying_server_baremetal.md>Ghidul Intel OVMS</a></p></dev>",
     "download": {
       "button": "Descarcă",
       "error": "Eroare descărcare",
@@ -3372,7 +3452,7 @@
           },
           "description": {
             "0": "Asistentul de selecție necesită <strong>Permisiune de accesibilitate</strong> pentru a funcționa corect.",
-            "1": "Te rugăm să faci clic pe \"<strong>Mergi la Setări</strong>\" și să apeși butonul \"<strong>Deschide setările de sistem</strong>\" în fereastra pop-up de solicitare a permisiunii care apare ulterior. Apoi găsește \"<strong>Cherry Studio</strong>\" în lista de aplicații și activează comutatorul de permisiune.",
+            "1": "Te rugăm să faci clic pe \"<strong>Mergi la Setări</strong>\" și să apeși butonul \"<strong>Deschide setările de sistem</strong>\" în fereastra pop-up de solicitare a permisiunii care apare ulterior. Apoi găsește \"<strong>Ofox Claw</strong>\" în lista de aplicații și activează comutatorul de permisiune.",
             "2": "După finalizarea setărilor, te rugăm să redeschizi asistentul de selecție."
           },
           "title": "Permisiune de accesibilitate"
@@ -3384,7 +3464,7 @@
         "title": "Listă filtrare aplicații",
         "user_tips": {
           "mac": "Te rugăm să introduci Bundle ID-ul aplicației, unul pe linie, nu este sensibil la majuscule/minuscule, poate fi potrivit aproximativ. De exemplu: com.google.Chrome, com.apple.mail etc.",
-          "windows": "Te rugăm să introduci numele fișierului executabil al aplicației, unul pe linie, nu este sensibil la majuscule/minuscule, poate fi potrivit aproximativ. De exemplu: chrome.exe, weixin.exe, Cherry Studio.exe etc."
+          "windows": "Te rugăm să introduci numele fișierului executabil al aplicației, unul pe linie, nu este sensibil la majuscule/minuscule, poate fi potrivit aproximativ. De exemplu: chrome.exe, weixin.exe, Ofox Claw.exe etc."
         }
       },
       "search_modal": {
@@ -3536,6 +3616,19 @@
         "title": "Site oficial"
       }
     },
+    "account": {
+      "api_key": "Cheie API",
+      "api_key_placeholder": "Introduceți cheia API",
+      "api_key_required": "Vă rugăm să introduceți o cheie API",
+      "api_key_save": "Salvare",
+      "api_key_saved": "Cheie API saved",
+      "available_models": "Available Models",
+      "logged_in": "Logged In",
+      "login": "Login",
+      "login_hint": "Login to access more features",
+      "no_models": "No models available",
+      "not_logged_in": "Not Logged In"
+    },
     "advanced": {
       "auto_switch_to_topics": "Comutare automată la subiect",
       "title": "Setări avansate"
@@ -3663,14 +3756,14 @@
             "test_message_received": "Primit pong de la {{device}}",
             "test_message_sent": "Trimis payload test hello world"
           },
-          "idle_hint": "Scanare în pauză. Începe scanarea pentru a găsi parteneri Cherry Studio în LAN.",
+          "idle_hint": "Scanare în pauză. Începe scanarea pentru a găsi parteneri Ofox Claw în LAN.",
           "ip_addresses": "Adrese IP",
           "last_seen": "Văzut ultima dată la {{time}}",
           "metadata": "Metadate",
-          "no_connection_warning": "Te rugăm să deschizi Transfer LAN pe mobil în Cherry Studio",
+          "no_connection_warning": "Te rugăm să deschizi Transfer LAN pe mobil în Ofox Claw",
           "no_devices": "Încă nu s-au găsit parteneri LAN",
           "scan_devices": "Scanează dispozitive",
-          "scanning_hint": "Se scanează rețeaua locală pentru parteneri Cherry Studio...",
+          "scanning_hint": "Se scanează rețeaua locală pentru parteneri Ofox Claw...",
           "send_file": "Trimite fișier",
           "status": {
             "completed": "Transfer finalizat",
@@ -4020,7 +4113,7 @@
         },
         "root": {
           "label": "Director backup (Opțional)",
-          "placeholder": "de ex.: /cherry-studio"
+          "placeholder": "de ex.: /ofox-claw"
         },
         "secretAccessKey": {
           "label": "Cheie secretă de acces",
@@ -4177,7 +4270,7 @@
       },
       "custom": {
         "css": {
-          "cherrycss": "Obține de la cherrycss.com",
+          "cherrycss": "Obține de la ofox.ai/themes",
           "label": "CSS personalizat",
           "placeholder": "/* Pune CSS personalizat aici */"
         }
@@ -4452,7 +4545,7 @@
       },
       "oauth": {
         "callback": {
-          "message": "Poți închide această pagină și te poți întoarce la Cherry Studio",
+          "message": "Poți închide această pagină și te poți întoarce la Ofox Claw",
           "title": "Autentificare reușită"
         }
       },
@@ -4658,6 +4751,48 @@
       "visible": "Mini-aplicații vizibile"
     },
     "model": "Model implicit",
+    "model_employee": {
+      "description": "Define employees for user-friendly model packaging",
+      "education_level": {
+        "high_school": "Junior",
+        "master": "Senior",
+        "phd": "Expert",
+        "undergraduate": "Intermediate"
+      },
+      "employee": {
+        "add": "Add Employee",
+        "delete": "Delete Employee",
+        "delete_confirm": "Are you sure you want to delete employee \"{{name}}\"?",
+        "description": "Description",
+        "description_placeholder": "Describe this employee's capabilities and use cases",
+        "edit": "Edit Employee",
+        "education_level": "Education Level",
+        "model": "Bind Model",
+        "name": "Employee Name",
+        "name_duplicate": "Employee name already exists, please use another name",
+        "name_placeholder": "e.g., Smart Assistant",
+        "soul": "Personality",
+        "soul_placeholder": "Describe the employee's personality traits and behavior style"
+      },
+      "empty": "No employees",
+      "export": {
+        "button": "Export Config",
+        "success": "Configuration exported"
+      },
+      "import": {
+        "button": "Import Config",
+        "error": "Import failed, please check the file format",
+        "success": "Configuration imported"
+      },
+      "label": "Model Employees",
+      "pricing": {
+        "input": "Intrare",
+        "output": "Ieșire"
+      },
+      "reset": "Reset Config",
+      "reset_confirm": "Are you sure you want to reset all employee configurations?",
+      "title": "Model Employee Configuration"
+    },
     "models": {
       "add": {
         "add_model": "Adaugă model",
@@ -5043,7 +5178,7 @@
       "remove_invalid_keys": "Elimină cheile invalide",
       "search": "Caută furnizori...",
       "search_placeholder": "Caută id sau nume model",
-      "title": "Furnizor model",
+      "title": "Contul Meu",
       "vertex_ai": {
         "api_host_help": "Gazda API pentru Vertex AI, nerecomandat de completat, aplicabil în general pentru reverse proxy",
         "documentation": "Vezi documentația oficială pentru mai multe detalii de configurare:",
@@ -5116,6 +5251,7 @@
       "clear_shortcut": "Șterge comanda rapidă",
       "clear_topic": "Șterge mesajele",
       "copy_last_message": "Copiază ultimul mesaj",
+      "cycle_permission_mode": "Comutare mod permisiune",
       "edit_last_user_message": "Editează ultimul mesaj al utilizatorului",
       "enabled": "Activează",
       "exit_fullscreen": "Ieși din ecran complet",
@@ -5140,6 +5276,42 @@
       "zoom_in": "Mărește",
       "zoom_out": "Micșorează",
       "zoom_reset": "Resetează zoom-ul"
+    },
+    "skin": {
+      "addCustom": "Add Custom",
+      "background": {
+        "addColor": "Add Color",
+        "blur": "Blur",
+        "color": "Color",
+        "colors": "Colors",
+        "direction": "Direction",
+        "directions": {
+          "radial": "Radial",
+          "to-bottom": "Vertical",
+          "to-bottom-right": "Diagonal",
+          "to-right": "Horizontal"
+        },
+        "opacity": "Opacity",
+        "selectImage": "Select Image",
+        "size": "Size",
+        "sizeAuto": "Auto",
+        "sizeContain": "Contain",
+        "sizeCover": "Cover",
+        "title": "Background Settings",
+        "types": {
+          "gradient": "Gradient",
+          "image": "Image",
+          "solid": "Solid"
+        }
+      },
+      "customTitle": "Custom Skin",
+      "deleteConfirm": "Are you sure you want to delete this skin?",
+      "export": "Export Skin",
+      "import": "Import Skin",
+      "name": "Skin Name",
+      "namePlaceholder": "Enter skin name",
+      "primaryColor": "Primary Color",
+      "title": "Skin"
     },
     "theme": {
       "color_primary": "Culoare primară",
@@ -5369,6 +5541,18 @@
       "title": "Zoom pagină"
     }
   },
+  "speedy": {
+    "chat_placeholder": "Începe o conversație nouă",
+    "configure_employees": "Configurare Angajați Model",
+    "expert_mode": "Modul Expert",
+    "new_topic": "Subiect Nou",
+    "no_employee_description": "Vă rugăm să configurați angajați model pentru a folosi Modul Turbo",
+    "no_employee_title": "Fără Angajați Model",
+    "no_topics": "Încă fără subiecte",
+    "select_employee": "Selectare Angajat Model",
+    "title": "Mod Turbo",
+    "topic_list_title": "Subiecte"
+  },
   "title": {
     "apps": "Aplicații",
     "code": "Cod",
@@ -5387,40 +5571,40 @@
   },
   "tools": {
     "custom": {
-      "duplicate_ids": "[to be translated]:Tool ID \"{{ids}}\" already exists",
-      "edit_title": "[to be translated]:Add Custom Tool",
-      "id": "[to be translated]:Tool ID",
-      "id_error": "[to be translated]:Please enter tool ID",
-      "id_placeholder": "[to be translated]:e.g., my-tool",
-      "logo": "[to be translated]:Tool Logo",
-      "logo_file": "[to be translated]:Upload File",
-      "logo_upload_button": "[to be translated]:Select Image",
-      "logo_upload_error": "[to be translated]:Failed to upload logo",
-      "logo_upload_label": "[to be translated]:Upload Logo",
-      "logo_upload_success": "[to be translated]:Logo uploaded successfully",
-      "logo_url": "[to be translated]:Logo URL",
-      "logo_url_label": "[to be translated]:Logo URL",
-      "logo_url_placeholder": "[to be translated]:Enter logo URL (optional)",
-      "name": "[to be translated]:Tool Name",
-      "name_error": "[to be translated]:Please enter tool name",
-      "name_placeholder": "[to be translated]:e.g., My Tool",
-      "save": "[to be translated]:Save",
-      "save_error": "[to be translated]:Failed to save custom tool",
-      "save_success": "[to be translated]:Custom tool saved successfully",
-      "title": "[to be translated]:Custom",
-      "url": "[to be translated]:Tool URL",
-      "url_error": "[to be translated]:Please enter tool URL",
-      "url_placeholder": "[to be translated]:e.g., https://example.com"
+      "duplicate_ids": "ID-ul instrumentului \"{{ids}}\" există deja",
+      "edit_title": "Adaugă Instrument Personalizat",
+      "id": "ID Instrument",
+      "id_error": "Vă rugăm să introduceți ID-ul instrumentului",
+      "id_placeholder": "ex. instrumentul-meu",
+      "logo": "Logo Instrument",
+      "logo_file": "Încarcă Fișier",
+      "logo_upload_button": "Selectează Imagine",
+      "logo_upload_error": "Încărcarea logo-ului a eșuat",
+      "logo_upload_label": "Încarcă Logo",
+      "logo_upload_success": "Logo încărcat cu succes",
+      "logo_url": "URL Logo",
+      "logo_url_label": "URL Logo",
+      "logo_url_placeholder": "Introduceți URL-ul logo-ului (opțional)",
+      "name": "Nume Instrument",
+      "name_error": "Vă rugăm să introduceți numele instrumentului",
+      "name_placeholder": "ex. Instrumentul Meu",
+      "save": "Salvează",
+      "save_error": "Salvarea instrumentului personalizat a eșuat",
+      "save_success": "Instrument personalizat salvat cu succes",
+      "title": "Personalizat",
+      "url": "URL Instrument",
+      "url_error": "Vă rugăm să introduceți URL-ul instrumentului",
+      "url_placeholder": "ex. https://exemplu.com"
     },
     "settings": {
-      "custom_tools_description": "[to be translated]:Manage your custom tools",
-      "custom_tools_title": "[to be translated]:Custom Tools",
-      "delete_confirm_description": "[to be translated]:Are you sure you want to delete tool \"{{name}}\"?",
-      "delete_confirm_title": "[to be translated]:Delete Tool",
-      "display_title": "[to be translated]:Tools Settings",
-      "no_custom_tools": "[to be translated]:No custom tools"
+      "custom_tools_description": "Gestionați instrumentele dvs. personalizate",
+      "custom_tools_title": "Instrumente Personalizate",
+      "delete_confirm_description": "Sunteți sigur că doriți să ștergeți instrumentul \"{{name}}\"?",
+      "delete_confirm_title": "Șterge Instrument",
+      "display_title": "Setări Instrumente",
+      "no_custom_tools": "Fără instrumente personalizate"
     },
-    "title": "[to be translated]:Tools"
+    "title": "Instrumente"
   },
   "trace": {
     "backList": "Înapoi la listă",
@@ -5590,5 +5774,31 @@
     "quit": "Ieșire",
     "show_window": "Afișează fereastra",
     "visualization": "Vizualizare"
+  },
+  "workspace": {
+    "add_folder": "Adaugă Folder",
+    "clear": "Curăță Spațiul de Lucru",
+    "clear_confirm_content": "Ești sigur că vrei să cureți spațiul de lucru? Toate referințele la fișiere vor fi eliminate.",
+    "clear_confirm_title": "Curăță Spațiul de Lucru",
+    "drop_hint": "Eliberează pentru a adăuga fișiere",
+    "empty_hint": "Trage fișiere sau foldere aici",
+    "empty_hint_click": "Trage folder sau click pentru a adăuga",
+    "empty_hint_sub": "Adaugă director de proiect în spațiul de lucru",
+    "exclude_config_title": "Modele de Excludere",
+    "exclude_description": "Următoarele directoare vor fi excluse în timpul filtrării",
+    "exclude_empty": "Fără modele de excludere",
+    "exclude_placeholder": "Introduceți numele directorului, de exemplu: build",
+    "filter_limit_hint": "Se afișează primele 50 de rezultate, vă rugăm să rafinați căutarea",
+    "filter_placeholder": "Caută fișiere sau dosare...",
+    "help_1": "Agentul poate accesa fișiere și directoare în spațiul de lucru",
+    "help_2": "Trage și plasează folderele aici pentru a le adăuga rapid",
+    "help_3": "Sau faceți clic pe butonul + pentru a selecta un dosar.",
+    "help_footer": "Agentul poate citi și edita fișierele din spațiul de lucru. Trageți folderele sau faceți clic pe + pentru a adăuga. Numai fișierele din spațiul de lucru sunt accesibile.",
+    "help_security": "Doar fișierele din spațiul de lucru sunt accesibile, asigurând securitatea datelor",
+    "help_title": "Despre Workspace",
+    "no_results": "Niciun rezultat găsit",
+    "searching": "Se caută...",
+    "select_folder": "Selectează Folder",
+    "title": "Spațiu de Lucru"
   }
 }

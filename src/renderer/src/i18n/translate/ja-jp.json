@@ -29,6 +29,7 @@
     "delete": {
       "content": "このエージェントを削除すると、このエージェントのすべてのセッションが強制的に終了し、削除されます。本当によろしいですか？",
       "error": {
+        "channel_bound": "チャネル「{{name}}」に紐づけられたエージェントは削除できません。まずチャネルを削除してください。",
         "failed": "エージェントの削除に失敗しました"
       },
       "title": "エージェントを削除"
@@ -77,6 +78,7 @@
         "failed": "エージェントの一覧取得に失敗しました。"
       }
     },
+    "permission_mode_changed": "権限モードが変更されました",
     "server": {
       "error": {
         "not_running": "APIサーバーは有効になっていますが、正常に動作していません。"
@@ -94,6 +96,8 @@
         "select_failed": "ディレクトリの選択に失敗しました。"
       },
       "add": {
+        "channel_bound_disabled": "チャネル・バウンド・エージェント",
+        "channel_bound_hint": "チャネルに紐付いたエージェントのセッションは自動的に作成されます。",
         "title": "セッションを追加"
       },
       "allowed_tools": {
@@ -101,6 +105,12 @@
         "helper": "事前承認済みのツールを選択します。未選択のツールは使用時に承認が必要になります。",
         "label": "事前承認済みツール",
         "placeholder": "事前承認するツールを選択"
+      },
+      "channel_bound": {
+        "description": "このセッションはチャンネル「{{name}}」({{type}})に紐づけられています。メッセージは自動的にチャンネルを通じて受信・送信されます。",
+        "go_to_channel": "チャンネルへ移動する",
+        "hint": "設定＞チャンネルでこのチャンネルを設定",
+        "title": "チャネルバインドセッション"
       },
       "create": {
         "error": {
@@ -223,6 +233,7 @@
         "uninstalling": "アンインストール中..."
       },
       "prompt": "プロンプト設定",
+      "title": "エージェント設定",
       "tooling": {
         "mcp": {
           "description": "MCPサーバーを接続して、上で承認できる追加ツールを解放します。",
@@ -377,6 +388,11 @@
         }
       }
     },
+    "turbo": {
+      "description": "簡単なタスク向けの高速アシスタント",
+      "name": "ターボモード",
+      "tag": "ターボ"
+    },
     "type": {
       "label": "エージェントタイプ",
       "unknown": "不明なタイプ"
@@ -406,7 +422,7 @@
     },
     "authHeaderText": "認証ヘッダーで使用：",
     "configuration": "設定",
-    "description": "OpenAI 互換の HTTP API を通じて Cherry Studio の AI 機能を公開します",
+    "description": "OpenAI 互換の HTTP API を通じて Ofox Claw の AI 機能を公開します",
     "documentation": {
       "title": "API ドキュメント"
     },
@@ -726,6 +742,57 @@
     },
     "update_available": "更新可能",
     "whole_word": "全語一致"
+  },
+  "channels": {
+    "add": "チャンネルを追加",
+    "add_title": "チャンネルを追加",
+    "agent_id": "エージェントID",
+    "binding": "エージェントバインディング",
+    "delete_confirm": "このチャンネルを削除してもよろしいですか？",
+    "deleted": "チャンネルが削除されました",
+    "email": {
+      "folder": "フォルダ",
+      "from_address": "送信元アドレス",
+      "from_address_placeholder": "デフォルトはSMTPユーザー",
+      "from_name": "差出人名",
+      "host": "ホスト",
+      "imap": "IMAP（受信）",
+      "password": "パスワード",
+      "poll_interval": "ポーリング間隔（秒）",
+      "port": "ポート",
+      "smtp": "SMTP（送信）",
+      "tls": "TLS",
+      "user": "ユーザー名"
+    },
+    "empty": "チャンネルが設定されていません。「チャンネルを追加」をクリックして始めましょう。",
+    "enabled": "有効",
+    "name": "名前",
+    "name_placeholder": "例：私のWebhook",
+    "name_required": "チャンネル名を入力してください",
+    "not_found": "チャンネルが見つかりません",
+    "saved": "チャンネルを保存しました",
+    "session_id": "セッションID",
+    "telegram": {
+      "allowed_chat_ids": "許可されたチャットID",
+      "allowed_chat_ids_placeholder": "カンマ区切り、すべての場合は空欄のまま",
+      "bot_token": "ボットトークン",
+      "bot_token_placeholder": "@BotFatherからボットトークンを入力してください",
+      "config": "Telegramボット設定",
+      "parse_mode": "解析モード",
+      "parse_mode_none": "なし",
+      "poll_interval": "ポーリング間隔（秒）"
+    },
+    "test_connection": "接続テスト",
+    "title": "チャンネル",
+    "type": "タイプ",
+    "type_placeholder": "チャンネルタイプを選択",
+    "type_required": "チャンネルタイプを選択してください",
+    "webhook": {
+      "config": "Webhook設定",
+      "endpoint": "エンドポイント",
+      "secret": "HMACシークレット",
+      "secret_placeholder": "オプション"
+    }
   },
   "chat": {
     "add": {
@@ -1324,6 +1391,7 @@
     },
     "footnote": "引用内容",
     "footnotes": "脚注",
+    "free": "無料",
     "fullscreen": "全画面モードに入りました。F11キーで終了します",
     "generate_random_seed": "ランダムシードを生成",
     "get_embedding_dimension": "埋め込み次元を取得",
@@ -1763,6 +1831,10 @@
     "urls": "URL",
     "videos": "動画",
     "videos_file": "動画ファイル"
+  },
+  "landing": {
+    "enterExpertMode": "エキスパートモードへ",
+    "welcome": "ofox studioへようこそ"
   },
   "languages": {
     "arabic": "アラビア語",
@@ -2326,6 +2398,14 @@
       "pin": "上部ウィンドウ"
     }
   },
+  "modelEmployee": {
+    "educationLevel": {
+      "high_school": "ジュニア",
+      "master": "シニア",
+      "phd": "エキスパート",
+      "undergraduate": "中級"
+    }
+  },
   "models": {
     "add_parameter": "パラメータを追加",
     "all": "すべて",
@@ -2558,7 +2638,7 @@
   },
   "openclaw": {
     "checking_installation": "OpenClawのインストールを確認しています...",
-    "description": "Cherry Studio プロバイダーを OpenClaw Gateway と統合し、Claude Code、Qwen-Coder などの AI コーディングエージェントを有効にします。",
+    "description": "Ofox Claw プロバイダーを OpenClaw Gateway と統合し、Claude Code、Qwen-Coder などの AI コーディングエージェントを有効にします。",
     "error": {
       "select_provider_model": "プロバイダーとモデルをまず選択してください"
     },
@@ -2591,7 +2671,7 @@
       "title": "モデル設定"
     },
     "node_missing": {
-      "description": "OpenClawにはNode.js/npmが必要です。まずNode.jsをインストールしてから、Cherry Studioを再起動してください。",
+      "description": "OpenClawにはNode.js/npmが必要です。まずNode.jsをインストールしてから、Ofox Clawを再起動してください。",
       "download_button": "Node.jsをダウンロード",
       "hint": "macOS: brew install node | Windows: nodejs.org から LTS 版をダウンロード",
       "title": "Node.jsが必要"
@@ -2651,7 +2731,7 @@
       "stop": "OVMSを停止",
       "stopping": "停止中"
     },
-    "description": "<div><p>1. OVモデルをダウンロードします。</p><p>2. 'マネージャー'でモデルを追加します。</p><p>Windowsのみサポート！</p><p>OVMSインストールパス: '%USERPROFILE%\\.cherrystudio\\ovms' 。</p><p>詳細は<a href=https://github.com/openvinotoolkit/model_server/blob/c55551763d02825829337b62c2dcef9339706f79/docs/deploying_server_baremetal.md>Intel OVMSガイド</a>をご参照ください。</p></dev>",
+    "description": "<div><p>1. OVモデルをダウンロードします。</p><p>2. 'マネージャー'でモデルを追加します。</p><p>Windowsのみサポート！</p><p>OVMSインストールパス: '%USERPROFILE%\\.ofoxclaw\\ovms' 。</p><p>詳細は<a href=https://github.com/openvinotoolkit/model_server/blob/c55551763d02825829337b62c2dcef9339706f79/docs/deploying_server_baremetal.md>Intel OVMSガイド</a>をご参照ください。</p></dev>",
     "download": {
       "button": "ダウンロード",
       "error": "ダウンロードエラー",
@@ -3372,7 +3452,7 @@
           },
           "description": {
             "0": "テキスト選択ツールは、<strong>アクセシビリティー権限</strong>が必要です。",
-            "1": "「<strong>設定に移動</strong>」をクリックし、後で表示される権限要求ポップアップで「<strong>システム設定を開く</strong>」ボタンをクリックします。その後、表示されるアプリケーションリストで「<strong>Cherry Studio</strong>」を見つけ、権限スイッチをオンにしてください。",
+            "1": "「<strong>設定に移動</strong>」をクリックし、後で表示される権限要求ポップアップで「<strong>システム設定を開く</strong>」ボタンをクリックします。その後、表示されるアプリケーションリストで「<strong>Ofox Claw</strong>」を見つけ、権限スイッチをオンにしてください。",
             "2": "設定が完了したら、テキスト選択ツールを再起動してください。"
           },
           "title": "アクセシビリティー権限"
@@ -3384,7 +3464,7 @@
         "title": "アプリケーションフィルターリスト",
         "user_tips": {
           "mac": "アプリケーションのBundle IDを1行ずつ入力してください。大文字小文字は区別しません。例: com.google.Chrome, com.apple.mail, など。",
-          "windows": "アプリケーションの実行ファイル名を1行ずつ入力してください。大文字小文字は区別しません。例: chrome.exe, weixin.exe, Cherry Studio.exe, など。"
+          "windows": "アプリケーションの実行ファイル名を1行ずつ入力してください。大文字小文字は区別しません。例: chrome.exe, weixin.exe, Ofox Claw.exe, など。"
         }
       },
       "search_modal": {
@@ -3536,6 +3616,19 @@
         "title": "公式ウェブサイト"
       }
     },
+    "account": {
+      "api_key": "APIキー",
+      "api_key_placeholder": "APIキーを入力してください",
+      "api_key_required": "APIキーを入力してください",
+      "api_key_save": "保存",
+      "api_key_saved": "APIキー saved",
+      "available_models": "利用可能なモデル",
+      "logged_in": "ログイン済み",
+      "login": "ログイン",
+      "login_hint": "ログインしてさらに多くの機能にアクセス",
+      "no_models": "利用可能なモデルがありません",
+      "not_logged_in": "未ログイン"
+    },
     "advanced": {
       "auto_switch_to_topics": "トピックに自動的に切り替える",
       "title": "詳細設定"
@@ -3637,7 +3730,7 @@
         "lan": {
           "connected": "接続済み",
           "connection_failed": "接続に失敗しました",
-          "content": "コンピューターとスマートフォンが同じネットワークに接続されていることを確認し、ローカルエリアネットワーク転送を使用してください。Cherry Studioアプリを開き、このQRコードをスキャンしてください。",
+          "content": "コンピューターとスマートフォンが同じネットワークに接続されていることを確認し、ローカルエリアネットワーク転送を使用してください。Ofox Clawアプリを開き、このQRコードをスキャンしてください。",
           "device_list_title": "ローカルネットワークデバイス",
           "discovered_devices": "発見されたデバイス",
           "error": {
@@ -3663,14 +3756,14 @@
             "test_message_received": "{{device}}からpongを受信しました",
             "test_message_sent": "hello world テストペイロードを送信しました"
           },
-          "idle_hint": "スキャンが一時停止されました。スキャンを開始して、LAN上のCherry Studioピアを検索してください。",
+          "idle_hint": "スキャンが一時停止されました。スキャンを開始して、LAN上のOfox Clawピアを検索してください。",
           "ip_addresses": "IPアドレス",
           "last_seen": "最後に見たのは{{time}}",
           "metadata": "メタデータ",
-          "no_connection_warning": "Cherry StudioモバイルでLAN転送を開いてください",
+          "no_connection_warning": "Ofox ClawモバイルでLAN転送を開いてください",
           "no_devices": "まだLANピアが見つかっていません",
           "scan_devices": "デバイスをスキャン",
-          "scanning_hint": "ローカルネットワークでCherry Studioのピアをスキャンしています...",
+          "scanning_hint": "ローカルネットワークでOfox Clawのピアをスキャンしています...",
           "send_file": "ファイルを送信",
           "status": {
             "completed": "転送完了",
@@ -4020,7 +4113,7 @@
         },
         "root": {
           "label": "バックアップディレクトリ（オプション）",
-          "placeholder": "例：/cherry-studio"
+          "placeholder": "例：/ofox-claw"
         },
         "secretAccessKey": {
           "label": "Secret Access Key",
@@ -4177,7 +4270,7 @@
       },
       "custom": {
         "css": {
-          "cherrycss": "cherrycss.comから取得",
+          "cherrycss": "ofox.ai/themesから取得",
           "label": "カスタムCSS",
           "placeholder": "/* ここにカスタムCSSを入力 */"
         }
@@ -4452,7 +4545,7 @@
       },
       "oauth": {
         "callback": {
-          "message": "このページを閉じてCherry Studioに戻ることができます",
+          "message": "このページを閉じてOfox Clawに戻ることができます",
           "title": "認証成功"
         }
       },
@@ -4658,6 +4751,48 @@
       "visible": "表示するミニアプリ"
     },
     "model": "デフォルトモデル",
+    "model_employee": {
+      "description": "ユーザーフレンドリーなモデルパッケージングのための従業員を定義",
+      "education_level": {
+        "high_school": "ジュニア",
+        "master": "シニア",
+        "phd": "エキスパート",
+        "undergraduate": "中級"
+      },
+      "employee": {
+        "add": "従業員を追加",
+        "delete": "従業員を削除",
+        "delete_confirm": "従業員「{{name}}」を削除してもよろしいですか？",
+        "description": "説明",
+        "description_placeholder": "この従業員の能力と使用例を説明してください",
+        "edit": "従業員を編集",
+        "education_level": "学歴",
+        "model": "モデルをバインド",
+        "name": "従業員名",
+        "name_duplicate": "従業員名は既に存在します。別の名前を使用してください",
+        "name_placeholder": "例：スマートアシスタント",
+        "soul": "性格",
+        "soul_placeholder": "従業員の性格特性と行動スタイルを説明してください"
+      },
+      "empty": "従業員がいません",
+      "export": {
+        "button": "設定をエクスポート",
+        "success": "設定をエクスポートしました"
+      },
+      "import": {
+        "button": "設定をインポート",
+        "error": "インポートに失敗しました。ファイル形式を確認してください",
+        "success": "設定をインポートしました"
+      },
+      "label": "モデル従業員",
+      "pricing": {
+        "input": "入力",
+        "output": "出力"
+      },
+      "reset": "設定をリセット",
+      "reset_confirm": "すべての従業員設定をリセットしてもよろしいですか？",
+      "title": "モデル従業員設定"
+    },
     "models": {
       "add": {
         "add_model": "モデルを追加",
@@ -5043,7 +5178,7 @@
       "remove_invalid_keys": "無効なキーを削除",
       "search": "プロバイダーを検索...",
       "search_placeholder": "モデルIDまたは名前を検索",
-      "title": "モデルプロバイダー",
+      "title": "マイアカウント",
       "vertex_ai": {
         "api_host_help": "Vertex AIのAPIアドレス。逆プロキシに適しています。",
         "documentation": "詳細な設定については、公式ドキュメントを参照してください:",
@@ -5116,6 +5251,7 @@
       "clear_shortcut": "ショートカットをクリア",
       "clear_topic": "メッセージを消去",
       "copy_last_message": "最後のメッセージをコピー",
+      "cycle_permission_mode": "権限モードを切り替え",
       "edit_last_user_message": "最後のユーザーメッセージを編集",
       "enabled": "有効化",
       "exit_fullscreen": "フルスクリーンを終了",
@@ -5140,6 +5276,42 @@
       "zoom_in": "ズームイン",
       "zoom_out": "ズームアウト",
       "zoom_reset": "ズームをリセット"
+    },
+    "skin": {
+      "addCustom": "カスタムを追加",
+      "background": {
+        "addColor": "色を追加",
+        "blur": "ぼかし",
+        "color": "色",
+        "colors": "色",
+        "direction": "方向",
+        "directions": {
+          "radial": "放射状",
+          "to-bottom": "垂直",
+          "to-bottom-right": "斜め",
+          "to-right": "水平"
+        },
+        "opacity": "不透明度",
+        "selectImage": "画像を選択",
+        "size": "サイズ",
+        "sizeAuto": "自動",
+        "sizeContain": "含む",
+        "sizeCover": "カバー",
+        "title": "背景設定",
+        "types": {
+          "gradient": "グラデーション",
+          "image": "画像",
+          "solid": "単色"
+        }
+      },
+      "customTitle": "カスタムスキン",
+      "deleteConfirm": "このスキンを削除してもよろしいですか？",
+      "export": "スキンをエクスポート",
+      "import": "スキンをインポート",
+      "name": "スキン名",
+      "namePlaceholder": "スキン名を入力",
+      "primaryColor": "メインカラー",
+      "title": "スキン"
     },
     "theme": {
       "color_primary": "テーマ色",
@@ -5369,6 +5541,18 @@
       "title": "ページズーム"
     }
   },
+  "speedy": {
+    "chat_placeholder": "新しい会話を開始",
+    "configure_employees": "モデル従業員を設定",
+    "expert_mode": "エキスパートモード",
+    "new_topic": "新しいトピック",
+    "no_employee_description": "ターボモードを使用するにはモデル従業員を設定してください",
+    "no_employee_title": "モデル従業員がありません",
+    "no_topics": "トピックはまだありません",
+    "select_employee": "モデル従業員を選択",
+    "title": "ターボモード",
+    "topic_list_title": "トピック"
+  },
   "title": {
     "apps": "アプリ",
     "code": "Code",
@@ -5387,40 +5571,40 @@
   },
   "tools": {
     "custom": {
-      "duplicate_ids": "[to be translated]:Tool ID \"{{ids}}\" already exists",
-      "edit_title": "[to be translated]:Add Custom Tool",
-      "id": "[to be translated]:Tool ID",
-      "id_error": "[to be translated]:Please enter tool ID",
-      "id_placeholder": "[to be translated]:e.g., my-tool",
-      "logo": "[to be translated]:Tool Logo",
-      "logo_file": "[to be translated]:Upload File",
-      "logo_upload_button": "[to be translated]:Select Image",
-      "logo_upload_error": "[to be translated]:Failed to upload logo",
-      "logo_upload_label": "[to be translated]:Upload Logo",
-      "logo_upload_success": "[to be translated]:Logo uploaded successfully",
-      "logo_url": "[to be translated]:Logo URL",
-      "logo_url_label": "[to be translated]:Logo URL",
-      "logo_url_placeholder": "[to be translated]:Enter logo URL (optional)",
-      "name": "[to be translated]:Tool Name",
-      "name_error": "[to be translated]:Please enter tool name",
-      "name_placeholder": "[to be translated]:e.g., My Tool",
-      "save": "[to be translated]:Save",
-      "save_error": "[to be translated]:Failed to save custom tool",
-      "save_success": "[to be translated]:Custom tool saved successfully",
-      "title": "[to be translated]:Custom",
-      "url": "[to be translated]:Tool URL",
-      "url_error": "[to be translated]:Please enter tool URL",
-      "url_placeholder": "[to be translated]:e.g., https://example.com"
+      "duplicate_ids": "ツールID「{{ids}}」は既に存在します",
+      "edit_title": "カスタムツールを追加",
+      "id": "ツールID",
+      "id_error": "ツールIDを入力してください",
+      "id_placeholder": "例：my-tool",
+      "logo": "ツールロゴ",
+      "logo_file": "ファイルをアップロード",
+      "logo_upload_button": "画像を選択",
+      "logo_upload_error": "ロゴのアップロードに失敗しました",
+      "logo_upload_label": "ロゴをアップロード",
+      "logo_upload_success": "ロゴをアップロードしました",
+      "logo_url": "ロゴURL",
+      "logo_url_label": "ロゴURL",
+      "logo_url_placeholder": "ロゴURLを入力（任意）",
+      "name": "ツール名",
+      "name_error": "ツール名を入力してください",
+      "name_placeholder": "例：マイツール",
+      "save": "保存",
+      "save_error": "カスタムツールの保存に失敗しました",
+      "save_success": "カスタムツールを保存しました",
+      "title": "カスタム",
+      "url": "ツールURL",
+      "url_error": "ツールURLを入力してください",
+      "url_placeholder": "例：https://example.com"
     },
     "settings": {
-      "custom_tools_description": "[to be translated]:Manage your custom tools",
-      "custom_tools_title": "[to be translated]:Custom Tools",
-      "delete_confirm_description": "[to be translated]:Are you sure you want to delete tool \"{{name}}\"?",
-      "delete_confirm_title": "[to be translated]:Delete Tool",
-      "display_title": "[to be translated]:Tools Settings",
-      "no_custom_tools": "[to be translated]:No custom tools"
+      "custom_tools_description": "カスタムツールを管理",
+      "custom_tools_title": "カスタムツール",
+      "delete_confirm_description": "ツール「{{name}}」を削除してもよろしいですか？",
+      "delete_confirm_title": "ツールを削除",
+      "display_title": "ツール設定",
+      "no_custom_tools": "カスタムツールがありません"
     },
-    "title": "[to be translated]:Tools"
+    "title": "ツール"
   },
   "trace": {
     "backList": "リストに戻る",
@@ -5590,5 +5774,31 @@
     "quit": "終了",
     "show_window": "ウィンドウを表示",
     "visualization": "可視化"
+  },
+  "workspace": {
+    "add_folder": "フォルダを追加",
+    "clear": "ワークスペースをクリア",
+    "clear_confirm_content": "ワークスペースをクリアしてもよろしいですか？すべてのファイル参照が削除されます。",
+    "clear_confirm_title": "ワークスペースをクリア",
+    "drop_hint": "ドロップしてファイルを追加",
+    "empty_hint": "ファイルやフォルダをここにドラッグ",
+    "empty_hint_click": "フォルダをドラッグまたはクリックして追加",
+    "empty_hint_sub": "プロジェクトディレクトリをワークスペースに追加",
+    "exclude_config_title": "除外パターン",
+    "exclude_description": "以下のディレクトリはフィルタリング中に除外されます",
+    "exclude_empty": "除外パターンなし",
+    "exclude_placeholder": "ディレクトリ名を入力してください、例：build",
+    "filter_limit_hint": "最初の50件の結果を表示しています。検索を絞り込んでください。",
+    "filter_placeholder": "ファイルまたはフォルダを検索...",
+    "help_1": "エージェントはワークスペース内のファイルとディレクトリにアクセスできます",
+    "help_2": "ここにフォルダをドラッグ＆ドロップして素早く追加",
+    "help_3": "または、+ボタンをクリックしてフォルダを選択してください",
+    "help_footer": "エージェントはワークスペース内のファイルを読み取り、編集できます。フォルダをドラッグするか、+をクリックして追加します。ワークスペース内のファイルのみアクセス可能です。",
+    "help_security": "ワークスペース内のファイルのみがアクセス可能で、データセキュリティが確保されています",
+    "help_title": "ワークスペースについて",
+    "no_results": "一致する結果が見つかりませんでした",
+    "searching": "検索中…",
+    "select_folder": "フォルダを選択",
+    "title": "ワークスペース"
   }
 }

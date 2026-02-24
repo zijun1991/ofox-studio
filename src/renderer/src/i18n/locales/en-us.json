@@ -29,6 +29,7 @@
     "delete": {
       "content": "Deleting the agent will forcibly stop and delete all sessions associated with the agent. Are you sure?",
       "error": {
+        "channel_bound": "Cannot delete agent bound to channel \"{{name}}\". Please delete the channel first.",
         "failed": "Failed to delete the agent"
       },
       "title": "Delete Agent"
@@ -77,6 +78,7 @@
         "failed": "Failed to list agents."
       }
     },
+    "permission_mode_changed": "Permission mode changed",
     "server": {
       "error": {
         "not_running": "The API server is enabled but not running properly."
@@ -94,6 +96,8 @@
         "select_failed": "Failed to select directory."
       },
       "add": {
+        "channel_bound_disabled": "Channel-Bound Agent",
+        "channel_bound_hint": "Sessions for channel-bound agents are created automatically.",
         "title": "Add a session"
       },
       "allowed_tools": {
@@ -101,6 +105,12 @@
         "helper": "Pre-approved tools run without manual approval. Unselected tools require approval before use.",
         "label": "Pre-approved tools",
         "placeholder": "Select pre-approved tools"
+      },
+      "channel_bound": {
+        "description": "This session is bound to channel \"{{name}}\" ({{type}}). Messages are automatically received and sent through the channel.",
+        "go_to_channel": "Go to Channel",
+        "hint": "Configure this channel in Settings > Channels",
+        "title": "Channel-Bound Session"
       },
       "create": {
         "error": {
@@ -223,6 +233,7 @@
         "uninstalling": "Uninstalling..."
       },
       "prompt": "Prompt Settings",
+      "title": "Agent Settings",
       "tooling": {
         "mcp": {
           "description": "Connect MCP servers to unlock additional tools you can approve above.",
@@ -377,6 +388,11 @@
         }
       }
     },
+    "turbo": {
+      "description": "Fast response assistant for simple tasks",
+      "name": "Turbo Mode",
+      "tag": "Turbo"
+    },
     "type": {
       "label": "Agent Type",
       "unknown": "Unknown Type"
@@ -406,7 +422,7 @@
     },
     "authHeaderText": "Use in Authorization header:",
     "configuration": "Configuration",
-    "description": "Expose Cherry Studio's AI capabilities through OpenAI-compatible HTTP APIs",
+    "description": "Expose Ofox Claw's AI capabilities through OpenAI-compatible HTTP APIs",
     "documentation": {
       "title": "API Documentation"
     },
@@ -726,6 +742,67 @@
     },
     "update_available": "Update Available",
     "whole_word": "Whole Word"
+  },
+  "channels": {
+    "add": "Add Channel",
+    "add_title": "Add Channel",
+    "agent_id": "Agent ID",
+    "binding": "Agent Binding",
+    "binding_status": "Binding Status",
+    "binding_create_hint": "Create a new Agent and bind to this channel",
+    "binding_already_bound": "Channel is already bound to an agent",
+    "binding_success": "Agent created and bound successfully",
+    "binding_error": "Failed to create and bind agent",
+    "binding_no_agent": "No agent bound to this channel",
+    "binding_edit_error": "Failed to open agent for editing",
+    "binding_locked_hint": "Agent is bound, click to navigate to agent edit page",
+    "unbound": "Unbound",
+    "create_agent_and_bind": "Create and Bind",
+    "delete_confirm": "Are you sure you want to delete this channel?",
+    "deleted": "Channel deleted",
+    "email": {
+      "folder": "Folder",
+      "from_address": "From Address",
+      "from_address_placeholder": "Defaults to SMTP user",
+      "from_name": "From Name",
+      "host": "Host",
+      "imap": "IMAP (Inbound)",
+      "password": "Password",
+      "poll_interval": "Poll Interval (sec)",
+      "port": "Port",
+      "smtp": "SMTP (Outbound)",
+      "tls": "TLS",
+      "user": "Username"
+    },
+    "empty": "No channels configured. Click \"Add Channel\" to get started.",
+    "enabled": "Enabled",
+    "name": "Name",
+    "name_placeholder": "e.g. My Webhook",
+    "name_required": "Please enter a channel name",
+    "not_found": "Channel not found",
+    "saved": "Channel saved",
+    "session_id": "Session ID",
+    "telegram": {
+      "allowed_chat_ids": "Allowed Chat IDs",
+      "allowed_chat_ids_placeholder": "Comma-separated, leave empty for all",
+      "bot_token": "Bot Token",
+      "bot_token_placeholder": "Enter your bot token from @BotFather",
+      "config": "Telegram Bot Configuration",
+      "parse_mode": "Parse Mode",
+      "parse_mode_none": "None",
+      "poll_interval": "Poll Interval (sec)"
+    },
+    "test_connection": "Test Connection",
+    "title": "Channels",
+    "type": "Type",
+    "type_placeholder": "Select channel type",
+    "type_required": "Please select a channel type",
+    "webhook": {
+      "config": "Webhook Configuration",
+      "endpoint": "Endpoint",
+      "secret": "HMAC Secret",
+      "secret_placeholder": "Optional"
+    }
   },
   "chat": {
     "add": {
@@ -1324,6 +1401,7 @@
     },
     "footnote": "Reference content",
     "footnotes": "References",
+    "free": "Free",
     "fullscreen": "Entered fullscreen mode. Press F11 to exit",
     "generate_random_seed": "Generate random seed",
     "get_embedding_dimension": "Get embedding dimension",
@@ -1346,6 +1424,7 @@
     "next_match": "Next match",
     "no_results": "No results",
     "none": "None",
+    "no": "No",
     "off": "Off",
     "on": "On",
     "open": "Open",
@@ -1398,6 +1477,7 @@
     "upload_image": "Upload image file",
     "uploaded_image": "Uploaded image",
     "warning": "Warning",
+    "yes": "Yes",
     "you": "You"
   },
   "dialog": {
@@ -1763,6 +1843,10 @@
     "urls": "URLs",
     "videos": "video",
     "videos_file": "video file"
+  },
+  "landing": {
+    "enterExpertMode": "Enter Expert Mode",
+    "welcome": "Welcome to ofox studio"
   },
   "languages": {
     "arabic": "Arabic",
@@ -2326,6 +2410,14 @@
       "pin": "Keep Window on Top"
     }
   },
+  "modelEmployee": {
+    "educationLevel": {
+      "high_school": "Junior",
+      "master": "Senior",
+      "phd": "Expert",
+      "undergraduate": "Intermediate"
+    }
+  },
   "models": {
     "add_parameter": "Add Parameter",
     "all": "All",
@@ -2558,7 +2650,7 @@
   },
   "openclaw": {
     "checking_installation": "Checking OpenClaw installation...",
-    "description": "Use Cherry Studio providers to power OpenClaw, your personal AI assistant that works across WhatsApp, Telegram, Slack, Discord and more.",
+    "description": "Use Ofox Claw providers to power OpenClaw, your personal AI assistant that works across WhatsApp, Telegram, Slack, Discord and more.",
     "error": {
       "select_provider_model": "Please select a provider and model first"
     },
@@ -2651,7 +2743,7 @@
       "stop": "Stop OVMS",
       "stopping": "Stopping"
     },
-    "description": "<div><p>1. Download OV Models.</p><p>2. Add Models in 'Manager'.</p><p>Support Windows Only!</p><p>OVMS Install Path: '%USERPROFILE%\\.cherrystudio\\ovms' .</p><p>Please refer to <a href=https://github.com/openvinotoolkit/model_server/blob/c55551763d02825829337b62c2dcef9339706f79/docs/deploying_server_baremetal.md>Intel OVMS Guide</a></p></dev>",
+    "description": "<div><p>1. Download OV Models.</p><p>2. Add Models in 'Manager'.</p><p>Support Windows Only!</p><p>OVMS Install Path: '%USERPROFILE%\\.ofoxclaw\\ovms' .</p><p>Please refer to <a href=https://github.com/openvinotoolkit/model_server/blob/c55551763d02825829337b62c2dcef9339706f79/docs/deploying_server_baremetal.md>Intel OVMS Guide</a></p></dev>",
     "download": {
       "button": "Download",
       "error": "Download Error",
@@ -3372,7 +3464,7 @@
           },
           "description": {
             "0": "Selection Assistant requires <strong>Accessibility Permission</strong> to work properly.",
-            "1": "Please click \"<strong>Go to Settings</strong>\" and click the \"<strong>Open System Settings</strong>\" button in the permission request popup that appears later. Then find \"<strong>Cherry Studio</strong>\" in the application list that appears later and turn on the permission switch.",
+            "1": "Please click \"<strong>Go to Settings</strong>\" and click the \"<strong>Open System Settings</strong>\" button in the permission request popup that appears later. Then find \"<strong>Ofox Claw</strong>\" in the application list that appears later and turn on the permission switch.",
             "2": "After completing the settings, please reopen the selection assistant."
           },
           "title": "Accessibility Permission"
@@ -3384,7 +3476,7 @@
         "title": "Application Filter List",
         "user_tips": {
           "mac": "Please enter the Bundle ID of the application, one per line, case insensitive, can be fuzzy matched. For example: com.google.Chrome, com.apple.mail, etc.",
-          "windows": "Please enter the executable file name of the application, one per line, case insensitive, can be fuzzy matched. For example: chrome.exe, weixin.exe, Cherry Studio.exe, etc."
+          "windows": "Please enter the executable file name of the application, one per line, case insensitive, can be fuzzy matched. For example: chrome.exe, weixin.exe, Ofox Claw.exe, etc."
         }
       },
       "search_modal": {
@@ -3510,7 +3602,7 @@
         "open": "Open",
         "title": "Debug"
       },
-      "description": "A powerful AI assistant for producer",
+      "description": "Ofox Personal AI Assistant",
       "downloading": "Downloading...",
       "enterprise": {
         "title": "Enterprise"
@@ -3535,6 +3627,19 @@
         "button": "Website",
         "title": "Official Website"
       }
+    },
+    "account": {
+      "api_key": "API Key",
+      "api_key_placeholder": "Enter your API Key",
+      "api_key_required": "Please enter an API Key",
+      "api_key_save": "Save",
+      "api_key_saved": "API Key saved",
+      "available_models": "Available Models",
+      "logged_in": "Logged In",
+      "login": "Login",
+      "login_hint": "Login to access more features",
+      "no_models": "No models available",
+      "not_logged_in": "Not Logged In"
     },
     "advanced": {
       "auto_switch_to_topics": "Auto switch to topic",
@@ -3663,14 +3768,14 @@
             "test_message_received": "Received pong from {{device}}",
             "test_message_sent": "Sent hello world test payload"
           },
-          "idle_hint": "Scan paused. Start scanning to find Cherry Studio peers on your LAN.",
+          "idle_hint": "Scan paused. Start scanning to find Ofox Claw peers on your LAN.",
           "ip_addresses": "IP addresses",
           "last_seen": "Last seen at {{time}}",
           "metadata": "Metadata",
-          "no_connection_warning": "Please open LAN Transfer on Cherry Studio mobile",
+          "no_connection_warning": "Please open LAN Transfer on Ofox Claw mobile",
           "no_devices": "No LAN peers found yet",
           "scan_devices": "Scan devices",
-          "scanning_hint": "Scanning your local network for Cherry Studio peers...",
+          "scanning_hint": "Scanning your local network for Ofox Claw peers...",
           "send_file": "Send File",
           "status": {
             "completed": "Transfer completed",
@@ -4020,7 +4125,7 @@
         },
         "root": {
           "label": "Backup Directory (Optional)",
-          "placeholder": "e.g: /cherry-studio"
+          "placeholder": "e.g: /ofox-claw"
         },
         "secretAccessKey": {
           "label": "Secret Access Key",
@@ -4177,7 +4282,7 @@
       },
       "custom": {
         "css": {
-          "cherrycss": "Get from cherrycss.com",
+          "cherrycss": "Get from ofox.ai/themes",
           "label": "Custom CSS",
           "placeholder": "/* Put custom CSS here */"
         }
@@ -4452,7 +4557,7 @@
       },
       "oauth": {
         "callback": {
-          "message": "You can close this page and return to Cherry Studio",
+          "message": "You can close this page and return to Ofox Claw",
           "title": "Authentication Successful"
         }
       },
@@ -4658,6 +4763,48 @@
       "visible": "Visible Mini Apps"
     },
     "model": "Default Model",
+    "model_employee": {
+      "description": "Define employees for user-friendly model packaging",
+      "education_level": {
+        "high_school": "Junior",
+        "master": "Senior",
+        "phd": "Expert",
+        "undergraduate": "Intermediate"
+      },
+      "employee": {
+        "add": "Add Employee",
+        "delete": "Delete Employee",
+        "delete_confirm": "Are you sure you want to delete employee \"{{name}}\"?",
+        "description": "Description",
+        "description_placeholder": "Describe this employee's capabilities and use cases",
+        "edit": "Edit Employee",
+        "education_level": "Education Level",
+        "model": "Bind Model",
+        "name": "Employee Name",
+        "name_duplicate": "Employee name already exists, please use another name",
+        "name_placeholder": "e.g., Smart Assistant",
+        "soul": "Personality",
+        "soul_placeholder": "Describe the employee's personality traits and behavior style"
+      },
+      "empty": "No employees",
+      "export": {
+        "button": "Export Config",
+        "success": "Configuration exported"
+      },
+      "import": {
+        "button": "Import Config",
+        "error": "Import failed, please check the file format",
+        "success": "Configuration imported"
+      },
+      "label": "Model Employees",
+      "pricing": {
+        "input": "Input",
+        "output": "Output"
+      },
+      "reset": "Reset Config",
+      "reset_confirm": "Are you sure you want to reset all employee configurations?",
+      "title": "Model Employee Configuration"
+    },
     "models": {
       "add": {
         "add_model": "Add Model",
@@ -5043,7 +5190,7 @@
       "remove_invalid_keys": "Remove Invalid Keys",
       "search": "Search Providers...",
       "search_placeholder": "Search model id or name",
-      "title": "Model Provider",
+      "title": "My Account",
       "vertex_ai": {
         "api_host_help": "The API host for Vertex AI, not recommended to fill in, generally applicable to reverse proxy",
         "documentation": "View official documentation for more configuration details:",
@@ -5116,6 +5263,7 @@
       "clear_shortcut": "Clear Shortcut",
       "clear_topic": "Clear Messages",
       "copy_last_message": "Copy Last Message",
+      "cycle_permission_mode": "Cycle Permission Mode",
       "edit_last_user_message": "Edit Last User Message",
       "enabled": "Enable",
       "exit_fullscreen": "Exit Fullscreen",
@@ -5140,6 +5288,42 @@
       "zoom_in": "Zoom In",
       "zoom_out": "Zoom Out",
       "zoom_reset": "Reset Zoom"
+    },
+    "skin": {
+      "addCustom": "Add Custom",
+      "background": {
+        "addColor": "Add Color",
+        "blur": "Blur",
+        "color": "Color",
+        "colors": "Colors",
+        "direction": "Direction",
+        "directions": {
+          "radial": "Radial",
+          "to-bottom": "Vertical",
+          "to-bottom-right": "Diagonal",
+          "to-right": "Horizontal"
+        },
+        "opacity": "Opacity",
+        "selectImage": "Select Image",
+        "size": "Size",
+        "sizeAuto": "Auto",
+        "sizeContain": "Contain",
+        "sizeCover": "Cover",
+        "title": "Background Settings",
+        "types": {
+          "gradient": "Gradient",
+          "image": "Image",
+          "solid": "Solid"
+        }
+      },
+      "customTitle": "Custom Skin",
+      "deleteConfirm": "Are you sure you want to delete this skin?",
+      "export": "Export Skin",
+      "import": "Import Skin",
+      "name": "Skin Name",
+      "namePlaceholder": "Enter skin name",
+      "primaryColor": "Primary Color",
+      "title": "Skin"
     },
     "theme": {
       "color_primary": "Primary Color",
@@ -5369,6 +5553,18 @@
       "title": "Page Zoom"
     }
   },
+  "speedy": {
+    "chat_placeholder": "Start a new conversation",
+    "configure_employees": "Configure Model Employees",
+    "expert_mode": "Expert Mode",
+    "new_topic": "New Topic",
+    "no_employee_description": "Please configure model employees to start using Speedy Mode",
+    "no_employee_title": "No Model Employees",
+    "no_topics": "No topics yet",
+    "select_employee": "Select Model Employee",
+    "title": "Speedy Mode",
+    "topic_list_title": "Topics"
+  },
   "title": {
     "apps": "Apps",
     "code": "Code",
@@ -5590,5 +5786,31 @@
     "quit": "Quit",
     "show_window": "Show Window",
     "visualization": "Visualization"
+  },
+  "workspace": {
+    "add_folder": "Add Folder",
+    "clear": "Clear Workspace",
+    "clear_confirm_content": "Are you sure you want to clear the workspace? All file references will be removed.",
+    "clear_confirm_title": "Clear Workspace",
+    "drop_hint": "Release to add files",
+    "empty_hint": "Drag files or folders here",
+    "empty_hint_click": "Drag folder or click to add",
+    "empty_hint_sub": "Add project directory to workspace",
+    "exclude_config_title": "Exclude Patterns",
+    "exclude_description": "The following directories will be excluded during filtering",
+    "exclude_empty": "No exclude patterns",
+    "exclude_placeholder": "Enter directory name, e.g: build",
+    "filter_limit_hint": "Showing first 50 results, please refine your search",
+    "filter_placeholder": "Search files or folders...",
+    "help_1": "Agent can read and edit files in the workspace",
+    "help_2": "Drag folders here to quickly add them",
+    "help_3": "Click the + button to select a folder",
+    "help_footer": "Agent can read and edit files in the workspace. Drag folders or click + to add. Only files in the workspace are accessible.",
+    "help_security": "Only files in the workspace are accessible, ensuring data security",
+    "help_title": "About Workspace",
+    "no_results": "No matching results found",
+    "searching": "Searching...",
+    "select_folder": "Select Folder",
+    "title": "Workspace"
   }
 }

@@ -134,6 +134,7 @@ export const getRestoreProgressLabel = (key: string): string => {
 
 const titleKeyMap = {
   // TODO: update i18n key
+  expert: 'landing.enterExpertMode',
   store: 'title.store',
   apps: 'title.apps',
   code: 'title.code',
@@ -177,6 +178,7 @@ export const getThemeModeLabel = (key: string): string => {
 // } as const
 
 const sidebarIconKeyMap = {
+  agents: 'assistants.title',
   assistants: 'assistants.title',
   store: 'assistants.presets.title',
   paintings: 'paintings.title',
@@ -223,7 +225,8 @@ const shortcutKeyMap = {
   toggle_show_topics: 'settings.shortcuts.toggle_show_topics',
   zoom_in: 'settings.shortcuts.zoom_in',
   zoom_out: 'settings.shortcuts.zoom_out',
-  zoom_reset: 'settings.shortcuts.zoom_reset'
+  zoom_reset: 'settings.shortcuts.zoom_reset',
+  cycle_permission_mode: 'settings.shortcuts.cycle_permission_mode'
 } as const
 
 export const getShortcutLabel = (key: string): string => {

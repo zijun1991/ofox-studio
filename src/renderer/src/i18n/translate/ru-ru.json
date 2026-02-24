@@ -29,6 +29,7 @@
     "delete": {
       "content": "Удаление этого агента приведёт к принудительному завершению и удалению всех сессий, связанных с ним. Вы уверены?",
       "error": {
+        "channel_bound": "Нельзя удалить агента, привязанного к каналу \"{{name}}\". Сначала удалите канал.",
         "failed": "Не удалось удалить агента"
       },
       "title": "Удалить агента"
@@ -77,6 +78,7 @@
         "failed": "Не удалось получить список агентов."
       }
     },
+    "permission_mode_changed": "Режим разрешений изменен",
     "server": {
       "error": {
         "not_running": "API-сервер включен, но работает неправильно."
@@ -94,6 +96,8 @@
         "select_failed": "Не удалось выбрать каталог."
       },
       "add": {
+        "channel_bound_disabled": "Агент, привязанный к каналу",
+        "channel_bound_hint": "Сессии для привязанных к каналу агентов создаются автоматически.",
         "title": "Добавить сеанс"
       },
       "allowed_tools": {
@@ -101,6 +105,12 @@
         "helper": "Выберите инструменты с предварительным допуском. Неотмеченные инструменты потребуют подтверждения перед использованием.",
         "label": "Предварительно одобренные инструменты",
         "placeholder": "Выберите предварительно одобренные инструменты"
+      },
+      "channel_bound": {
+        "description": "Этот сеанс привязан к каналу \"{{name}}\" ({{type}}). Сообщения автоматически принимаются и отправляются через этот канал.",
+        "go_to_channel": "Перейти в канал",
+        "hint": "Настройте этот канал в разделе Настройки > Каналы",
+        "title": "Сессия, привязанная к каналу"
       },
       "create": {
         "error": {
@@ -223,6 +233,7 @@
         "uninstalling": "Удаление..."
       },
       "prompt": "Настройки подсказки",
+      "title": "Настройки агента",
       "tooling": {
         "mcp": {
           "description": "Подключите серверы MCP, чтобы разблокировать дополнительные инструменты, которые вы можете одобрить выше.",
@@ -377,6 +388,11 @@
         }
       }
     },
+    "turbo": {
+      "description": "Быстрый помощник для простых задач",
+      "name": "Турбо-режим",
+      "tag": "Турбо"
+    },
     "type": {
       "label": "Тип агента",
       "unknown": "Неизвестный тип"
@@ -406,7 +422,7 @@
     },
     "authHeaderText": "Использовать в заголовке авторизации:",
     "configuration": "Конфигурация",
-    "description": "Предоставляет возможности ИИ Cherry Studio через HTTP API, совместимые с OpenAI",
+    "description": "Предоставляет возможности ИИ Ofox Claw через HTTP API, совместимые с OpenAI",
     "documentation": {
       "title": "Документация API"
     },
@@ -726,6 +742,57 @@
     },
     "update_available": "Доступно обновление",
     "whole_word": "Полное слово"
+  },
+  "channels": {
+    "add": "Добавить канал",
+    "add_title": "Добавить канал",
+    "agent_id": "Идентификатор агента",
+    "binding": "Агентское связывание",
+    "delete_confirm": "Вы уверены, что хотите удалить этот канал?",
+    "deleted": "Канал удален",
+    "email": {
+      "folder": "Папка",
+      "from_address": "От адреса",
+      "from_address_placeholder": "По умолчанию используется пользователь SMTP",
+      "from_name": "От имени",
+      "host": "Хост",
+      "imap": "IMAP (Входящие)",
+      "password": "Пароль",
+      "poll_interval": "Интервал опроса (сек)",
+      "port": "Порт",
+      "smtp": "SMTP (Исходящий)",
+      "tls": "TLS",
+      "user": "Имя пользователя"
+    },
+    "empty": "Нет настроенных каналов. Нажмите «Добавить канал», чтобы начать.",
+    "enabled": "Включено",
+    "name": "Имя",
+    "name_placeholder": "например, Мой Webhook",
+    "name_required": "Пожалуйста, введите название канала",
+    "not_found": "Канал не найден",
+    "saved": "Канал сохранен",
+    "session_id": "Идентификатор сессии",
+    "telegram": {
+      "allowed_chat_ids": "Разрешенные ID чатов",
+      "allowed_chat_ids_placeholder": "Через запятую, оставьте пустым для всех",
+      "bot_token": "Токен бота",
+      "bot_token_placeholder": "Введите токен вашего бота от @BotFather",
+      "config": "Конфигурация Telegram бота",
+      "parse_mode": "Режим разбора",
+      "parse_mode_none": "Нет",
+      "poll_interval": "Интервал опроса (сек)"
+    },
+    "test_connection": "Проверка соединения",
+    "title": "Каналы",
+    "type": "Тип",
+    "type_placeholder": "Выберите тип канала",
+    "type_required": "Пожалуйста, выберите тип канала",
+    "webhook": {
+      "config": "Конфигурация Webhook",
+      "endpoint": "Endpoint",
+      "secret": "HMAC Секрет",
+      "secret_placeholder": "Необязательно"
+    }
   },
   "chat": {
     "add": {
@@ -1324,6 +1391,7 @@
     },
     "footnote": "Цитируемый контент",
     "footnotes": "Сноски",
+    "free": "Бесплатно",
     "fullscreen": "Вы вошли в полноэкранный режим. Нажмите F11 для выхода",
     "generate_random_seed": "Сгенерировать случайное зерно",
     "get_embedding_dimension": "Получить размерность вложения",
@@ -1763,6 +1831,10 @@
     "urls": "URL-адреса",
     "videos": "видео",
     "videos_file": "видеофайл"
+  },
+  "landing": {
+    "enterExpertMode": "Войти в Экспертный Режим",
+    "welcome": "Добро пожаловать в ofox studio"
   },
   "languages": {
     "arabic": "Арабский",
@@ -2326,6 +2398,14 @@
       "pin": "Верхнее окно"
     }
   },
+  "modelEmployee": {
+    "educationLevel": {
+      "high_school": "Junior",
+      "master": "Senior",
+      "phd": "Expert",
+      "undergraduate": "Intermediate"
+    }
+  },
   "models": {
     "add_parameter": "Добавить параметр",
     "all": "Все",
@@ -2558,7 +2638,7 @@
   },
   "openclaw": {
     "checking_installation": "Проверка установки OpenClaw...",
-    "description": "Интегрируйте провайдеров Cherry Studio с шлюзом OpenClaw, чтобы включить агентов кодирования ИИ, таких как Claude Code, Qwen-Coder и другие.",
+    "description": "Интегрируйте провайдеров Ofox Claw с шлюзом OpenClaw, чтобы включить агентов кодирования ИИ, таких как Claude Code, Qwen-Coder и другие.",
     "error": {
       "select_provider_model": "Пожалуйста, сначала выберите поставщика и модель"
     },
@@ -2591,7 +2671,7 @@
       "title": "Конфигурация модели"
     },
     "node_missing": {
-      "description": "OpenClaw требует Node.js/npm. Пожалуйста, сначала установите Node.js, затем перезапустите Cherry Studio.",
+      "description": "OpenClaw требует Node.js/npm. Пожалуйста, сначала установите Node.js, затем перезапустите Ofox Claw.",
       "download_button": "Скачать Node.js",
       "hint": "macOS: brew install node | Windows: Скачайте LTS-версию с nodejs.org",
       "title": "Требуется Node.js"
@@ -2651,7 +2731,7 @@
       "stop": "Остановить OVMS",
       "stopping": "Остановка"
     },
-    "description": "<div><p>1. Загрузите модели OV.</p><p>2. Добавьте модели в 'Менеджер'.</p><p>Поддерживается только Windows!</p><p>Путь установки OVMS: '%USERPROFILE%\\.cherrystudio\\ovms'.</p><p>Пожалуйста, ознакомьтесь с <a href=https://github.com/openvinotoolkit/model_server/blob/c55551763d02825829337b62c2dcef9339706f79/docs/deploying_server_baremetal.md>руководством Intel OVMS</a></p></dev>",
+    "description": "<div><p>1. Загрузите модели OV.</p><p>2. Добавьте модели в 'Менеджер'.</p><p>Поддерживается только Windows!</p><p>Путь установки OVMS: '%USERPROFILE%\\.ofoxclaw\\ovms'.</p><p>Пожалуйста, ознакомьтесь с <a href=https://github.com/openvinotoolkit/model_server/blob/c55551763d02825829337b62c2dcef9339706f79/docs/deploying_server_baremetal.md>руководством Intel OVMS</a></p></dev>",
     "download": {
       "button": "Скачать",
       "error": "Ошибка загрузки",
@@ -3372,7 +3452,7 @@
           },
           "description": {
             "0": "Помощник выбора требует <strong>Права доступа</strong> для правильной работы.",
-            "1": "Пожалуйста, перейдите в \"<strong>Настройки</strong>\" и нажмите \"<strong>Открыть системные настройки</strong>\" в запросе разрешения, который появится позже. Затем найдите \"<strong>Cherry Studio</strong>\" в списке приложений, который появится позже, и включите переключатель разрешения.",
+            "1": "Пожалуйста, перейдите в \"<strong>Настройки</strong>\" и нажмите \"<strong>Открыть системные настройки</strong>\" в запросе разрешения, который появится позже. Затем найдите \"<strong>Ofox Claw</strong>\" в списке приложений, который появится позже, и включите переключатель разрешения.",
             "2": "После завершения настроек, пожалуйста, перезапустите помощник выбора."
           },
           "title": "Права доступа"
@@ -3536,6 +3616,19 @@
         "title": "Официальный сайт"
       }
     },
+    "account": {
+      "api_key": "API-ключ",
+      "api_key_placeholder": "Введите API-ключ",
+      "api_key_required": "Пожалуйста, введите API-ключ",
+      "api_key_save": "Сохранить",
+      "api_key_saved": "API-ключ saved",
+      "available_models": "Available Models",
+      "logged_in": "Logged In",
+      "login": "Login",
+      "login_hint": "Login to access more features",
+      "no_models": "No models available",
+      "not_logged_in": "Not Logged In"
+    },
     "advanced": {
       "auto_switch_to_topics": "Автоматически переключаться на топик",
       "title": "Расширенные настройки"
@@ -3637,7 +3730,7 @@
         "lan": {
           "connected": "Подключено",
           "connection_failed": "Соединение не удалось",
-          "content": "Убедитесь, что компьютер и телефон подключены к одной сети, чтобы использовать локальную передачу. Откройте приложение Cherry Studio и отсканируйте этот QR-код.",
+          "content": "Убедитесь, что компьютер и телефон подключены к одной сети, чтобы использовать локальную передачу. Откройте приложение Ofox Claw и отсканируйте этот QR-код.",
           "device_list_title": "Устройства локальной сети",
           "discovered_devices": "Обнаруженные устройства",
           "error": {
@@ -3663,14 +3756,14 @@
             "test_message_received": "Получен понг от {{device}}",
             "test_message_sent": "Отправлен тестовый полезный груз \"hello world\""
           },
-          "idle_hint": "Сканирование приостановлено. Начните сканирование, чтобы найти пиры Cherry Studio в вашей локальной сети.",
+          "idle_hint": "Сканирование приостановлено. Начните сканирование, чтобы найти пиры Ofox Claw в вашей локальной сети.",
           "ip_addresses": "IP-адреса",
           "last_seen": "В последний раз был(а) в сети в {{time}}",
           "metadata": "Метаданные",
-          "no_connection_warning": "Пожалуйста, откройте LAN Transfer в мобильном приложении Cherry Studio",
+          "no_connection_warning": "Пожалуйста, откройте LAN Transfer в мобильном приложении Ofox Claw",
           "no_devices": "Пока не найдено участников локальной сети",
           "scan_devices": "Сканировать устройства",
-          "scanning_hint": "Сканирование локальной сети на наличие узлов Cherry Studio...",
+          "scanning_hint": "Сканирование локальной сети на наличие узлов Ofox Claw...",
           "send_file": "Отправить файл",
           "status": {
             "completed": "Перевод завершён",
@@ -4020,7 +4113,7 @@
         },
         "root": {
           "label": "Каталог резервных копий (необязательно)",
-          "placeholder": "например: /cherry-studio"
+          "placeholder": "например: /ofox-claw"
         },
         "secretAccessKey": {
           "label": "Secret Access Key",
@@ -4177,7 +4270,7 @@
       },
       "custom": {
         "css": {
-          "cherrycss": "Получить из cherrycss.com",
+          "cherrycss": "Получить из ofox.ai/themes",
           "label": "Пользовательский CSS",
           "placeholder": "/* Здесь введите пользовательский CSS */"
         }
@@ -4452,7 +4545,7 @@
       },
       "oauth": {
         "callback": {
-          "message": "Вы можете закрыть эту страницу и вернуться в Cherry Studio",
+          "message": "Вы можете закрыть эту страницу и вернуться в Ofox Claw",
           "title": "Аутентификация Успешна"
         }
       },
@@ -4658,6 +4751,48 @@
       "visible": "Отображаемые мини-приложения"
     },
     "model": "Модель по умолчанию",
+    "model_employee": {
+      "description": "Define employees for user-friendly model packaging",
+      "education_level": {
+        "high_school": "Junior",
+        "master": "Senior",
+        "phd": "Expert",
+        "undergraduate": "Intermediate"
+      },
+      "employee": {
+        "add": "Add Employee",
+        "delete": "Delete Employee",
+        "delete_confirm": "Are you sure you want to delete employee \"{{name}}\"?",
+        "description": "Description",
+        "description_placeholder": "Describe this employee's capabilities and use cases",
+        "edit": "Edit Employee",
+        "education_level": "Education Level",
+        "model": "Bind Model",
+        "name": "Employee Name",
+        "name_duplicate": "Employee name already exists, please use another name",
+        "name_placeholder": "e.g., Smart Assistant",
+        "soul": "Personality",
+        "soul_placeholder": "Describe the employee's personality traits and behavior style"
+      },
+      "empty": "No employees",
+      "export": {
+        "button": "Export Config",
+        "success": "Configuration exported"
+      },
+      "import": {
+        "button": "Import Config",
+        "error": "Import failed, please check the file format",
+        "success": "Configuration imported"
+      },
+      "label": "Model Employees",
+      "pricing": {
+        "input": "Вход",
+        "output": "Выход"
+      },
+      "reset": "Reset Config",
+      "reset_confirm": "Are you sure you want to reset all employee configurations?",
+      "title": "Model Employee Configuration"
+    },
     "models": {
       "add": {
         "add_model": "Добавить модель",
@@ -5043,7 +5178,7 @@
       "remove_invalid_keys": "Удалить недействительные ключи",
       "search": "Поиск поставщиков...",
       "search_placeholder": "Поиск по ID или имени модели",
-      "title": "Провайдеры моделей",
+      "title": "Мой Аккаунт",
       "vertex_ai": {
         "api_host_help": "API-адрес Vertex AI, не рекомендуется заполнять, обычно применим к обратным прокси",
         "documentation": "Смотрите официальную документацию для получения более подробной информации о конфигурации:",
@@ -5116,6 +5251,7 @@
       "clear_shortcut": "Очистить сочетание клавиш",
       "clear_topic": "Очистить все сообщения",
       "copy_last_message": "Копировать последнее сообщение",
+      "cycle_permission_mode": "Циклический режим разрешений",
       "edit_last_user_message": "Редактировать последнее сообщение пользователя",
       "enabled": "Включить",
       "exit_fullscreen": "Выйти из полноэкранного режима",
@@ -5140,6 +5276,42 @@
       "zoom_in": "Увеличить",
       "zoom_out": "Уменьшить",
       "zoom_reset": "Сбросить масштаб"
+    },
+    "skin": {
+      "addCustom": "Add Custom",
+      "background": {
+        "addColor": "Add Color",
+        "blur": "Blur",
+        "color": "Color",
+        "colors": "Colors",
+        "direction": "Direction",
+        "directions": {
+          "radial": "Radial",
+          "to-bottom": "Vertical",
+          "to-bottom-right": "Diagonal",
+          "to-right": "Horizontal"
+        },
+        "opacity": "Opacity",
+        "selectImage": "Select Image",
+        "size": "Size",
+        "sizeAuto": "Auto",
+        "sizeContain": "Contain",
+        "sizeCover": "Cover",
+        "title": "Background Settings",
+        "types": {
+          "gradient": "Gradient",
+          "image": "Image",
+          "solid": "Solid"
+        }
+      },
+      "customTitle": "Custom Skin",
+      "deleteConfirm": "Are you sure you want to delete this skin?",
+      "export": "Export Skin",
+      "import": "Import Skin",
+      "name": "Skin Name",
+      "namePlaceholder": "Enter skin name",
+      "primaryColor": "Primary Color",
+      "title": "Skin"
     },
     "theme": {
       "color_primary": "Цвет темы",
@@ -5369,6 +5541,18 @@
       "title": "Масштаб страницы"
     }
   },
+  "speedy": {
+    "chat_placeholder": "Начать новый разговор",
+    "configure_employees": "Настроить сотрудников модели",
+    "expert_mode": "Экспертный режим",
+    "new_topic": "Новая тема",
+    "no_employee_description": "Пожалуйста, настройте сотрудников модели для использования Турбо-режима",
+    "no_employee_title": "Нет сотрудников модели",
+    "no_topics": "Тем пока нет",
+    "select_employee": "Выбрать сотрудника модели",
+    "title": "Турбо-режим",
+    "topic_list_title": "Темы"
+  },
   "title": {
     "apps": "Приложения",
     "code": "Code",
@@ -5387,40 +5571,40 @@
   },
   "tools": {
     "custom": {
-      "duplicate_ids": "[to be translated]:Tool ID \"{{ids}}\" already exists",
-      "edit_title": "[to be translated]:Add Custom Tool",
-      "id": "[to be translated]:Tool ID",
-      "id_error": "[to be translated]:Please enter tool ID",
-      "id_placeholder": "[to be translated]:e.g., my-tool",
-      "logo": "[to be translated]:Tool Logo",
-      "logo_file": "[to be translated]:Upload File",
-      "logo_upload_button": "[to be translated]:Select Image",
-      "logo_upload_error": "[to be translated]:Failed to upload logo",
-      "logo_upload_label": "[to be translated]:Upload Logo",
-      "logo_upload_success": "[to be translated]:Logo uploaded successfully",
-      "logo_url": "[to be translated]:Logo URL",
-      "logo_url_label": "[to be translated]:Logo URL",
-      "logo_url_placeholder": "[to be translated]:Enter logo URL (optional)",
-      "name": "[to be translated]:Tool Name",
-      "name_error": "[to be translated]:Please enter tool name",
-      "name_placeholder": "[to be translated]:e.g., My Tool",
-      "save": "[to be translated]:Save",
-      "save_error": "[to be translated]:Failed to save custom tool",
-      "save_success": "[to be translated]:Custom tool saved successfully",
-      "title": "[to be translated]:Custom",
-      "url": "[to be translated]:Tool URL",
-      "url_error": "[to be translated]:Please enter tool URL",
-      "url_placeholder": "[to be translated]:e.g., https://example.com"
+      "duplicate_ids": "ID инструмента \"{{ids}}\" уже существует",
+      "edit_title": "Добавить Пользовательский Инструмент",
+      "id": "ID Инструмента",
+      "id_error": "Пожалуйста, введите ID инструмента",
+      "id_placeholder": "напр. my-tool",
+      "logo": "Логотип Инструмента",
+      "logo_file": "Загрузить Файл",
+      "logo_upload_button": "Выбрать Изображение",
+      "logo_upload_error": "Ошибка загрузки логотипа",
+      "logo_upload_label": "Загрузить Логотип",
+      "logo_upload_success": "Логотип успешно загружен",
+      "logo_url": "URL Логотипа",
+      "logo_url_label": "URL Логотипа",
+      "logo_url_placeholder": "Введите URL логотипа (необязательно)",
+      "name": "Название Инструмента",
+      "name_error": "Пожалуйста, введите название инструмента",
+      "name_placeholder": "напр. Мой Инструмент",
+      "save": "Сохранить",
+      "save_error": "Ошибка сохранения пользовательского инструмента",
+      "save_success": "Пользовательский инструмент успешно сохранен",
+      "title": "Пользовательский",
+      "url": "URL Инструмента",
+      "url_error": "Пожалуйста, введите URL инструмента",
+      "url_placeholder": "напр. https://example.com"
     },
     "settings": {
-      "custom_tools_description": "[to be translated]:Manage your custom tools",
-      "custom_tools_title": "[to be translated]:Custom Tools",
-      "delete_confirm_description": "[to be translated]:Are you sure you want to delete tool \"{{name}}\"?",
-      "delete_confirm_title": "[to be translated]:Delete Tool",
-      "display_title": "[to be translated]:Tools Settings",
-      "no_custom_tools": "[to be translated]:No custom tools"
+      "custom_tools_description": "Управление вашими пользовательскими инструментами",
+      "custom_tools_title": "Пользовательские Инструменты",
+      "delete_confirm_description": "Вы уверены, что хотите удалить инструмент \"{{name}}\"?",
+      "delete_confirm_title": "Удалить Инструмент",
+      "display_title": "Настройки Инструментов",
+      "no_custom_tools": "Нет пользовательских инструментов"
     },
-    "title": "[to be translated]:Tools"
+    "title": "Инструменты"
   },
   "trace": {
     "backList": "Вернуться к списку",
@@ -5590,5 +5774,31 @@
     "quit": "Выйти",
     "show_window": "Показать окно",
     "visualization": "Визуализация"
+  },
+  "workspace": {
+    "add_folder": "Добавить папку",
+    "clear": "Очистить рабочую область",
+    "clear_confirm_content": "Вы уверены, что хотите очистить рабочую область? Все ссылки на файлы будут удалены.",
+    "clear_confirm_title": "Очистить рабочую область",
+    "drop_hint": "Отпустите для добавления файлов",
+    "empty_hint": "Перетащите файлы или папки сюда",
+    "empty_hint_click": "Перетащите папку или нажмите для добавления",
+    "empty_hint_sub": "Добавить каталог проекта в рабочую область",
+    "exclude_config_title": "Исключить шаблоны",
+    "exclude_description": "Следующие каталоги будут исключены при фильтрации",
+    "exclude_empty": "Без исключений",
+    "exclude_placeholder": "Введите имя директории, например: build",
+    "filter_limit_hint": "Показаны первые 50 результатов, уточните поиск",
+    "filter_placeholder": "Поиск файлов или папок...",
+    "help_1": "Агент может получать доступ к файлам и каталогам в рабочей области",
+    "help_2": "Перетащите папки сюда для быстрого добавления",
+    "help_3": "Или нажмите кнопку +, чтобы выбрать папку",
+    "help_footer": "Агент может читать и редактировать файлы в рабочей области. Перетащите папки или нажмите +, чтобы добавить. Доступны только файлы в рабочей области.",
+    "help_security": "Только файлы в рабочей области доступны, обеспечивая безопасность данных.",
+    "help_title": "О рабочем пространстве",
+    "no_results": "Совпадений не найдено",
+    "searching": "Поиск...",
+    "select_folder": "Выбрать папку",
+    "title": "Рабочая область"
   }
 }

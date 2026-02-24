@@ -29,6 +29,7 @@
     "delete": {
       "content": "删除该 Agent 将强制终止并删除该 Agent 下的所有会话。您确定吗？",
       "error": {
+        "channel_bound": "无法删除已绑定到频道 \"{{name}}\" 的 Agent，请先删除频道。",
         "failed": "删除 Agent 失败"
       },
       "title": "删除 Agent"
@@ -77,6 +78,7 @@
         "failed": "获取智能体列表失败"
       }
     },
+    "permission_mode_changed": "权限模式已更改",
     "server": {
       "error": {
         "not_running": "API 服务器已启用但未正常运行。"
@@ -94,6 +96,8 @@
         "select_failed": "选择目录失败"
       },
       "add": {
+        "channel_bound_disabled": "频道绑定 Agent",
+        "channel_bound_hint": "频道绑定 Agent 的会话会自动创建。",
         "title": "添加会话"
       },
       "allowed_tools": {
@@ -101,6 +105,12 @@
         "helper": "选择预先授权的工具，未选中的工具在使用时需要手动审批。",
         "label": "预先授权工具",
         "placeholder": "选择预先授权的工具"
+      },
+      "channel_bound": {
+        "description": "此会话已绑定到频道 \"{{name}}\" ({{type}})。消息通过频道自动接收和发送。",
+        "go_to_channel": "前往频道",
+        "hint": "在 设置 > 频道 中配置此频道",
+        "title": "频道绑定会话"
       },
       "create": {
         "error": {
@@ -223,6 +233,7 @@
         "uninstalling": "卸载中..."
       },
       "prompt": "提示词设置",
+      "title": "智能体设置",
       "tooling": {
         "mcp": {
           "description": "连接 MCP 服务器即可解锁更多可在上方预先授权的工具。",
@@ -377,6 +388,11 @@
         }
       }
     },
+    "turbo": {
+      "description": "快速响应的极速助手，适用于简单任务",
+      "name": "极速模式",
+      "tag": "极速"
+    },
     "type": {
       "label": "智能体类型",
       "unknown": "未知类型"
@@ -406,7 +422,7 @@
     },
     "authHeaderText": "在授权标头中使用：",
     "configuration": "配置",
-    "description": "通过 OpenAI 兼容的 HTTP API 暴露 Cherry Studio 的 AI 功能",
+    "description": "通过 OpenAI 兼容的 HTTP API 暴露 Ofox Claw 的 AI 功能",
     "documentation": {
       "title": "API 文档"
     },
@@ -726,6 +742,67 @@
     },
     "update_available": "有可用更新",
     "whole_word": "全字匹配"
+  },
+  "channels": {
+    "add": "添加频道",
+    "add_title": "添加频道",
+    "agent_id": "Agent ID",
+    "binding": "Agent 绑定",
+    "binding_status": "绑定状态",
+    "binding_create_hint": "创建一个新的 Agent 并绑定到此频道",
+    "binding_already_bound": "该频道已绑定到 Agent",
+    "binding_success": "Agent 创建并绑定成功",
+    "binding_error": "创建并绑定 Agent 失败",
+    "binding_no_agent": "该频道未绑定 Agent",
+    "binding_edit_error": "无法打开 Agent 进行编辑",
+    "binding_locked_hint": "Agent 已绑定，点击可跳转到 Agent 编辑页面",
+    "unbound": "未绑定",
+    "create_agent_and_bind": "创建并绑定",
+    "delete_confirm": "确定要删除此频道吗？",
+    "deleted": "频道已删除",
+    "email": {
+      "folder": "文件夹",
+      "from_address": "发件人地址",
+      "from_address_placeholder": "默认使用 SMTP 用户",
+      "from_name": "发件人名称",
+      "host": "主机",
+      "imap": "IMAP（收信）",
+      "password": "密码",
+      "poll_interval": "轮询间隔（秒）",
+      "port": "端口",
+      "smtp": "SMTP（发信）",
+      "tls": "TLS",
+      "user": "用户名"
+    },
+    "empty": "暂无频道配置。点击「添加频道」开始使用。",
+    "enabled": "启用",
+    "name": "名称",
+    "name_placeholder": "例如：我的 Webhook",
+    "name_required": "请输入频道名称",
+    "not_found": "未找到频道",
+    "saved": "频道已保存",
+    "session_id": "会话 ID",
+    "telegram": {
+      "allowed_chat_ids": "允许的 Chat ID",
+      "allowed_chat_ids_placeholder": "逗号分隔，留空表示允许所有",
+      "bot_token": "Bot Token",
+      "bot_token_placeholder": "输入从 @BotFather 获取的 Bot Token",
+      "config": "Telegram Bot 配置",
+      "parse_mode": "消息格式",
+      "parse_mode_none": "无",
+      "poll_interval": "轮询间隔（秒）"
+    },
+    "test_connection": "测试连接",
+    "title": "频道",
+    "type": "类型",
+    "type_placeholder": "选择频道类型",
+    "type_required": "请选择频道类型",
+    "webhook": {
+      "config": "Webhook 配置",
+      "endpoint": "端点",
+      "secret": "HMAC 密钥",
+      "secret_placeholder": "可选"
+    }
   },
   "chat": {
     "add": {
@@ -1324,6 +1401,7 @@
     },
     "footnote": "引用内容",
     "footnotes": "引用内容",
+    "free": "免费",
     "fullscreen": "已进入全屏模式，按 F11 退出",
     "generate_random_seed": "生成随机种子",
     "get_embedding_dimension": "获取嵌入维度",
@@ -1346,6 +1424,7 @@
     "next_match": "下一个匹配",
     "no_results": "无结果",
     "none": "无",
+    "no": "否",
     "off": "关闭",
     "on": "启用",
     "open": "打开",
@@ -1398,6 +1477,7 @@
     "upload_image": "上传图片文件",
     "uploaded_image": "已上传图片",
     "warning": "警告",
+    "yes": "是",
     "you": "用户"
   },
   "dialog": {
@@ -1763,6 +1843,10 @@
     "urls": "网址",
     "videos": "视频",
     "videos_file": "视频文件"
+  },
+  "landing": {
+    "enterExpertMode": "专家模式",
+    "welcome": "欢迎来到 ofox studio"
   },
   "languages": {
     "arabic": "阿拉伯文",
@@ -2326,6 +2410,14 @@
       "pin": "窗口置顶"
     }
   },
+  "modelEmployee": {
+    "educationLevel": {
+      "high_school": "初级",
+      "master": "高级",
+      "phd": "顶级",
+      "undergraduate": "中级"
+    }
+  },
   "models": {
     "add_parameter": "添加参数",
     "all": "全部",
@@ -2558,7 +2650,7 @@
   },
   "openclaw": {
     "checking_installation": "正在检查 OpenClaw 安装状态...",
-    "description": "使用 Cherry Studio 服务商为 OpenClaw 提供支持，OpenClaw 是您的个人 AI 助手，可在 WhatsApp、Telegram、Slack、Discord 等平台上使用。",
+    "description": "使用 Ofox Claw 服务商为 OpenClaw 提供支持，OpenClaw 是您的个人 AI 助手，可在 WhatsApp、Telegram、Slack、Discord 等平台上使用。",
     "error": {
       "select_provider_model": "请先选择服务商和模型"
     },
@@ -2651,7 +2743,7 @@
       "stop": "停止 OVMS",
       "stopping": "停止中"
     },
-    "description": "<div><p>1. 下载 OV 模型.</p><p>2. 在 'Manager' 中添加模型.</p><p>仅支持 Windows!</p><p>OVMS 安装路径: '%USERPROFILE%\\.cherrystudio\\ovms' .</p><p>请参考 <a href=https://github.com/openvinotoolkit/model_server/blob/c55551763d02825829337b62c2dcef9339706f79/docs/deploying_server_baremetal.md>Intel OVMS 指南</a></p></dev>",
+    "description": "<div><p>1. 下载 OV 模型.</p><p>2. 在 'Manager' 中添加模型.</p><p>仅支持 Windows!</p><p>OVMS 安装路径: '%USERPROFILE%\\.ofoxclaw\\ovms' .</p><p>请参考 <a href=https://github.com/openvinotoolkit/model_server/blob/c55551763d02825829337b62c2dcef9339706f79/docs/deploying_server_baremetal.md>Intel OVMS 指南</a></p></dev>",
     "download": {
       "button": "下载",
       "error": "下载失败",
@@ -3372,7 +3464,7 @@
           },
           "description": {
             "0": "划词助手需「<strong>辅助功能权限</strong>」才能正常工作。",
-            "1": "请点击「<strong>去设置</strong>」，并在稍后弹出的权限请求弹窗中点击 「<strong>打开系统设置</strong>」 按钮，然后在之后的应用列表中找到 「<strong>Cherry Studio</strong>」，并打开权限开关。",
+            "1": "请点击「<strong>去设置</strong>」，并在稍后弹出的权限请求弹窗中点击 「<strong>打开系统设置</strong>」 按钮，然后在之后的应用列表中找到 「<strong>Ofox Claw</strong>」，并打开权限开关。",
             "2": "完成设置后，请再次开启划词助手。"
           },
           "title": "辅助功能权限"
@@ -3384,7 +3476,7 @@
         "title": "应用筛选名单",
         "user_tips": {
           "mac": "请输入应用的Bundle ID，每行一个，不区分大小写，可以模糊匹配。例如：com.google.Chrome、com.apple.mail等",
-          "windows": "请输入应用的执行文件名，每行一个，不区分大小写，可以模糊匹配。例如：chrome.exe、weixin.exe、Cherry Studio.exe等"
+          "windows": "请输入应用的执行文件名，每行一个，不区分大小写，可以模糊匹配。例如：chrome.exe、weixin.exe、Ofox Claw.exe等"
         }
       },
       "search_modal": {
@@ -3510,7 +3602,7 @@
         "open": "打开",
         "title": "调试面板"
       },
-      "description": "一款为创造者而生的 AI 助手",
+      "description": "Ofox个人AI助手",
       "downloading": "正在下载更新...",
       "enterprise": {
         "title": "企业版"
@@ -3535,6 +3627,19 @@
         "button": "查看",
         "title": "官方网站"
       }
+    },
+    "account": {
+      "api_key": "API Key",
+      "api_key_placeholder": "请输入 API Key",
+      "api_key_required": "请输入 API Key",
+      "api_key_save": "保存",
+      "api_key_saved": "API Key 已保存",
+      "available_models": "可用模型",
+      "logged_in": "已登录",
+      "login": "登录",
+      "login_hint": "登录以获取更多功能",
+      "no_models": "暂无可用模型",
+      "not_logged_in": "未登录"
     },
     "advanced": {
       "auto_switch_to_topics": "自动切换到话题",
@@ -3663,14 +3768,14 @@
             "test_message_received": "已收到 {{device}} 的 pong 响应",
             "test_message_sent": "已发送 hello world 测试数据"
           },
-          "idle_hint": "扫描已暂停。开始扫描以发现局域网中的 Cherry Studio 设备。",
+          "idle_hint": "扫描已暂停。开始扫描以发现局域网中的 Ofox Claw 设备。",
           "ip_addresses": "IP 地址",
           "last_seen": "最后活动：{{time}}",
           "metadata": "元数据",
-          "no_connection_warning": "请在 Cherry Studio 移动端打开局域网传输",
+          "no_connection_warning": "请在 Ofox Claw 移动端打开局域网传输",
           "no_devices": "尚未发现局域网设备",
           "scan_devices": "扫描设备",
-          "scanning_hint": "正在扫描局域网中的 Cherry Studio 设备...",
+          "scanning_hint": "正在扫描局域网中的 Ofox Claw 设备...",
           "send_file": "发送文件",
           "status": {
             "completed": "传输完成",
@@ -4020,7 +4125,7 @@
         },
         "root": {
           "label": "备份目录（可选）",
-          "placeholder": "例如：/cherry-studio"
+          "placeholder": "例如：/ofox-claw"
         },
         "secretAccessKey": {
           "label": "Secret Access Key",
@@ -4177,7 +4282,7 @@
       },
       "custom": {
         "css": {
-          "cherrycss": "从 cherrycss.com 获取",
+          "cherrycss": "从 ofox.ai/themes 获取",
           "label": "自定义 CSS",
           "placeholder": "/* 这里写自定义 CSS */"
         }
@@ -4452,7 +4557,7 @@
       },
       "oauth": {
         "callback": {
-          "message": "您可以关闭此页面并返回 Cherry Studio",
+          "message": "您可以关闭此页面并返回 Ofox Claw",
           "title": "认证成功"
         }
       },
@@ -4658,6 +4763,48 @@
       "visible": "显示的小程序"
     },
     "model": "默认模型",
+    "model_employee": {
+      "description": "定义员工并对模型进行用户友好的包装",
+      "education_level": {
+        "high_school": "初级",
+        "master": "高级",
+        "phd": "顶级",
+        "undergraduate": "中级"
+      },
+      "employee": {
+        "add": "添加员工",
+        "delete": "删除员工",
+        "delete_confirm": "确定删除员工「{{name}}」吗？",
+        "description": "员工介绍",
+        "description_placeholder": "介绍这个员工的能力和适用场景",
+        "edit": "编辑员工",
+        "education_level": "学历等级",
+        "model": "绑定模型",
+        "name": "员工名称",
+        "name_duplicate": "员工名称已存在，请使用其他名称",
+        "name_placeholder": "例如: 智能小助手",
+        "soul": "性格描述",
+        "soul_placeholder": "描述员工的性格特征、行为风格等"
+      },
+      "empty": "暂无员工",
+      "export": {
+        "button": "导出配置",
+        "success": "配置已导出"
+      },
+      "import": {
+        "button": "导入配置",
+        "error": "导入失败，请检查文件格式",
+        "success": "配置已导入"
+      },
+      "label": "模型员工",
+      "pricing": {
+        "input": "输入",
+        "output": "输出"
+      },
+      "reset": "重置配置",
+      "reset_confirm": "确定重置所有员工配置吗？",
+      "title": "模型员工配置"
+    },
     "models": {
       "add": {
         "add_model": "添加模型",
@@ -5043,7 +5190,7 @@
       "remove_invalid_keys": "删除无效密钥",
       "search": "搜索模型平台...",
       "search_placeholder": "搜索模型 ID 或名称",
-      "title": "模型服务",
+      "title": "我的账号",
       "vertex_ai": {
         "api_host_help": "Vertex AI 的 API 地址，不建议填写，通常适用于反向代理",
         "documentation": "查看官方文档了解更多配置详情：",
@@ -5116,6 +5263,7 @@
       "clear_shortcut": "清除快捷键",
       "clear_topic": "清空消息",
       "copy_last_message": "复制上一条消息",
+      "cycle_permission_mode": "切换权限模式",
       "edit_last_user_message": "编辑最后一条用户消息",
       "enabled": "启用",
       "exit_fullscreen": "退出全屏",
@@ -5140,6 +5288,42 @@
       "zoom_in": "放大界面",
       "zoom_out": "缩小界面",
       "zoom_reset": "重置缩放"
+    },
+    "skin": {
+      "addCustom": "添加自定义",
+      "background": {
+        "addColor": "添加颜色",
+        "blur": "模糊度",
+        "color": "颜色",
+        "colors": "颜色",
+        "direction": "方向",
+        "directions": {
+          "radial": "径向",
+          "to-bottom": "垂直",
+          "to-bottom-right": "对角",
+          "to-right": "水平"
+        },
+        "opacity": "透明度",
+        "selectImage": "选择图片",
+        "size": "填充方式",
+        "sizeAuto": "原始",
+        "sizeContain": "包含",
+        "sizeCover": "覆盖",
+        "title": "背景设置",
+        "types": {
+          "gradient": "渐变",
+          "image": "图片",
+          "solid": "纯色"
+        }
+      },
+      "customTitle": "自定义皮肤",
+      "deleteConfirm": "确定要删除这个皮肤吗？",
+      "export": "导出皮肤",
+      "import": "导入皮肤",
+      "name": "皮肤名称",
+      "namePlaceholder": "输入皮肤名称",
+      "primaryColor": "主色调",
+      "title": "皮肤"
     },
     "theme": {
       "color_primary": "主题颜色",
@@ -5369,6 +5553,18 @@
       "title": "缩放"
     }
   },
+  "speedy": {
+    "chat_placeholder": "开始新对话",
+    "configure_employees": "配置模型员工",
+    "expert_mode": "专家模式",
+    "new_topic": "新建话题",
+    "no_employee_description": "请先配置模型员工以使用极速模式",
+    "no_employee_title": "未配置模型员工",
+    "no_topics": "暂无话题",
+    "select_employee": "选择模型员工",
+    "title": "极速模式",
+    "topic_list_title": "话题列表"
+  },
   "title": {
     "apps": "小程序",
     "code": "Code",
@@ -5590,5 +5786,31 @@
     "quit": "退出",
     "show_window": "显示窗口",
     "visualization": "可视化"
+  },
+  "workspace": {
+    "add_folder": "添加文件夹",
+    "clear": "清空工作区",
+    "clear_confirm_content": "确定要清空工作区吗？所有文件引用将被移除。",
+    "clear_confirm_title": "清空工作区",
+    "drop_hint": "释放以添加文件",
+    "empty_hint": "拖入文件或文件夹到此处",
+    "empty_hint_click": "拖入文件夹或点击添加",
+    "empty_hint_sub": "添加项目目录到工作区",
+    "exclude_config_title": "排除规则配置",
+    "exclude_description": "以下目录将在筛选时被排除",
+    "exclude_empty": "暂无排除规则",
+    "exclude_placeholder": "输入目录名称，如: build",
+    "filter_limit_hint": "已显示前50个结果，请细化搜索条件",
+    "filter_placeholder": "搜索文件或文件夹...",
+    "help_1": "Agent 可读取、编辑工作区内的文件",
+    "help_2": "支持拖拽文件夹快速添加",
+    "help_3": "点击 + 按钮也可选择文件夹",
+    "help_footer": "Agent 可读取、编辑工作区内的文件。支持拖拽文件夹或点击 + 添加。仅工作区内的文件可被访问。",
+    "help_security": "仅工作区内的文件可被访问，保障数据安全",
+    "help_title": "工作区的作用",
+    "no_results": "未找到匹配的结果",
+    "searching": "搜索中...",
+    "select_folder": "选择文件夹",
+    "title": "工作区"
   }
 }

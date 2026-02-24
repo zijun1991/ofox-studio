@@ -29,6 +29,7 @@
     "delete": {
       "content": "Eliminar este Agente forzará la terminación y eliminación de todas las sesiones bajo este Agente. ¿Está seguro?",
       "error": {
+        "channel_bound": "No se puede eliminar el agente vinculado al canal \"{{name}}\". Por favor, elimine el canal primero.",
         "failed": "Error al eliminar el agente"
       },
       "title": "Eliminar Agent"
@@ -77,6 +78,7 @@
         "failed": "Error al listar agentes."
       }
     },
+    "permission_mode_changed": "Modo de permiso cambiado",
     "server": {
       "error": {
         "not_running": "El servidor de API está habilitado pero no funciona correctamente."
@@ -94,6 +96,8 @@
         "select_failed": "Error al seleccionar el directorio."
       },
       "add": {
+        "channel_bound_disabled": "Agente Vinculado al Canal",
+        "channel_bound_hint": "Las sesiones para agentes vinculados a canales se crean automáticamente.",
         "title": "Agregar una sesión"
       },
       "allowed_tools": {
@@ -101,6 +105,12 @@
         "helper": "Elige qué herramientas quedan preaprobadas. Las no seleccionadas requerirán aprobación manual antes de usarse.",
         "label": "Herramientas preaprobadas",
         "placeholder": "Seleccionar herramientas preaprobadas"
+      },
+      "channel_bound": {
+        "description": "Esta sesión está vinculada al canal \"{{name}}\" ({{type}}). Los mensajes se reciben y envían automáticamente a través del canal.",
+        "go_to_channel": "Ir a Canal",
+        "hint": "Configurar este canal en Configuración > Canales",
+        "title": "Sesión Vinculada al Canal"
       },
       "create": {
         "error": {
@@ -223,6 +233,7 @@
         "uninstalling": "Desinstalando..."
       },
       "prompt": "Configuración de indicaciones",
+      "title": "Configuración del agente",
       "tooling": {
         "mcp": {
           "description": "Conecta servidores MCP para desbloquear herramientas adicionales que puedes aprobar arriba.",
@@ -377,6 +388,11 @@
         }
       }
     },
+    "turbo": {
+      "description": "Asistente rápido para tareas simples",
+      "name": "Modo Turbo",
+      "tag": "Turbo"
+    },
     "type": {
       "label": "Tipo de Agente",
       "unknown": "Tipo desconocido"
@@ -406,7 +422,7 @@
     },
     "authHeaderText": "Usar en el encabezado de autorización:",
     "configuration": "Configuración",
-    "description": "Expone las capacidades de IA de Cherry Studio a través de APIs HTTP compatibles con OpenAI",
+    "description": "Expone las capacidades de IA de Ofox Claw a través de APIs HTTP compatibles con OpenAI",
     "documentation": {
       "title": "Documentación API"
     },
@@ -726,6 +742,57 @@
     },
     "update_available": "Hay Actualizaciones Disponibles",
     "whole_word": "Coincidencia de palabra completa"
+  },
+  "channels": {
+    "add": "Agregar Canal",
+    "add_title": "Agregar Canal",
+    "agent_id": "ID del Agente",
+    "binding": "Enlace de Agente",
+    "delete_confirm": "¿Estás seguro de que quieres eliminar este canal?",
+    "deleted": "Canal eliminado",
+    "email": {
+      "folder": "Carpeta",
+      "from_address": "Desde Dirección",
+      "from_address_placeholder": "Predeterminado a usuario SMTP",
+      "from_name": "De Nombre",
+      "host": "Anfitrión",
+      "imap": "IMAP (Entrante)",
+      "password": "Contraseña",
+      "poll_interval": "Intervalo de Encuesta (seg)",
+      "port": "Puerto",
+      "smtp": "SMTP (Saliente)",
+      "tls": "TLS",
+      "user": "Nombre de usuario"
+    },
+    "empty": "No hay canales configurados. Haz clic en \"Agregar canal\" para comenzar.",
+    "enabled": "Habilitado",
+    "name": "Nombre",
+    "name_placeholder": "p. ej. Mi Webhook",
+    "name_required": "Por favor, ingresa un nombre de canal",
+    "not_found": "Canal no encontrado",
+    "saved": "Canal guardado",
+    "session_id": "ID de sesión",
+    "telegram": {
+      "allowed_chat_ids": "IDs de Chat Permitidos",
+      "allowed_chat_ids_placeholder": "Separados por comas, dejar vacío para todos",
+      "bot_token": "Token del Bot",
+      "bot_token_placeholder": "Ingresa el token de tu bot de @BotFather",
+      "config": "Configuración del Bot de Telegram",
+      "parse_mode": "Modo de análisis",
+      "parse_mode_none": "Ninguno",
+      "poll_interval": "Intervalo de Encuesta (seg)"
+    },
+    "test_connection": "Probar Conexión",
+    "title": "Canales",
+    "type": "Tipo",
+    "type_placeholder": "Seleccionar tipo de canal",
+    "type_required": "Por favor, seleccione un tipo de canal.",
+    "webhook": {
+      "config": "Configuración de Webhook",
+      "endpoint": "Endpoint",
+      "secret": "Secreto HMAC",
+      "secret_placeholder": "Opcional"
+    }
   },
   "chat": {
     "add": {
@@ -1324,6 +1391,7 @@
     },
     "footnote": "Nota al pie",
     "footnotes": "Notas al pie",
+    "free": "Gratis",
     "fullscreen": "En modo pantalla completa, presione F11 para salir",
     "generate_random_seed": "Generar semilla aleatoria",
     "get_embedding_dimension": "Obtener dimensión de incrustación",
@@ -1763,6 +1831,10 @@
     "urls": "URLs",
     "videos": "vídeo",
     "videos_file": "video file"
+  },
+  "landing": {
+    "enterExpertMode": "Entrar en Modo Experto",
+    "welcome": "Bienvenido a ofox studio"
   },
   "languages": {
     "arabic": "Árabe",
@@ -2326,6 +2398,14 @@
       "pin": "Fijar en la parte superior"
     }
   },
+  "modelEmployee": {
+    "educationLevel": {
+      "high_school": "Junior",
+      "master": "Senior",
+      "phd": "Expert",
+      "undergraduate": "Intermediate"
+    }
+  },
   "models": {
     "add_parameter": "Agregar parámetro",
     "all": "Todo",
@@ -2558,7 +2638,7 @@
   },
   "openclaw": {
     "checking_installation": "Comprobando la instalación de OpenClaw...",
-    "description": "Integra los proveedores de Cherry Studio con OpenClaw Gateway para habilitar agentes de codificación con IA como Claude Code, Qwen-Coder y más.",
+    "description": "Integra los proveedores de Ofox Claw con OpenClaw Gateway para habilitar agentes de codificación con IA como Claude Code, Qwen-Coder y más.",
     "error": {
       "select_provider_model": "Por favor, selecciona primero un proveedor y un modelo."
     },
@@ -2591,7 +2671,7 @@
       "title": "Configuración del modelo"
     },
     "node_missing": {
-      "description": "OpenClaw requiere Node.js/npm. Por favor, instala Node.js primero y luego reinicia Cherry Studio.",
+      "description": "OpenClaw requiere Node.js/npm. Por favor, instala Node.js primero y luego reinicia Ofox Claw.",
       "download_button": "Descargar Node.js",
       "hint": "macOS: brew install node | Windows: Descarga la versión LTS desde nodejs.org",
       "title": "Node.js Requerido"
@@ -2651,7 +2731,7 @@
       "stop": "Detener OVMS",
       "stopping": "Deteniendo"
     },
-    "description": "<div><p>1. Descargar modelo OV.</p><p>2. Agregar modelo en 'Administrador'.</p><p>¡Solo compatible con Windows!</p><p>Ruta de instalación de OVMS: '%USERPROFILE%\\.cherrystudio\\ovms' .</p><p>Consulte la <a href=https://github.com/openvinotoolkit/model_server/blob/c55551763d02825829337b62c2dcef9339706f79/docs/deploying_server_baremetal.md>Guía de Intel OVMS</a></p></dev>",
+    "description": "<div><p>1. Descargar modelo OV.</p><p>2. Agregar modelo en 'Administrador'.</p><p>¡Solo compatible con Windows!</p><p>Ruta de instalación de OVMS: '%USERPROFILE%\\.ofoxclaw\\ovms' .</p><p>Consulte la <a href=https://github.com/openvinotoolkit/model_server/blob/c55551763d02825829337b62c2dcef9339706f79/docs/deploying_server_baremetal.md>Guía de Intel OVMS</a></p></dev>",
     "download": {
       "button": "Descargar",
       "error": "Selección fallida",
@@ -3372,7 +3452,7 @@
           },
           "description": {
             "0": "El asistente de selección de texto necesita el permiso de «<strong>Accesibilidad</strong>» para funcionar correctamente.",
-            "1": "Haga clic en «<strong>Ir a configuración</strong>», luego, en la ventana emergente de solicitud de permisos que aparecerá, haga clic en el botón «<strong>Abrir configuración del sistema</strong>» y, a continuación, busque «<strong>Cherry Studio</strong>» en la lista de aplicaciones y active el interruptor de permisos.",
+            "1": "Haga clic en «<strong>Ir a configuración</strong>», luego, en la ventana emergente de solicitud de permisos que aparecerá, haga clic en el botón «<strong>Abrir configuración del sistema</strong>» y, a continuación, busque «<strong>Ofox Claw</strong>» en la lista de aplicaciones y active el interruptor de permisos.",
             "2": "Una vez completada la configuración, vuelva a activar el asistente de selección de texto."
           },
           "title": "Permisos de accesibilidad"
@@ -3384,7 +3464,7 @@
         "title": "Lista de selección de aplicaciones",
         "user_tips": {
           "mac": "Ingrese el ID de paquete de la aplicación, uno por línea, sin distinguir mayúsculas y minúsculas, se permite la coincidencia aproximada. Por ejemplo: com.google.Chrome, com.apple.mail, etc.",
-          "windows": "Ingrese el nombre del archivo ejecutable de la aplicación, uno por línea, sin distinguir mayúsculas y minúsculas, se permite la coincidencia aproximada. Por ejemplo: chrome.exe, weixin.exe, Cherry Studio.exe, etc."
+          "windows": "Ingrese el nombre del archivo ejecutable de la aplicación, uno por línea, sin distinguir mayúsculas y minúsculas, se permite la coincidencia aproximada. Por ejemplo: chrome.exe, weixin.exe, Ofox Claw.exe, etc."
         }
       },
       "search_modal": {
@@ -3536,6 +3616,19 @@
         "title": "Sitio web oficial"
       }
     },
+    "account": {
+      "api_key": "Clave API",
+      "api_key_placeholder": "Ingrese su clave API",
+      "api_key_required": "Por favor ingrese una clave API",
+      "api_key_save": "Guardar",
+      "api_key_saved": "Clave API saved",
+      "available_models": "Available Models",
+      "logged_in": "Logged In",
+      "login": "Login",
+      "login_hint": "Login to access more features",
+      "no_models": "No models available",
+      "not_logged_in": "Not Logged In"
+    },
     "advanced": {
       "auto_switch_to_topics": "Cambiar automáticamente a temas",
       "title": "Configuración avanzada"
@@ -3637,7 +3730,7 @@
         "lan": {
           "connected": "Conectado",
           "connection_failed": "Conexión fallida",
-          "content": "Asegúrate de que el ordenador y el móvil estén en la misma red para usar la transferencia por LAN. Abre la aplicación Cherry Studio y escanea este código QR.",
+          "content": "Asegúrate de que el ordenador y el móvil estén en la misma red para usar la transferencia por LAN. Abre la aplicación Ofox Claw y escanea este código QR.",
           "device_list_title": "Dispositivos de red local",
           "discovered_devices": "Dispositivos descubiertos",
           "error": {
@@ -3663,14 +3756,14 @@
             "test_message_received": "Recibido pong de {{device}}",
             "test_message_sent": "Enviado payload de prueba hello world"
           },
-          "idle_hint": "Escaneo pausado. Inicia el escaneo para encontrar pares de Cherry Studio en tu red local.",
+          "idle_hint": "Escaneo pausado. Inicia el escaneo para encontrar pares de Ofox Claw en tu red local.",
           "ip_addresses": "Direcciones IP",
           "last_seen": "Visto por última vez a las {{time}}",
           "metadata": "Metadatos",
-          "no_connection_warning": "Por favor, abre Transferencia LAN en la aplicación móvil Cherry Studio.",
+          "no_connection_warning": "Por favor, abre Transferencia LAN en la aplicación móvil Ofox Claw.",
           "no_devices": "Aún no se han encontrado pares en LAN",
           "scan_devices": "Escanear dispositivos",
-          "scanning_hint": "Escaneando tu red local en busca de pares de Cherry Studio...",
+          "scanning_hint": "Escaneando tu red local en busca de pares de Ofox Claw...",
           "send_file": "Enviar archivo",
           "status": {
             "completed": "Transferencia completada",
@@ -4020,7 +4113,7 @@
         },
         "root": {
           "label": "Directorio de respaldo (opcional)",
-          "placeholder": "Por ejemplo: /cherry-studio"
+          "placeholder": "Por ejemplo: /ofox-claw"
         },
         "secretAccessKey": {
           "label": "Clave de acceso secreta",
@@ -4177,7 +4270,7 @@
       },
       "custom": {
         "css": {
-          "cherrycss": "Obtener desde cherrycss.com",
+          "cherrycss": "Obtener desde ofox.ai/themes",
           "label": "CSS personalizado",
           "placeholder": "/* Escribe tu CSS personalizado aquí */"
         }
@@ -4452,7 +4545,7 @@
       },
       "oauth": {
         "callback": {
-          "message": "Puede cerrar esta página y volver a Cherry Studio",
+          "message": "Puede cerrar esta página y volver a Ofox Claw",
           "title": "Autenticación Exitosa"
         }
       },
@@ -4658,6 +4751,48 @@
       "visible": "Miniaplicaciones visibles"
     },
     "model": "Modelo predeterminado",
+    "model_employee": {
+      "description": "Define employees for user-friendly model packaging",
+      "education_level": {
+        "high_school": "Junior",
+        "master": "Senior",
+        "phd": "Expert",
+        "undergraduate": "Intermediate"
+      },
+      "employee": {
+        "add": "Add Employee",
+        "delete": "Delete Employee",
+        "delete_confirm": "Are you sure you want to delete employee \"{{name}}\"?",
+        "description": "Description",
+        "description_placeholder": "Describe this employee's capabilities and use cases",
+        "edit": "Edit Employee",
+        "education_level": "Education Level",
+        "model": "Bind Model",
+        "name": "Employee Name",
+        "name_duplicate": "Employee name already exists, please use another name",
+        "name_placeholder": "e.g., Smart Assistant",
+        "soul": "Personality",
+        "soul_placeholder": "Describe the employee's personality traits and behavior style"
+      },
+      "empty": "No employees",
+      "export": {
+        "button": "Export Config",
+        "success": "Configuration exported"
+      },
+      "import": {
+        "button": "Import Config",
+        "error": "Import failed, please check the file format",
+        "success": "Configuration imported"
+      },
+      "label": "Model Employees",
+      "pricing": {
+        "input": "Entrada",
+        "output": "Salida"
+      },
+      "reset": "Reset Config",
+      "reset_confirm": "Are you sure you want to reset all employee configurations?",
+      "title": "Model Employee Configuration"
+    },
     "models": {
       "add": {
         "add_model": "Agregar modelo",
@@ -5043,7 +5178,7 @@
       "remove_invalid_keys": "Eliminar claves inválidas",
       "search": "Buscar plataforma de modelos...",
       "search_placeholder": "Buscar ID o nombre del modelo",
-      "title": "Servicio de modelos",
+      "title": "Mi Cuenta",
       "vertex_ai": {
         "api_host_help": "Dirección de la API de Vertex AI, no se recomienda completar, normalmente aplicable al proxy inverso",
         "documentation": "Consulte la documentación oficial para obtener más detalles de configuración:",
@@ -5116,6 +5251,7 @@
       "clear_shortcut": "Borrar atajo",
       "clear_topic": "Vaciar mensaje",
       "copy_last_message": "Copiar el último mensaje",
+      "cycle_permission_mode": "Modo de permiso cíclico",
       "edit_last_user_message": "Editar último mensaje de usuario",
       "enabled": "habilitar",
       "exit_fullscreen": "Salir de pantalla completa",
@@ -5140,6 +5276,42 @@
       "zoom_in": "Ampliar interfaz",
       "zoom_out": "Reducir interfaz",
       "zoom_reset": "Restablecer zoom"
+    },
+    "skin": {
+      "addCustom": "Add Custom",
+      "background": {
+        "addColor": "Add Color",
+        "blur": "Blur",
+        "color": "Color",
+        "colors": "Colors",
+        "direction": "Direction",
+        "directions": {
+          "radial": "Radial",
+          "to-bottom": "Vertical",
+          "to-bottom-right": "Diagonal",
+          "to-right": "Horizontal"
+        },
+        "opacity": "Opacity",
+        "selectImage": "Select Image",
+        "size": "Size",
+        "sizeAuto": "Auto",
+        "sizeContain": "Contain",
+        "sizeCover": "Cover",
+        "title": "Background Settings",
+        "types": {
+          "gradient": "Gradient",
+          "image": "Image",
+          "solid": "Solid"
+        }
+      },
+      "customTitle": "Custom Skin",
+      "deleteConfirm": "Are you sure you want to delete this skin?",
+      "export": "Export Skin",
+      "import": "Import Skin",
+      "name": "Skin Name",
+      "namePlaceholder": "Enter skin name",
+      "primaryColor": "Primary Color",
+      "title": "Skin"
     },
     "theme": {
       "color_primary": "Color del tema",
@@ -5369,6 +5541,18 @@
       "title": "Escala"
     }
   },
+  "speedy": {
+    "chat_placeholder": "Iniciar nueva conversación",
+    "configure_employees": "Configurar Empleados Modelo",
+    "expert_mode": "Modo Experto",
+    "new_topic": "Nuevo Tema",
+    "no_employee_description": "Por favor, configure empleados modelo para usar el Modo Turbo",
+    "no_employee_title": "Sin Empleados Modelo",
+    "no_topics": "Aún no hay temas",
+    "select_employee": "Seleccionar Empleado Modelo",
+    "title": "Modo Turbo",
+    "topic_list_title": "Temas"
+  },
   "title": {
     "apps": "Aplicaciones",
     "code": "Código",
@@ -5387,40 +5571,40 @@
   },
   "tools": {
     "custom": {
-      "duplicate_ids": "[to be translated]:Tool ID \"{{ids}}\" already exists",
-      "edit_title": "[to be translated]:Add Custom Tool",
-      "id": "[to be translated]:Tool ID",
-      "id_error": "[to be translated]:Please enter tool ID",
-      "id_placeholder": "[to be translated]:e.g., my-tool",
-      "logo": "[to be translated]:Tool Logo",
-      "logo_file": "[to be translated]:Upload File",
-      "logo_upload_button": "[to be translated]:Select Image",
-      "logo_upload_error": "[to be translated]:Failed to upload logo",
-      "logo_upload_label": "[to be translated]:Upload Logo",
-      "logo_upload_success": "[to be translated]:Logo uploaded successfully",
-      "logo_url": "[to be translated]:Logo URL",
-      "logo_url_label": "[to be translated]:Logo URL",
-      "logo_url_placeholder": "[to be translated]:Enter logo URL (optional)",
-      "name": "[to be translated]:Tool Name",
-      "name_error": "[to be translated]:Please enter tool name",
-      "name_placeholder": "[to be translated]:e.g., My Tool",
-      "save": "[to be translated]:Save",
-      "save_error": "[to be translated]:Failed to save custom tool",
-      "save_success": "[to be translated]:Custom tool saved successfully",
-      "title": "[to be translated]:Custom",
-      "url": "[to be translated]:Tool URL",
-      "url_error": "[to be translated]:Please enter tool URL",
-      "url_placeholder": "[to be translated]:e.g., https://example.com"
+      "duplicate_ids": "El ID de herramienta \"{{ids}}\" ya existe",
+      "edit_title": "Añadir Herramienta Personalizada",
+      "id": "ID de Herramienta",
+      "id_error": "Por favor introduzca ID de herramienta",
+      "id_placeholder": "ej. mi-herramienta",
+      "logo": "Logo de Herramienta",
+      "logo_file": "Subir Archivo",
+      "logo_upload_button": "Seleccionar Imagen",
+      "logo_upload_error": "Error al subir logo",
+      "logo_upload_label": "Subir Logo",
+      "logo_upload_success": "Logo subido exitosamente",
+      "logo_url": "URL del Logo",
+      "logo_url_label": "URL del Logo",
+      "logo_url_placeholder": "Introduzca URL del logo (opcional)",
+      "name": "Nombre de Herramienta",
+      "name_error": "Por favor introduzca nombre de herramienta",
+      "name_placeholder": "ej. Mi Herramienta",
+      "save": "Guardar",
+      "save_error": "Error al guardar herramienta personalizada",
+      "save_success": "Herramienta personalizada guardada exitosamente",
+      "title": "Personalizado",
+      "url": "URL de Herramienta",
+      "url_error": "Por favor introduzca URL de herramienta",
+      "url_placeholder": "ej. https://ejemplo.com"
     },
     "settings": {
-      "custom_tools_description": "[to be translated]:Manage your custom tools",
-      "custom_tools_title": "[to be translated]:Custom Tools",
-      "delete_confirm_description": "[to be translated]:Are you sure you want to delete tool \"{{name}}\"?",
-      "delete_confirm_title": "[to be translated]:Delete Tool",
-      "display_title": "[to be translated]:Tools Settings",
-      "no_custom_tools": "[to be translated]:No custom tools"
+      "custom_tools_description": "Gestione sus herramientas personalizadas",
+      "custom_tools_title": "Herramientas Personalizadas",
+      "delete_confirm_description": "¿Está seguro de que desea eliminar la herramienta \"{{name}}\"?",
+      "delete_confirm_title": "Eliminar Herramienta",
+      "display_title": "Configuración de Herramientas",
+      "no_custom_tools": "Sin herramientas personalizadas"
     },
-    "title": "[to be translated]:Tools"
+    "title": "Herramientas"
   },
   "trace": {
     "backList": "Volver a la lista",
@@ -5590,5 +5774,31 @@
     "quit": "Salir",
     "show_window": "Mostrar Ventana",
     "visualization": "Visualización"
+  },
+  "workspace": {
+    "add_folder": "Añadir Carpeta",
+    "clear": "Limpiar Espacio de Trabajo",
+    "clear_confirm_content": "¿Está seguro de que desea limpiar el espacio de trabajo? Se eliminarán todas las referencias de archivos.",
+    "clear_confirm_title": "Limpiar Espacio de Trabajo",
+    "drop_hint": "Suelta para añadir archivos",
+    "empty_hint": "Arrastra archivos o carpetas aquí",
+    "empty_hint_click": "Arrastra carpeta o haz clic para añadir",
+    "empty_hint_sub": "Añadir directorio de proyecto al espacio de trabajo",
+    "exclude_config_title": "Patrones de Exclusión",
+    "exclude_description": "Los siguientes directorios serán excluidos durante el filtrado.",
+    "exclude_empty": "Sin patrones de exclusión",
+    "exclude_placeholder": "Ingrese el nombre del directorio, por ejemplo: build",
+    "filter_limit_hint": "Mostrando los primeros 50 resultados, por favor, refina tu búsqueda",
+    "filter_placeholder": "Buscar archivos o carpetas...",
+    "help_1": "El agente puede acceder a archivos y directorios en el espacio de trabajo",
+    "help_2": "Arrastra y suelta carpetas aquí para agregarlas rápidamente",
+    "help_3": "O haga clic en el botón + para seleccionar una carpeta",
+    "help_footer": "El agente puede leer y editar archivos en el espacio de trabajo. Arrastra carpetas o haz clic en + para añadir. Solo se puede acceder a los archivos que estén en el espacio de trabajo.",
+    "help_security": "Solo se puede acceder a los archivos en el espacio de trabajo, garantizando la seguridad de los datos.",
+    "help_title": "Acerca de Workspace",
+    "no_results": "No se encontraron resultados coincidentes.",
+    "searching": "Buscando...",
+    "select_folder": "Seleccionar Carpeta",
+    "title": "Espacio de Trabajo"
   }
 }
