@@ -1,5 +1,5 @@
-appId: com.kangfenmao.CherryStudio
-productName: Cherry Studio
+appId: app.ofox.claw
+productName: Ofox Claw
 electronLanguages:
   - zh-CN
   - zh-TW
@@ -14,9 +14,9 @@ directories:
   buildResources: build
 
 protocols:
-  - name: Cherry Studio
+  - name: Ofox Claw
     schemes:
-      - cherrystudio
+      - ofoxclaw
 files:
   - "**/*"
   - "!**/{.vscode,.yarn,.yarn-lock,.github,.cursorrules,.prettierrc}"
@@ -74,7 +74,7 @@ asarUnpack:
   - "node_modules/@img/sharp-libvips-*/**"
 
 win:
-  executableName: Cherry Studio
+  executableName: Ofox Claw
   artifactName: ${productName}-${version}-${arch}-setup.${ext}
   target:
     - target: nsis
@@ -111,7 +111,7 @@ dmg:
   writeUpdateInfo: false
 linux:
   artifactName: ${productName}-${version}-${arch}.${ext}
-  executableName: CherryStudio
+  executableName: OfoxClaw
   target:
     - target: AppImage
     - target: deb
@@ -120,17 +120,17 @@ linux:
   category: Utility
   desktop:
     entry:
-      Name: Cherry Studio
-      StartupWMClass: CherryStudio
+      Name: Ofox Claw
+      StartupWMClass: OfoxClaw
   mimeTypes:
-    - x-scheme-handler/cherrystudio
+    - x-scheme-handler/ofoxclaw
 rpm:
   # Workaround for electron build issue on rpm package:
   # https://github.com/electron/forge/issues/3594
   fpm: ["--rpm-rpmbuild-define=_build_id_links none"]
 publish:
   provider: generic
-  url: https://releases.cherry-ai.com
+  url: https://releases.ofox.app
 electronDownload:
   mirror: https://npmmirror.com/mirrors/electron/
 beforePack: scripts/before-pack.js
@@ -140,7 +140,7 @@ artifactBuildCompleted: scripts/artifact-build-completed.js
 releaseInfo:
   releaseNotes: |
     <!--LANG:en-->
-    Cherry Studio 1.7.19 - Bug Fixes & Improvements
+    Ofox Claw - Bug Fixes & Improvements
 
     🐛 Bug Fixes
     - [Settings] Fixed provider name input removing spaces during typing
@@ -153,7 +153,7 @@ releaseInfo:
     - [Models] Updated MiniMax models to the latest M2.x series
 
     <!--LANG:zh-CN-->
-    Cherry Studio 1.7.19 - 问题修复与改进
+    Ofox Claw - 问题修复与改进
 
     🐛 问题修复
     - [设置] 修复服务商名称输入时空格被立即移除的问题

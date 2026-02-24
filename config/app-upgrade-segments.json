@@ -11,20 +11,17 @@
       "channelTemplates": {
         "latest": {
           "feedTemplates": {
-            "github": "https://github.com/CherryHQ/cherry-studio/releases/download/{{tag}}",
-            "gitcode": "https://releases.cherry-ai.com"
+            "production": "https://releases.ofox.app"
           }
         },
         "rc": {
           "feedTemplates": {
-            "github": "https://github.com/CherryHQ/cherry-studio/releases/download/{{tag}}",
-            "gitcode": "https://github.com/CherryHQ/cherry-studio/releases/download/{{tag}}"
+            "production": "https://releases.ofox.app"
           }
         },
         "beta": {
           "feedTemplates": {
-            "github": "https://github.com/CherryHQ/cherry-studio/releases/download/{{tag}}",
-            "gitcode": "https://github.com/CherryHQ/cherry-studio/releases/download/{{tag}}"
+            "production": "https://releases.ofox.app"
           }
         }
       }
@@ -41,8 +38,7 @@
       "channelTemplates": {
         "latest": {
           "feedTemplates": {
-            "github": "https://github.com/CherryHQ/cherry-studio/releases/download/{{tag}}",
-            "gitcode": "https://gitcode.com/CherryHQ/cherry-studio/releases/download/{{tag}}"
+            "production": "https://releases.ofox.app"
           }
         }
       }
@@ -59,20 +55,17 @@
       "channelTemplates": {
         "latest": {
           "feedTemplates": {
-            "github": "https://github.com/CherryHQ/cherry-studio/releases/download/{{tag}}",
-            "gitcode": "https://gitcode.com/CherryHQ/cherry-studio/releases/download/{{tag}}"
+            "production": "https://releases.ofox.app"
           }
         },
         "rc": {
           "feedTemplates": {
-            "github": "https://github.com/CherryHQ/cherry-studio/releases/download/{{tag}}",
-            "gitcode": "https://gitcode.com/CherryHQ/cherry-studio/releases/download/{{tag}}"
+            "production": "https://releases.ofox.app"
           }
         },
         "beta": {
           "feedTemplates": {
-            "github": "https://github.com/CherryHQ/cherry-studio/releases/download/{{tag}}",
-            "gitcode": "https://gitcode.com/CherryHQ/cherry-studio/releases/download/{{tag}}"
+            "production": "https://releases.ofox.app"
           }
         }
       }
