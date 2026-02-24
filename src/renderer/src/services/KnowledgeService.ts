@@ -104,7 +104,7 @@ export const getFileFromUrl = async (url: string): Promise<FileMetadata | null> 
   logger.debug(`getFileFromUrl: ${url}`)
   let fileName = ''
 
-  if (url && url.includes('CherryStudio')) {
+  if (url && url.includes('OfoxClaw')) {
     if (url.includes('/Data/Files')) {
       fileName = url.split('/Data/Files/')[1]
     }

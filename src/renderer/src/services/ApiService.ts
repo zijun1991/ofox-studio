@@ -5,7 +5,7 @@ import { loggerService } from '@logger'
 import type { AiSdkMiddlewareConfig } from '@renderer/aiCore/middleware/AiSdkMiddlewareBuilder'
 import { buildStreamTextParams } from '@renderer/aiCore/prepareParams'
 import { isDedicatedImageGenerationModel, isEmbeddingModel, isFunctionCallingModel } from '@renderer/config/models'
-import { OFOX_API_KEY, OFOX_PROVIDER_IDS } from '@renderer/config/ofox'
+import { OFOX_PROVIDER_IDS } from '@renderer/config/ofox'
 import { getStoreSetting } from '@renderer/hooks/useSettings'
 import i18n from '@renderer/i18n'
 import store from '@renderer/store'
@@ -605,9 +605,10 @@ export function hasApiKey(provider: Provider) {
  * Returns empty string for providers that don't require API keys
  */
 function getRotatedApiKey(provider: Provider): string {
-  // Ofox Provider 优先使用代码中定义的 API Key
+  // Ofox Provider 使用 store 中用户设置的 API Key
   if ((OFOX_PROVIDER_IDS as string[]).includes(provider.id)) {
-    return OFOX_API_KEY
+    const state = store.getState()
+    return state?.ofox?.apiKey || ''
   }
 
   // Handle providers that don't require API keys

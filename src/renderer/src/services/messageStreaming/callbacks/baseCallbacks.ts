@@ -11,6 +11,7 @@ import type { Assistant } from '@renderer/types'
 import type { PlaceholderMessageBlock, Response, ThinkingMessageBlock } from '@renderer/types/newMessage'
 import { AssistantMessageStatus, MessageBlockStatus, MessageBlockType } from '@renderer/types/newMessage'
 import { uuid } from '@renderer/utils'
+import { isAgentSessionTopicId } from '@renderer/utils/agentSession'
 import { trackTokenUsage } from '@renderer/utils/analytics'
 import { isAbortError, serializeError } from '@renderer/utils/error'
 import { createBaseMessageBlock, createErrorBlock } from '@renderer/utils/messageUtils/create'
@@ -217,8 +218,10 @@ export const createBaseCallbacks = (deps: BaseCallbacksDependencies) => {
           })
         }
 
-        // 更新topic的name
-        autoRenameTopic(assistant, topicId)
+        // 更新topic的name（跳过 Agent Session，因为 Agent Session 有独立的命名逻辑）
+        if (!isAgentSessionTopicId(topicId)) {
+          autoRenameTopic(assistant, topicId)
+        }
 
         // 处理usage估算
         // For OpenRouter, always use the accurate usage data from API, don't estimate
