@@ -1,6 +1,6 @@
 /**
  * OfoxAgent Electron 服务
- * 管理 Agent 实例的生命周期，数据持久化到 Cherry Studio 数据目录
+ * 管理 Agent 实例的生命周期，数据持久化到 Ofox Claw 数据目录
  */
 
 import { app } from 'electron'

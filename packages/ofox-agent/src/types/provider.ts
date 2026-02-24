@@ -93,7 +93,7 @@ export interface ILlmProvider {
 }
 
 /**
- * Cherry Studio 的 Model 配置（简化版）
+ * Ofox Claw 的 Model 配置（简化版）
  */
 export interface Model {
   id: string
@@ -107,7 +107,7 @@ export interface Model {
 }
 
 /**
- * Cherry Studio 的 Provider 配置（简化版）
+ * Ofox Claw 的 Provider 配置（简化版）
  */
 export interface Provider {
   id: string

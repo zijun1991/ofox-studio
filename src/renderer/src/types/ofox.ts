@@ -78,3 +78,119 @@ export interface OfoxApiResponse<T> {
   data?: T
   error?: string
 }
+
+// ============================================
+// 三个 API 端点的原始响应类型
+// ============================================
+
+/**
+ * OpenAI 格式模型 (/v1/models)
+ */
+export interface OfoxOpenAIModel {
+  id: string
+  object: string
+  created: number
+  owned_by: string
+  canonical_slug: string
+  name: string
+  description?: string
+  context_length: number
+  architecture?: {
+    modality?: string
+    input_modalities?: string[]
+    output_modalities?: string[]
+    tokenizer?: string
+    instruct_type?: string | null
+  }
+  pricing?: {
+    prompt: string
+    completion: string
+    input_cache_read?: string
+    input_cache_write_5m?: string
+    input_cache_write_1h?: string
+    input_cache_write?: string
+    web_search?: string
+  }
+  top_provider?: {
+    context_length?: number
+    max_completion_tokens?: number
+    is_moderated?: boolean
+  }
+  supported_parameters?: string[]
+}
+
+/**
+ * Anthropic 格式模型 (/anthropic/v1/models)
+ */
+export interface OfoxAnthropicModel {
+  type: string
+  id: string
+  display_name: string
+  created_at: string
+  owned_by: string
+  canonical_slug: string
+  description?: string
+  context_length: number
+  architecture?: {
+    modality?: string
+    input_modalities?: string[]
+    output_modalities?: string[]
+    tokenizer?: string
+    instruct_type?: string | null
+  }
+  pricing?: {
+    prompt: string
+    completion: string
+    input_cache_read?: string
+    input_cache_write_5m?: string
+    input_cache_write_1h?: string
+    input_cache_write?: string
+    web_search?: string
+  }
+  top_provider?: {
+    context_length?: number
+    max_completion_tokens?: number
+    is_moderated?: boolean
+  }
+  supported_parameters?: string[]
+  expiration_date?: string | null
+}
+
+/**
+ * Gemini 格式模型 (/gemini/v1beta/models)
+ */
+export interface OfoxGeminiModel {
+  name: string
+  version: string
+  displayName: string
+  description?: string
+  inputTokenLimit: number
+  outputTokenLimit: number
+  supportedGenerationMethods?: string[]
+  ownedBy: string
+  canonicalSlug: string
+  contextLength: number
+  architecture?: {
+    modality?: string
+    input_modalities?: string[]
+    output_modalities?: string[]
+    tokenizer?: string
+    instruct_type?: string | null
+  }
+  pricing?: {
+    prompt: string
+    completion: string
+    audio?: string
+    input_cache_read?: string
+    input_cache_write?: string
+    input_cached_audio?: string
+    web_search?: string
+  }
+  topProvider?: {
+    context_length?: number
+    max_completion_tokens?: number
+    is_moderated?: boolean
+  }
+  supportedParameters?: string[]
+  expirationDate?: string | null
+}

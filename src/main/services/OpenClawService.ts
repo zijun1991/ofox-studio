@@ -26,7 +26,7 @@ const NPM_MIRROR_CN = 'https://registry.npmmirror.com'
 const OPENCLAW_CONFIG_DIR = path.join(os.homedir(), '.openclaw')
 // Original user config (read-only, used as template for first-time setup)
 const OPENCLAW_ORIGINAL_CONFIG_PATH = path.join(OPENCLAW_CONFIG_DIR, 'openclaw.json')
-// Cherry Studio's isolated config (read/write) — OpenClaw reads the OPENCLAW_CONFIG_PATH env var to locate this
+// Ofox Claw's isolated config (read/write) — OpenClaw reads the OPENCLAW_CONFIG_PATH env var to locate this
 const OPENCLAW_CONFIG_PATH = path.join(OPENCLAW_CONFIG_DIR, 'openclaw.cherry.json')
 const DEFAULT_GATEWAY_PORT = 18790
 
@@ -297,7 +297,7 @@ class OpenClawService {
               this.sendInstallProgress('Permission denied. Requesting administrator access...')
 
               // Use full npm path since sudo runs in clean environment without user PATH
-              exec(npmCommand, { name: 'Cherry Studio' }, (error, stdout) => {
+              exec(npmCommand, { name: 'Ofox Claw' }, (error, stdout) => {
                 if (error) {
                   logger.error('Sudo install failed:', error)
                   this.sendInstallProgress(`Installation failed: ${error.message}`, 'error')
@@ -393,7 +393,7 @@ class OpenClawService {
               logger.info('Permission denied, retrying uninstall with sudo-prompt...')
               this.sendInstallProgress('Permission denied. Requesting administrator access...')
 
-              exec(npmCommand, { name: 'Cherry Studio' }, (error, stdout) => {
+              exec(npmCommand, { name: 'Ofox Claw' }, (error, stdout) => {
                 if (error) {
                   logger.error('Sudo uninstall failed:', error)
                   this.sendInstallProgress(`Uninstallation failed: ${error.message}`, 'error')
@@ -745,7 +745,7 @@ class OpenClawService {
   }
 
   /**
-   * Sync Cherry Studio Provider configuration to OpenClaw
+   * Sync Ofox Claw Provider configuration to OpenClaw
    */
   public async syncProviderConfig(
     _: Electron.IpcMainInvokeEvent,

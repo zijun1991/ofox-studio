@@ -193,6 +193,7 @@ export enum IpcChannel {
   File_GetPdfInfo = 'file:getPdfInfo',
   Fs_Read = 'fs:read',
   Fs_ReadText = 'fs:readText',
+  Fs_Exists = 'fs:exists',
   File_OpenWithRelativePath = 'file:openWithRelativePath',
   File_IsTextFile = 'file:isTextFile',
   File_IsDirectory = 'file:isDirectory',
@@ -426,5 +427,14 @@ export enum IpcChannel {
   Ofox_GetDashboardUrl = 'ofox:get-dashboard-url',
   Ofox_IsLoginComplete = 'ofox:is-login-complete',
   Ofox_Logout = 'ofox:logout',
-  Ofox_GetModels = 'ofox:get-models'
+  Ofox_GetModels = 'ofox:get-models',
+
+  // Channels
+  Channel_SyncConfig = 'channel:sync-config',
+  Channel_Start = 'channel:start',
+  Channel_Stop = 'channel:stop',
+  Channel_TestConnection = 'channel:test-connection',
+  Channel_GetStatuses = 'channel:get-statuses',
+  Channel_StatusChanged = 'channel:status-changed',
+  Channel_MessageEvent = 'channel:message-event'
 }

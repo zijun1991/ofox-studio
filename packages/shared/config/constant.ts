@@ -198,13 +198,11 @@ export const GB = 1024 * MB
 export const defaultLanguage = 'en-US'
 
 export enum FeedUrl {
-  PRODUCTION = 'https://releases.cherry-ai.com',
-  GITHUB_LATEST = 'https://github.com/CherryHQ/cherry-studio/releases/latest/download'
+  PRODUCTION = 'https://releases.ofox.app'
 }
 
 export enum UpdateConfigUrl {
-  GITHUB = 'https://raw.githubusercontent.com/CherryHQ/cherry-studio/refs/heads/x-files/app-upgrade-config/app-upgrade-config.json',
-  GITCODE = 'https://raw.gitcode.com/CherryHQ/cherry-studio/raw/x-files%2Fapp-upgrade-config/app-upgrade-config.json'
+  PRODUCTION = 'https://releases.ofox.app/app-upgrade-config.json'
 }
 
 export enum UpgradeChannel {
@@ -214,8 +212,7 @@ export enum UpgradeChannel {
 }
 
 export enum UpdateMirror {
-  GITHUB = 'github',
-  GITCODE = 'gitcode'
+  PRODUCTION = 'production'
 }
 
 export const defaultTimeout = 10 * 1000 * 60
@@ -489,7 +486,7 @@ export const MACOS_TERMINALS_WITH_COMMANDS: TerminalConfigWithCommand[] = [
 ]
 
 // resources/scripts should be maintained manually
-export const HOME_CHERRY_DIR = '.cherrystudio'
+export const HOME_CHERRY_DIR = '.ofoxclaw'
 
 // Git Bash path configuration types
 export type GitBashPathSource = 'manual' | 'auto'

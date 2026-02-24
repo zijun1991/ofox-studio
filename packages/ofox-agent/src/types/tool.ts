@@ -61,7 +61,7 @@ export interface ToolCallResult {
 }
 
 /**
- * MCP Tool 格式（来自 Cherry Studio）
+ * MCP Tool 格式（来自 Ofox Claw）
  */
 export interface MCPTool {
   /** 工具 ID（格式：serverId__toolName） */

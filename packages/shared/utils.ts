@@ -2,8 +2,8 @@ import { parse as jsoncParse } from 'jsonc-parser'
 
 export const defaultAppHeaders = () => {
   return {
-    'HTTP-Referer': 'https://cherry-ai.com',
-    'X-Title': 'Cherry Studio'
+    'HTTP-Referer': 'https://ofox.ai',
+    'X-Title': 'Ofox Claw'
   }
 }
 

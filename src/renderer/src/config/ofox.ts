@@ -6,9 +6,6 @@
 
 import type { ProviderType } from '@renderer/types'
 
-// Ofox API Key 全局固定（暂时固定，后续改进）
-export const OFOX_API_KEY = 'sk-of-NqmDGtLlvKyYVPyvkNStLLtuyrgoulewOaQOCpvBOtnYdwMZIHEfZcrGWbyOrYOh'
-
 // Ofox 供应商配置
 export const OFOX_PROVIDER_CONFIGS = {
   openai: {

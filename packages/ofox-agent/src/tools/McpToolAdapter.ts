@@ -7,7 +7,7 @@ import type { MCPCallToolResponse, MCPTool, ToolDefinition } from '../types/tool
 
 /**
  * MCP 服务接口（简化版）
- * 实际使用时需要注入 Cherry Studio 的 MCPService
+ * 实际使用时需要注入 Ofox Claw 的 MCPService
  */
 export interface IMcpService {
   listAllActiveServerTools(): Promise<MCPTool[]>

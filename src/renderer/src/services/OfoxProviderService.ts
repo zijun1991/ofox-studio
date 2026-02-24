@@ -5,10 +5,19 @@
  */
 
 import { loggerService } from '@logger'
-import { OFOX_API_KEY, OFOX_PROVIDER_CONFIGS, OFOX_SUPPORTED_PROTOCOLS } from '@renderer/config/ofox'
+import { OFOX_PROVIDER_CONFIGS, OFOX_SUPPORTED_PROTOCOLS } from '@renderer/config/ofox'
 import type { AppDispatch, RootState } from '@renderer/store'
 import { addProvider, updateProvider } from '@renderer/store/llm'
-import type { EndpointType, Model, ModelCapability, OfoxModel, OfoxModelCapabilities, Provider } from '@renderer/types'
+import type {
+  EndpointType,
+  Model,
+  ModelCapability,
+  ModelPricing,
+  OfoxModel,
+  OfoxModelCapabilities,
+  OfoxModelPricing,
+  Provider
+} from '@renderer/types'
 
 const logger = loggerService.withContext('OfoxProviderService')
 
@@ -41,7 +50,9 @@ class OfoxProviderService {
 
     logger.info('Initializing Ofox providers...')
 
-    const currentProviders = (window.store?.getState() as RootState)?.llm?.providers || []
+    const state = window.store?.getState() as RootState
+    const currentProviders = state?.llm?.providers || []
+    const apiKey = state?.ofox?.apiKey || ''
 
     for (const protocol of OFOX_SUPPORTED_PROTOCOLS) {
       const config = OFOX_PROVIDER_CONFIGS[protocol]
@@ -56,7 +67,7 @@ class OfoxProviderService {
           id: providerId,
           name: config.name,
           type: config.type,
-          apiKey: OFOX_API_KEY,
+          apiKey: apiKey,
           apiHost: config.apiHost,
           models: [],
           enabled: true,
@@ -89,8 +100,10 @@ class OfoxProviderService {
       const ofoxModels = response.data
       logger.info(`Fetched ${ofoxModels.length} models from Ofox`)
 
-      // 2. 获取当前 providers 状态
-      const currentProviders = (window.store?.getState() as RootState)?.llm?.providers || []
+      // 2. 获取当前 providers 状态和 apiKey
+      const state = window.store?.getState() as RootState
+      const currentProviders = state?.llm?.providers || []
+      const apiKey = state?.ofox?.apiKey || ''
 
       // 3. 为每个支持的协议创建或更新供应商
       for (const protocol of OFOX_SUPPORTED_PROTOCOLS) {
@@ -122,7 +135,7 @@ class OfoxProviderService {
             id: providerId,
             name: config.name,
             type: config.type,
-            apiKey: OFOX_API_KEY,
+            apiKey: apiKey,
             apiHost: config.apiHost,
             models: convertedModels,
             enabled: true,
@@ -167,7 +180,29 @@ class OfoxProviderService {
       owned_by: ofoxModel.owned_by,
       description: ofoxModel.description,
       endpoint_type: this.mapEndpointType(protocol),
-      capabilities: this.mapCapabilities(ofoxModel.capabilities)
+      capabilities: this.mapCapabilities(ofoxModel.capabilities),
+      pricing: this.convertPricing(ofoxModel.pricing)
+    }
+  }
+
+  /**
+   * 转换 Ofox 定价信息为应用内的 ModelPricing
+   * Ofox API 返回的是每 token 价格（字符串），需要转换为每百万 token 价格
+   * @param ofoxPricing Ofox 定价信息
+   * @returns ModelPricing 或 undefined
+   */
+  private convertPricing(ofoxPricing?: OfoxModelPricing): ModelPricing | undefined {
+    if (!ofoxPricing) return undefined
+
+    const inputPerToken = parseFloat(ofoxPricing.input) || 0
+    const outputPerToken = parseFloat(ofoxPricing.output) || 0
+
+    // 如果价格都是 0，返回 undefined
+    if (inputPerToken === 0 && outputPerToken === 0) return undefined
+
+    return {
+      input_per_million_tokens: inputPerToken * 1_000_000,
+      output_per_million_tokens: outputPerToken * 1_000_000
     }
   }
 

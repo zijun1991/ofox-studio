@@ -1,6 +1,6 @@
 /**
  * Provider 工厂
- * 从 Cherry Studio Model/Provider 配置创建 LlmProvider 实例
+ * 从 Ofox Claw Model/Provider 配置创建 LlmProvider 实例
  */
 
 import type { LlmProviderConfig, Model, Provider, ProviderType } from '../types/provider'
@@ -30,7 +30,7 @@ export class ProviderFactory {
   }
 
   /**
-   * 从 Cherry Studio Model 和 Provider 配置创建
+   * 从 Ofox Claw Model 和 Provider 配置创建
    */
   static fromModel(model: Model, provider: Provider): LlmProvider {
     const config: LlmProviderConfig = {

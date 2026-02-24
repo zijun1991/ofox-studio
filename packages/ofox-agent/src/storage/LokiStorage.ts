@@ -1,6 +1,6 @@
 /**
  * LokiJS 存储实现
- * 持久化到 Cherry Studio 数据目录
+ * 持久化到 Ofox Claw 数据目录
  */
 
 import { app } from 'electron'

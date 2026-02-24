@@ -23,6 +23,17 @@ export interface OfoxState {
   user: OfoxUser | null
   showLoginModal: boolean
   error: string | null
+  apiKey: string // API Key（不持久化，每次启动需要重新设置）
+}
+
+// 从 localStorage 同步读取初始 apiKey
+// 确保在 ReduxStoreReady 信号发送前 apiKey 已经设置
+const getInitialApiKey = (): string => {
+  try {
+    return localStorage.getItem('ofox_api_key') || ''
+  } catch {
+    return ''
+  }
 }
 
 const initialState: OfoxState = {
@@ -30,7 +41,8 @@ const initialState: OfoxState = {
   isChecking: true, // 初始时正在检查登录状态
   user: null,
   showLoginModal: false,
-  error: null
+  error: null,
+  apiKey: getInitialApiKey() // 同步从 localStorage 读取
 }
 
 const ofoxSlice = createSlice({
@@ -67,10 +79,14 @@ const ofoxSlice = createSlice({
       state.isLoggedIn = false
       state.user = null
       state.error = null
+      state.apiKey = '' // 登出时清空 API Key
+    },
+    setApiKey: (state, action: PayloadAction<string>) => {
+      state.apiKey = action.payload
     }
   }
 })
 
-export const { setLoggedIn, setChecking, setUser, setShowLoginModal, setError, logout } = ofoxSlice.actions
+export const { setLoggedIn, setChecking, setUser, setShowLoginModal, setError, logout, setApiKey } = ofoxSlice.actions
 
 export default ofoxSlice.reducer

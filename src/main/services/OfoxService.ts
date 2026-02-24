@@ -9,7 +9,15 @@
 import { loggerService } from '@logger'
 import { session } from 'electron'
 
-import type { OfoxApiResponse, OfoxModel } from '../../renderer/src/types/ofox'
+import type {
+  OfoxAnthropicModel,
+  OfoxApiResponse,
+  OfoxGeminiModel,
+  OfoxModel,
+  OfoxModelCapabilities,
+  OfoxModelPricing,
+  OfoxOpenAIModel
+} from '../../renderer/src/types/ofox'
 
 const logger = loggerService.withContext('OfoxService')
 
@@ -18,7 +26,15 @@ const OFOX_BASE_URL = 'https://app.ofox.ai'
 const OFOX_API_BASE = 'https://app.ofox.ai/api'
 const OFOX_REFERER = 'https://app.ofox.ai/'
 const OFOX_PARTITION = 'persist:ofox'
-const OFOX_MODELS_PAGE = 'https://ofox.ai/zh/models'
+
+// Ofox 模型 API 端点配置
+const OFOX_API_ENDPOINTS = {
+  openai: 'https://api.ofox.ai/v1/models',
+  anthropic: 'https://api.ofox.ai/anthropic/v1/models',
+  gemini: 'https://api.ofox.ai/gemini/v1beta/models'
+} as const
+
+type OfoxProtocol = keyof typeof OFOX_API_ENDPOINTS
 
 // 用户会话信息接口
 export interface OfoxSession {
@@ -231,46 +247,65 @@ class OfoxService {
   }
 
   /**
-   * 从 ofox.ai/zh/models 页面获取模型列表
-   * 解析页面中的 Next.js RSC payload 提取模型数据
+   * 从三个 Ofox API 端点获取模型列表
+   * - OpenAI: /v1/models
+   * - Anthropic: /anthropic/v1/models
+   * - Gemini: /gemini/v1beta/models
    */
   async getModels(): Promise<OfoxApiResponse<OfoxModel[]>> {
     try {
-      logger.debug(`Fetching models from ${OFOX_MODELS_PAGE}`)
+      logger.info('Fetching models from all Ofox API endpoints...')
 
-      const response = await this.getOfoxSession().fetch(OFOX_MODELS_PAGE, {
-        method: 'GET',
-        headers: {
-          Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-          'User-Agent':
-            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-        }
-      })
+      // 并行获取三个端点的数据
+      const [openaiResult, anthropicResult, geminiResult] = await Promise.all([
+        this.fetchModelsFromEndpoint('openai'),
+        this.fetchModelsFromEndpoint('anthropic'),
+        this.fetchModelsFromEndpoint('gemini')
+      ])
 
-      if (!response.ok) {
-        const errorText = await response.text()
-        logger.error(`Failed to fetch models page: ${response.status} ${errorText}`)
+      // 合并所有模型
+      const allModels: OfoxModel[] = []
+
+      if (openaiResult.success && openaiResult.data) {
+        const openaiModels = openaiResult.data as OfoxOpenAIModel[]
+        allModels.push(...openaiModels.map((m) => this.convertOpenAIModel(m)))
+        logger.debug(`Fetched ${openaiModels.length} models from OpenAI endpoint`)
+      }
+      if (anthropicResult.success && anthropicResult.data) {
+        const anthropicModels = anthropicResult.data as OfoxAnthropicModel[]
+        allModels.push(...anthropicModels.map((m) => this.convertAnthropicModel(m)))
+        logger.debug(`Fetched ${anthropicModels.length} models from Anthropic endpoint`)
+      }
+      if (geminiResult.success && geminiResult.data) {
+        const geminiModels = geminiResult.data as OfoxGeminiModel[]
+        allModels.push(...geminiModels.map((m) => this.convertGeminiModel(m)))
+        logger.debug(`Fetched ${geminiModels.length} models from Gemini endpoint`)
+      }
+
+      // 去重并合并协议（基于 canonical_slug）
+      const uniqueModels = this.deduplicateAndMergeProtocols(allModels)
+
+      if (uniqueModels.length === 0) {
+        logger.error('No models fetched from any endpoint')
         return {
           success: false,
-          error: `HTTP ${response.status}: Failed to fetch models page`
+          error: 'No models fetched from any endpoint'
         }
       }
 
-      const html = await response.text()
-      const models = this.parseModelsFromHtml(html)
-
-      if (models.length === 0) {
-        logger.warn('No models found in page, structure may have changed')
-        return {
-          success: false,
-          error: 'No models found in page, the page structure may have changed'
+      // 统计各协议模型数量
+      const protocolCounts: Record<string, number> = {}
+      for (const model of uniqueModels) {
+        for (const protocol of model.supported_protocols) {
+          protocolCounts[protocol] = (protocolCounts[protocol] || 0) + 1
         }
       }
+      logger.info('Models by protocol:', protocolCounts)
 
-      logger.info(`Successfully fetched ${models.length} models from ofox.ai`)
+      logger.info(`Successfully fetched ${uniqueModels.length} unique models from Ofox APIs`)
       return {
         success: true,
-        data: models
+        data: uniqueModels
       }
     } catch (error) {
       logger.error('Error fetching models:', error as Error)
@@ -282,101 +317,216 @@ class OfoxService {
   }
 
   /**
-   * 解析 Next.js RSC payload 中的模型数据
-   * 查找 "models":[{...}] 数组并提取
+   * 从指定端点获取模型列表
    */
-  private parseModelsFromHtml(html: string): OfoxModel[] {
+  private async fetchModelsFromEndpoint(protocol: OfoxProtocol): Promise<OfoxApiResponse<unknown[]>> {
+    const url = OFOX_API_ENDPOINTS[protocol]
+
     try {
-      // Next.js RSC payload 中的模型数据格式为 "models":[{...}]
-      // 数据以转义 JSON 格式存在，需要先找到位置再解析
+      logger.debug(`Fetching models from ${url}`)
 
-      // 查找模型数组的起始位置
-      // 模式: \"models\":[{\"id\":
-      const modelsPattern = /\\"models\\":\[\{\\"id\\":/
-      const match = html.match(modelsPattern)
-
-      if (!match || match.index === undefined) {
-        logger.warn('Could not find models array in HTML')
-        return []
-      }
-
-      // 从 \"models\":[ 开始提取
-      const startMarker = '\\"models\\":['
-      const startIndex = html.indexOf(startMarker, match.index)
-
-      if (startIndex === -1) {
-        logger.warn('Could not find models array start marker')
-        return []
-      }
-
-      // 从 [ 位置开始提取数组
-      const arrayStart = startIndex + startMarker.length - 1
-
-      // 找到匹配的 ] 结束位置（需要计算括号深度）
-      let depth = 0
-      let arrayEnd = -1
-      let inString = false
-      let escapeNext = false
-
-      for (let i = arrayStart; i < html.length; i++) {
-        const char = html[i]
-
-        if (escapeNext) {
-          escapeNext = false
-          continue
+      const response = await this.getOfoxSession().fetch(url, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
         }
+      })
 
-        if (char === '\\') {
-          escapeNext = true
-          continue
-        }
-
-        if (char === '"' && !escapeNext) {
-          inString = !inString
-          continue
-        }
-
-        if (!inString) {
-          if (char === '[') {
-            depth++
-          } else if (char === ']') {
-            depth--
-            if (depth === 0) {
-              arrayEnd = i + 1
-              break
-            }
-          }
+      if (!response.ok) {
+        const errorText = await response.text()
+        logger.error(`Failed to fetch from ${protocol}: ${response.status} ${errorText}`)
+        return {
+          success: false,
+          error: `HTTP ${response.status}: ${errorText}`
         }
       }
 
-      if (arrayEnd === -1) {
-        logger.warn('Could not find models array end')
-        return []
+      const data = (await response.json()) as Record<string, unknown>
+
+      // 根据协议提取模型数组
+      let models: unknown[] = []
+      if (protocol === 'openai' && Array.isArray(data.data)) {
+        models = data.data
+      } else if (protocol === 'anthropic' && Array.isArray(data.data)) {
+        models = data.data
+      } else if (protocol === 'gemini' && Array.isArray(data.models)) {
+        models = data.models
       }
 
-      // 提取 JSON 数组字符串
-      let jsonArrayStr = html.substring(arrayStart, arrayEnd)
-
-      // 处理转义字符: \\" -> ", \\\\ -> \
-      jsonArrayStr = jsonArrayStr
-        .replace(/\\\\"/g, '\\"') // 先处理 \\" -> \"
-        .replace(/\\"/g, '"') // 再处理 \" -> "
-        .replace(/\\\\/g, '\\') // 处理 \\ -> \
-
-      // 解析 JSON
-      const models = JSON.parse(jsonArrayStr) as OfoxModel[]
-
-      // 过滤掉非模型对象（有些可能是 ID 字符串数组）
-      const validModels = models.filter(
-        (model) =>
-          model && typeof model === 'object' && typeof model.id === 'string' && typeof model.display_name === 'string'
-      )
-
-      return validModels
+      return {
+        success: true,
+        data: models
+      }
     } catch (error) {
-      logger.error('Error parsing models from HTML:', error as Error)
-      return []
+      logger.error(`Error fetching from ${protocol}:`, error as Error)
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      }
     }
+  }
+
+  /**
+   * 将 OpenAI 格式模型转换为统一 OfoxModel
+   */
+  private convertOpenAIModel(model: OfoxOpenAIModel): OfoxModel {
+    return {
+      id: model.id,
+      canonical_slug: model.canonical_slug,
+      display_name: model.name,
+      description: model.description,
+      owned_by: model.owned_by,
+      model_protocol: 'openai',
+      series: this.extractSeries(model.canonical_slug),
+      mode: 'chat',
+      context_window: model.context_length,
+      max_output_tokens: model.top_provider?.max_completion_tokens,
+      pricing: this.convertPricing(model.pricing),
+      capabilities: this.extractCapabilities(model.supported_parameters, model.architecture),
+      supported_provider_types: [model.owned_by],
+      supported_protocols: ['openai'],
+      released_at: model.created ? new Date(model.created * 1000).toISOString() : undefined
+    }
+  }
+
+  /**
+   * 将 Anthropic 格式模型转换为统一 OfoxModel
+   */
+  private convertAnthropicModel(model: OfoxAnthropicModel): OfoxModel {
+    return {
+      id: model.id,
+      canonical_slug: model.canonical_slug,
+      display_name: model.display_name,
+      description: model.description,
+      owned_by: model.owned_by,
+      model_protocol: 'anthropic',
+      series: this.extractSeries(model.canonical_slug),
+      mode: 'chat',
+      context_window: model.context_length,
+      max_output_tokens: model.top_provider?.max_completion_tokens,
+      pricing: this.convertPricing(model.pricing),
+      capabilities: this.extractCapabilities(model.supported_parameters, model.architecture),
+      supported_provider_types: [model.owned_by],
+      supported_protocols: ['anthropic'],
+      released_at: model.created_at
+    }
+  }
+
+  /**
+   * 将 Gemini 格式模型转换为统一 OfoxModel
+   */
+  private convertGeminiModel(model: OfoxGeminiModel): OfoxModel {
+    // 移除 "models/" 前缀
+    const id = model.name.replace(/^models\//, '')
+
+    return {
+      id,
+      canonical_slug: model.canonicalSlug,
+      display_name: model.displayName,
+      description: model.description,
+      owned_by: model.ownedBy,
+      model_protocol: 'gemini',
+      series: this.extractSeries(model.canonicalSlug),
+      mode: 'chat',
+      context_window: model.contextLength || model.inputTokenLimit,
+      max_output_tokens: model.outputTokenLimit,
+      pricing: this.convertPricing(model.pricing),
+      capabilities: this.extractCapabilities(model.supportedParameters, model.architecture),
+      supported_provider_types: [model.ownedBy],
+      supported_protocols: ['gemini'],
+      released_at: undefined
+    }
+  }
+
+  /**
+   * 转换定价信息
+   */
+  private convertPricing(pricing?: {
+    prompt: string
+    completion: string
+    input_cache_read?: string
+    input_cache_write?: string
+    web_search?: string
+  }): OfoxModelPricing {
+    return {
+      input: pricing?.prompt || '0',
+      output: pricing?.completion || '0',
+      input_cache_read: pricing?.input_cache_read,
+      input_cache_write: pricing?.input_cache_write,
+      web_search: pricing?.web_search
+    }
+  }
+
+  /**
+   * 提取模型能力
+   */
+  private extractCapabilities(
+    supportedParams?: string[],
+    architecture?: { modality?: string; input_modalities?: string[] }
+  ): OfoxModelCapabilities {
+    const capabilities: OfoxModelCapabilities = {}
+
+    if (supportedParams) {
+      if (supportedParams.includes('tools') || supportedParams.includes('tool_choice')) {
+        capabilities.function_calling = true
+      }
+      if (supportedParams.includes('reasoning')) {
+        capabilities.reasoning = true
+      }
+    }
+
+    if (architecture?.modality?.includes('image')) {
+      capabilities.vision = true
+    }
+    if (architecture?.input_modalities?.includes('image')) {
+      capabilities.vision = true
+    }
+    if (architecture?.input_modalities?.includes('audio')) {
+      capabilities.audio_input = true
+    }
+    if (architecture?.input_modalities?.includes('file')) {
+      capabilities.pdf_input = true
+    }
+
+    return capabilities
+  }
+
+  /**
+   * 从 canonical_slug 提取系列名称
+   */
+  private extractSeries(slug: string): string {
+    // 例如: "claude-haiku-4-5-20251001" -> "claude"
+    // 例如: "gemini-2.5-flash-preview-05-20" -> "gemini"
+    const parts = slug.split('-')
+    return parts[0] || 'default'
+  }
+
+  /**
+   * 模型去重并合并协议（基于 canonical_slug）
+   * 同一个模型可能支持多个协议，需要合并 supported_protocols
+   */
+  private deduplicateAndMergeProtocols(models: OfoxModel[]): OfoxModel[] {
+    const modelMap = new Map<string, OfoxModel>()
+
+    for (const model of models) {
+      const existing = modelMap.get(model.canonical_slug)
+      if (existing) {
+        // 合并 supported_protocols
+        const mergedProtocols = [...new Set([...existing.supported_protocols, ...model.supported_protocols])]
+        existing.supported_protocols = mergedProtocols
+        // 也合并 supported_provider_types
+        const mergedProviderTypes = [
+          ...new Set([...existing.supported_provider_types, ...model.supported_provider_types])
+        ]
+        existing.supported_provider_types = mergedProviderTypes
+      } else {
+        // 克隆模型，避免引用问题
+        modelMap.set(model.canonical_slug, { ...model })
+      }
+    }
+
+    return Array.from(modelMap.values())
   }
 }
 
