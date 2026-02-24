@@ -75,6 +75,15 @@ vi.mock('@renderer/services/ModelService', () => ({
   getModelUniqId: vi.fn()
 }))
 
+// Mock useRuntime hook
+vi.mock('@renderer/hooks/useRuntime', () => ({
+  useRuntime: () => ({
+    chat: {
+      activeAgentId: null // Default to non-expert mode (turbo mode or regular chat)
+    }
+  })
+}))
+
 // Mock Markdown component
 vi.mock('@renderer/pages/home/Markdown/Markdown', () => ({
   __esModule: true,
@@ -87,6 +96,17 @@ vi.mock('@renderer/pages/home/Markdown/Markdown', () => ({
     )
   }
 }))
+
+// Mock window.api for PathTextRenderer
+Object.defineProperty(window, 'api', {
+  value: {
+    fs: {
+      exists: vi.fn().mockResolvedValue(false)
+    }
+  },
+  writable: true,
+  configurable: true
+})
 
 describe('MainTextBlock', () => {
   // Get references to mocked modules
@@ -176,9 +196,10 @@ describe('MainTextBlock', () => {
       expect(getRenderedPlainText()!.textContent).toBe('User message\nWith line breaks')
       expect(getRenderedMarkdown()).not.toBeInTheDocument()
 
-      // Check preserved whitespace
+      // Check preserved whitespace - 样式在 PathTextRenderer 内部的 span 元素上
       const textElement = getRenderedPlainText()!
-      expect(textElement).toHaveStyle({ whiteSpace: 'pre-wrap' })
+      const innerSpan = textElement.querySelector('span')
+      expect(innerSpan).toHaveStyle({ whiteSpace: 'pre-wrap' })
     })
 
     it('should render user messages as markdown when setting enabled', () => {

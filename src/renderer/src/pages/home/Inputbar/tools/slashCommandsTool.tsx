@@ -63,6 +63,12 @@ const insertSlashCommand = (
 }
 
 /**
+ * Turbo agent ID constant
+ * Must match the TURBO_AGENT_ID in SpeedyPage.tsx and useCyclePermissionMode.ts
+ */
+const TURBO_AGENT_ID = 'agent_turbo_system'
+
+/**
  * Slash Commands Tool
  *
  * Integrates Agent Session slash commands into the Inputbar.
@@ -79,6 +85,18 @@ const slashCommandsTool = defineTool({
 
   // Only visible in Agent Session
   visibleInScopes: [TopicType.Session],
+
+  // Disable slash commands in turbo mode (speedy page)
+  condition: (context) => {
+    const isTurboMode = context.session?.agentId === TURBO_AGENT_ID
+    console.log('[slashCommandsTool] condition check:', {
+      agentId: context.session?.agentId,
+      TURBO_AGENT_ID,
+      isTurboMode,
+      result: !isTurboMode
+    })
+    return !isTurboMode
+  },
 
   dependencies: {
     actions: ['onTextChange'] as const

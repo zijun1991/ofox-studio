@@ -14,6 +14,7 @@ import { EVENT_NAMES, EventEmitter } from '@renderer/services/EventService'
 import { pauseTrace } from '@renderer/services/SpanManagerService'
 import { estimateUserPromptUsage } from '@renderer/services/TokenService'
 import { useAppDispatch, useAppSelector } from '@renderer/store'
+import { getChannelBySession } from '@renderer/store/channels'
 import { newMessagesActions, selectMessagesForTopic } from '@renderer/store/newMessage'
 import { sendMessage as dispatchSendMessage } from '@renderer/store/thunk/messageThunk'
 import type { Assistant, Message } from '@renderer/types'
@@ -25,9 +26,11 @@ import { buildAgentSessionTopicId } from '@renderer/utils/agentSession'
 import { getSendMessageShortcutLabel } from '@renderer/utils/input'
 import { createMainTextBlock, createMessage } from '@renderer/utils/messageUtils/create'
 import { documentExts, imageExts, textExts } from '@shared/config/constant'
+import { Link2 } from 'lucide-react'
 import type { FC } from 'react'
 import React, { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import { v4 as uuid } from 'uuid'
 
@@ -48,6 +51,9 @@ const DRAFT_CACHE_TTL = 24 * 60 * 60 * 1000 // 24 hours
 
 const getAgentDraftCacheKey = (agentId: string) => `agent-session-draft-${agentId}`
 
+// Turbo agent ID constant - must match the one in SpeedyPage.tsx
+const TURBO_AGENT_ID = 'agent_turbo_system'
+
 type Props = {
   agentId: string
   sessionId: string
@@ -67,8 +73,10 @@ const AgentSessionInputbar: FC<Props> = ({ agentId, sessionId }) => {
   const assistantStub = useMemo<Assistant | null>(() => {
     if (!session) return null
 
-    // Extract model info
-    const [providerId, actualModelId] = session.model?.split(':') ?? [undefined, undefined]
+    // Extract model info - only split on the first colon since modelId may contain colons
+    const colonIndex = session.model?.indexOf(':') ?? -1
+    const providerId = colonIndex > -1 ? session.model?.slice(0, colonIndex) : undefined
+    const actualModelId = colonIndex > -1 ? session.model?.slice(colonIndex + 1) : session.model
     const actualModel = actualModelId ? getModel(actualModelId, providerId) : undefined
 
     return {
@@ -179,14 +187,18 @@ const AgentSessionInputbarInner: FC<InnerProps> = ({ assistant, agentId, session
   const quickPanel = useQuickPanel()
 
   const { files } = useInputbarToolsState()
-  const { toolsRegistry, setIsExpanded } = useInputbarToolsDispatch()
+  const { toolsRegistry, triggers, setIsExpanded } = useInputbarToolsDispatch()
   const { setCouldAddImageFile } = useInputbarToolsInternalDispatch()
 
   const { setTimeoutTimer } = useTimer()
   const dispatch = useAppDispatch()
+  const navigate = useNavigate()
   const sessionTopicId = buildAgentSessionTopicId(sessionId)
   const topicMessages = useAppSelector((state) => selectMessagesForTopic(state, sessionTopicId))
   const loading = useAppSelector((state) => selectNewTopicLoading(state, sessionTopicId))
+
+  // Check if this session is bound to a channel
+  const boundChannel = useAppSelector((state) => getChannelBySession(state, sessionId))
 
   // Calculate vision and image generation support
   const isVisionAssistant = useMemo(() => (assistant.model ? isVisionModel(assistant.model) : false), [assistant.model])
@@ -233,6 +245,21 @@ const AgentSessionInputbarInner: FC<InnerProps> = ({ assistant, agentId, session
       toggleExpanded: handleToggleExpanded
     }
   }, [resizeTextArea, setText, actionsRef, handleToggleExpanded])
+
+  // Listen for workspace node double click events to insert path into input
+  useEffect(() => {
+    const handleNodeDoubleClick = async ({ path }: { path: string }) => {
+      // Use insertPath method to insert path as a blot
+      await textareaRef.current?.insertPath(path)
+      // Focus the textarea after inserting path
+      focusTextarea()
+    }
+
+    EventEmitter.on(EVENT_NAMES.WORKSPACE_NODE_DOUBLE_CLICK, handleNodeDoubleClick)
+    return () => {
+      EventEmitter.off(EVENT_NAMES.WORKSPACE_NODE_DOUBLE_CLICK, handleNodeDoubleClick)
+    }
+  }, [textareaRef, focusTextarea])
 
   const rootTriggerHandlerRef = useRef<((payload?: unknown) => void) | undefined>(undefined)
 
@@ -322,6 +349,12 @@ const AgentSessionInputbarInner: FC<InnerProps> = ({ assistant, agentId, session
       return
     }
 
+    // Disable slash command trigger in turbo mode (speedy page)
+    const isTurboMode = agentId === TURBO_AGENT_ID
+    if (isTurboMode) {
+      return
+    }
+
     const disposeRootTrigger = toolsRegistry.registerTrigger(
       'agent-session-root',
       QuickPanelReservedSymbol.Root,
@@ -331,7 +364,7 @@ const AgentSessionInputbarInner: FC<InnerProps> = ({ assistant, agentId, session
     return () => {
       disposeRootTrigger()
     }
-  }, [config.enableQuickPanel, toolsRegistry])
+  }, [config.enableQuickPanel, toolsRegistry, agentId])
 
   const sendDisabled = (inputEmpty && files.length === 0) || !apiServer.enabled
 
@@ -479,6 +512,44 @@ const AgentSessionInputbarInner: FC<InnerProps> = ({ assistant, agentId, session
     [sendMessageShortcut, t]
   )
 
+  // Check if in turbo mode (speedy page)
+  const isTurboMode = agentId === TURBO_AGENT_ID
+  console.log('[AgentSessionInputbar] turbo mode check:', { agentId, TURBO_AGENT_ID, isTurboMode })
+
+  // Handle navigation to channel settings
+  const handleGoToChannel = useCallback(() => {
+    if (boundChannel) {
+      navigate(`/settings/channels/${boundChannel.id}`)
+    }
+  }, [boundChannel, navigate])
+
+  // If session is bound to a channel, show prompt area instead of input
+  if (boundChannel) {
+    return (
+      <ChannelBoundPromptArea>
+        <PromptIcon>
+          <Link2 size={20} />
+        </PromptIcon>
+        <PromptContent>
+          <PromptTitle>{t('agent.session.channel_bound.title', 'Channel-Bound Session')}</PromptTitle>
+          <PromptDescription>
+            {t(
+              'agent.session.channel_bound.description',
+              'This session is bound to channel "{{name}}" ({{type}}). Messages are automatically received and sent through the channel.',
+              { name: boundChannel.name, type: boundChannel.type }
+            )}
+          </PromptDescription>
+          <PromptHint>
+            {t('agent.session.channel_bound.hint', 'Configure this channel in Settings > Channels')}
+          </PromptHint>
+          <GoToChannelButton onClick={handleGoToChannel}>
+            {t('agent.session.channel_bound.go_to_channel', 'Go to Channel')}
+          </GoToChannelButton>
+        </PromptContent>
+      </ChannelBoundPromptArea>
+    )
+  }
+
   return (
     <InputbarCore
       scope={TopicType.Session}
@@ -496,6 +567,8 @@ const AgentSessionInputbarInner: FC<InnerProps> = ({ assistant, agentId, session
       handleSendMessage={sendMessage}
       leftToolbar={leftToolbar}
       forceEnableQuickPanelTriggers
+      disableQuickPanelTriggers={isTurboMode}
+      triggers={triggers}
     />
   )
 }
@@ -505,6 +578,77 @@ const ToolbarGroup = styled.div`
   flex-direction: row;
   align-items: center;
   gap: 6px;
+`
+
+// Channel-bound session prompt area styles
+const ChannelBoundPromptArea = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 20px;
+  margin: 8px 0;
+  background-color: var(--color-background-soft);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+`
+
+const PromptIcon = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: var(--color-primary);
+  border-radius: 50%;
+  color: white;
+  flex-shrink: 0;
+`
+
+const PromptContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+`
+
+const PromptTitle = styled.div`
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+`
+
+const PromptDescription = styled.div`
+  font-size: 13px;
+  color: var(--color-text-2);
+  line-height: 1.5;
+`
+
+const PromptHint = styled.div`
+  font-size: 12px;
+  color: var(--color-text-3);
+`
+
+const GoToChannelButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-primary);
+  background-color: transparent;
+  border: 1px solid var(--color-primary);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: fit-content;
+
+  &:hover {
+    background-color: var(--color-primary);
+    color: white;
+  }
 `
 
 export default AgentSessionInputbar

@@ -1,8 +1,10 @@
 import { ErrorBoundary } from '@renderer/components/ErrorBoundary'
 import { useAgentSessionInitializer } from '@renderer/hooks/agents/useAgentSessionInitializer'
+import { useCyclePermissionMode } from '@renderer/hooks/agents/useCyclePermissionMode'
 import { useAssistants } from '@renderer/hooks/useAssistant'
 import { useRuntime } from '@renderer/hooks/useRuntime'
 import { useNavbarPosition, useSettings } from '@renderer/hooks/useSettings'
+import { useShortcut } from '@renderer/hooks/useShortcuts'
 import { useActiveTopic } from '@renderer/hooks/useTopic'
 import NavigationService from '@renderer/services/NavigationService'
 import { newMessagesActions } from '@renderer/store/newMessage'
@@ -43,6 +45,19 @@ const HomePage: FC = () => {
   const { activeTopicOrSession } = chat
 
   _activeAssistant = activeAssistant
+
+  // Permission mode cycle shortcut
+  const { cyclePermissionMode } = useCyclePermissionMode()
+  useShortcut(
+    'cycle_permission_mode',
+    () => {
+      cyclePermissionMode(false)
+    },
+    {
+      preventDefault: true,
+      enableOnFormTags: false
+    }
+  )
 
   const setActiveAssistant = useCallback(
     // TODO: allow to set it as null.

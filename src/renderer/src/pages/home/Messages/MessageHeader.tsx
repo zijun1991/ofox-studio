@@ -8,6 +8,7 @@ import { useAgent } from '@renderer/hooks/agents/useAgent'
 import useAvatar from '@renderer/hooks/useAvatar'
 import { useChatContext } from '@renderer/hooks/useChatContext'
 import { useMinappPopup } from '@renderer/hooks/useMinappPopup'
+import { useModelEmployee } from '@renderer/hooks/useModelEmployee'
 import { useRuntime } from '@renderer/hooks/useRuntime'
 import { useMessageStyle, useSettings } from '@renderer/hooks/useSettings'
 import { getMessageModelId } from '@renderer/services/MessagesService'
@@ -21,6 +22,7 @@ import { Sparkle } from 'lucide-react'
 import type { FC } from 'react'
 import { memo, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 
 import MessageTokens from './MessageTokens'
@@ -49,6 +51,11 @@ const MessageHeader: FC<Props> = memo(({ assistant, model, message, topic, isGro
   const { t } = useTranslation()
   const { isBubbleStyle } = useMessageStyle()
   const { openMinappById } = useMinappPopup()
+  const location = useLocation()
+  const { employees } = useModelEmployee()
+
+  // 判断是否在极速模式（根路径 "/"）
+  const isSpeedyMode = location.pathname === '/'
 
   const { isMultiSelectMode, selectedMessageIds, handleSelectMessage } = useChatContext(topic)
 
@@ -61,6 +68,35 @@ const MessageHeader: FC<Props> = memo(({ assistant, model, message, topic, isGro
       return APP_NAME
     }
 
+    // 极速模式下，优先显示模型员工名称
+    if (isSpeedyMode && message.role === 'assistant') {
+      const modelId = getMessageModelId(message) // 可能是 "gpt-4" 或 "openai:gpt-4"
+      const modelProvider = message.model?.provider
+
+      // 查找匹配的模型员工（支持两种格式匹配）
+      const employee = employees.find((emp) => {
+        // 方式1: provider 和 id 分开匹配
+        if (emp.model.provider === modelProvider && emp.model.id === modelId) {
+          return true
+        }
+        // 方式2: 完整格式匹配 (provider:id)
+        const fullModelId = `${emp.model.provider}:${emp.model.id}`
+        if (fullModelId === modelId) {
+          return true
+        }
+        return false
+      })
+
+      if (employee) {
+        return employee.name
+      }
+
+      // 如果找不到模型员工，尝试显示模型名称
+      if (model?.name) {
+        return model.name
+      }
+    }
+
     if (isAgentView && message.role === 'assistant') {
       return agent?.name ?? t('common.unknown')
     }
@@ -70,11 +106,15 @@ const MessageHeader: FC<Props> = memo(({ assistant, model, message, topic, isGro
     }
 
     return userName || t('common.you')
-  }, [agent?.name, isAgentView, message, model, t, userName])
+  }, [agent?.name, isAgentView, message, model, t, userName, isSpeedyMode, employees])
 
   const isAssistantMessage = message.role === 'assistant'
   const isUserMessage = message.role === 'user'
   const showMinappIcon = sidebarIcons.visible.includes('minapp')
+
+  // 获取 Agent 的 avatar 配置，默认为 ⭐
+  const agentAvatar = agent?.configuration?.avatar || '⭐'
+  const isEmojiAvatar = isEmoji(agentAvatar)
 
   const avatarName = useMemo(() => firstLetter(assistant?.name).toUpperCase(), [assistant?.name])
   const username = useMemo(() => removeLeadingEmoji(getUserName()), [getUserName])
@@ -94,18 +134,24 @@ const MessageHeader: FC<Props> = memo(({ assistant, model, message, topic, isGro
   return (
     <Container className="message-header">
       {isAssistantMessage ? (
-        <Avatar
-          src={avatarSource}
-          size={35}
-          style={{
-            borderRadius: '25%',
-            cursor: showMinappIcon ? 'pointer' : 'default',
-            border: isLocalAi ? '1px solid var(--color-border-soft)' : 'none',
-            filter: theme === 'dark' ? 'invert(0.05)' : undefined
-          }}
-          onClick={showMiniApp}>
-          {avatarName}
-        </Avatar>
+        isEmojiAvatar ? (
+          <EmojiAvatar size={35} fontSize={20}>
+            {agentAvatar}
+          </EmojiAvatar>
+        ) : (
+          <Avatar
+            src={avatarSource}
+            size={35}
+            style={{
+              borderRadius: '25%',
+              cursor: showMinappIcon ? 'pointer' : 'default',
+              border: isLocalAi ? '1px solid var(--color-border-soft)' : 'none',
+              filter: theme === 'dark' ? 'invert(0.05)' : undefined
+            }}
+            onClick={showMiniApp}>
+            {avatarName}
+          </Avatar>
+        )
       ) : (
         <>
           {isEmoji(avatar) ? (

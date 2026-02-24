@@ -23,6 +23,7 @@ import { classNames } from '@renderer/utils'
 import { Tooltip } from 'antd'
 import type { LRUCache } from 'lru-cache'
 import {
+  Brain,
   FileSearch,
   Folder,
   Home,
@@ -102,6 +103,8 @@ const getTabIcon = (
   switch (tabId) {
     case 'home':
       return <Home size={14} />
+    case 'expert':
+      return <Brain size={14} />
     case 'store':
       return <Sparkle size={14} />
     case 'translate':

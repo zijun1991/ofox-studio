@@ -144,7 +144,7 @@ const MainMenus: FC = () => {
   }
 
   const pathMap = {
-    assistants: '/',
+    assistants: '/expert',
     store: '/store',
     paintings: `/paintings/${defaultPaintingProvider}`,
     translate: '/translate',
@@ -159,7 +159,7 @@ const MainMenus: FC = () => {
 
   return sidebarIcons.visible.map((icon) => {
     const path = pathMap[icon]
-    const isActive = path === '/' ? isRoute(path) : isRoutes(path)
+    const isActive = path === '/expert' ? isRoute(path) : isRoutes(path)
 
     return (
       <Tooltip key={icon} title={getSidebarIconLabel(icon)} mouseEnterDelay={0.8} placement="right">

@@ -67,7 +67,7 @@ const AboutSettings: FC = () => {
   }
 
   const mailto = async () => {
-    const email = 'support@cherry-ai.com'
+    const email = 'support@ofox.ai'
     const subject = `${APP_NAME} Feedback`
     const version = (await window.api.getAppInfo()).version
     const platform = window.electron.process.platform
@@ -80,15 +80,15 @@ const AboutSettings: FC = () => {
   }
 
   const showEnterprise = async () => {
-    onOpenWebsite('https://enterprise.cherry-ai.com')
+    onOpenWebsite('https://enterprise.ofox.ai')
   }
 
   const showReleases = async () => {
     const { appPath } = await window.api.getAppInfo()
     openSmartMinapp({
-      id: 'cherrystudio-releases',
+      id: 'ofoxclaw-releases',
       name: t('settings.about.releases.title'),
-      url: `file://${appPath}/resources/cherry-studio/releases.html?theme=${theme === ThemeMode.dark ? 'dark' : 'light'}`,
+      url: `file://${appPath}/resources/ofox-claw/releases.html?theme=${theme === ThemeMode.dark ? 'dark' : 'light'}`,
       logo: AppLogo
     })
   }
@@ -169,7 +169,7 @@ const AboutSettings: FC = () => {
 
   const onOpenDocs = () => {
     const isChinese = i18n.language.startsWith('zh')
-    window.api.openWebsite(isChinese ? 'https://docs.cherry-ai.com/' : 'https://docs.cherry-ai.com/docs/en-us')
+    window.api.openWebsite(isChinese ? 'https://docs.ofox.ai/' : 'https://docs.ofox.ai/docs/en-us')
   }
 
   return (
@@ -178,7 +178,7 @@ const AboutSettings: FC = () => {
         <SettingTitle>
           {t('settings.about.title')}
           <HStack alignItems="center">
-            <Link to="https://github.com/CherryHQ/cherry-studio">
+            <Link to="https://github.com/ofox/ofox-claw">
               <GithubOutlined style={{ marginRight: 4, color: 'var(--color-text)', fontSize: 20 }} />
             </Link>
           </HStack>
@@ -186,7 +186,7 @@ const AboutSettings: FC = () => {
         <SettingDivider />
         <AboutHeader>
           <Row align="middle">
-            <AvatarWrapper onClick={() => onOpenWebsite('https://github.com/CherryHQ/cherry-studio')}>
+            <AvatarWrapper onClick={() => onOpenWebsite('https://github.com/ofox/ofox-claw')}>
               {update.downloadProgress > 0 && (
                 <ProgressCircle
                   type="circle"
@@ -203,7 +203,7 @@ const AboutSettings: FC = () => {
               <Title>{APP_NAME}</Title>
               <Description>{t('settings.about.description')}</Description>
               <Tag
-                onClick={() => onOpenWebsite('https://github.com/CherryHQ/cherry-studio/releases')}
+                onClick={() => onOpenWebsite('https://github.com/ofox/ofox-claw/releases')}
                 color="cyan"
                 style={{ marginTop: 8, cursor: 'pointer' }}>
                 v{version}
@@ -298,7 +298,7 @@ const AboutSettings: FC = () => {
             <Globe size={18} />
             {t('settings.about.website.title')}
           </SettingRowTitle>
-          <Button onClick={() => onOpenWebsite('https://cherry-ai.com')}>{t('settings.about.website.button')}</Button>
+          <Button onClick={() => onOpenWebsite('https://ofox.ai')}>{t('settings.about.website.button')}</Button>
         </SettingRow>
         <SettingDivider />
         <SettingRow>
@@ -306,7 +306,7 @@ const AboutSettings: FC = () => {
             <Github size={18} />
             {t('settings.about.feedback.title')}
           </SettingRowTitle>
-          <Button onClick={() => onOpenWebsite('https://github.com/CherryHQ/cherry-studio/issues/new/choose')}>
+          <Button onClick={() => onOpenWebsite('https://github.com/ofox/ofox-claw/issues/new/choose')}>
             {t('settings.about.feedback.button')}
           </Button>
         </SettingRow>
@@ -332,7 +332,7 @@ const AboutSettings: FC = () => {
             <Briefcase size={18} />
             {t('settings.about.careers.title')}
           </SettingRowTitle>
-          <Button onClick={() => onOpenWebsite('https://www.cherry-ai.com/careers')}>
+          <Button onClick={() => onOpenWebsite('https://www.ofox.ai/careers')}>
             {t('settings.about.careers.button')}
           </Button>
         </SettingRow>

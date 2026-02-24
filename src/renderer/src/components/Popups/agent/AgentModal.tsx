@@ -1,3 +1,4 @@
+import { LockOutlined } from '@ant-design/icons'
 import { loggerService } from '@logger'
 import { ErrorBoundary } from '@renderer/components/ErrorBoundary'
 import { HelpTooltip } from '@renderer/components/TooltipIcons'
@@ -17,8 +18,9 @@ import type {
   UpdateAgentForm
 } from '@renderer/types'
 import { AgentConfigurationSchema, isAgentType } from '@renderer/types'
+import type { ChannelBindingContext } from '@renderer/types/channel'
 import type { GitBashPathInfo } from '@shared/config/constant'
-import { Button, Input, Modal, Select } from 'antd'
+import { Button, Input, Modal, Select, Tag } from 'antd'
 import type { ChangeEvent, FormEvent } from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -30,43 +32,64 @@ const logger = loggerService.withContext('AddAgentPopup')
 
 type AgentWithTools = AgentEntity & { tools?: Tool[] }
 
-const buildAgentForm = (existing?: AgentWithTools): BaseAgentForm => ({
-  type: existing?.type ?? 'claude-code',
-  name: existing?.name ?? 'Agent',
-  description: existing?.description,
-  instructions: existing?.instructions,
-  model: existing?.model ?? '',
-  accessible_paths: existing?.accessible_paths ? [...existing.accessible_paths] : [],
-  allowed_tools: existing?.allowed_tools ? [...existing.allowed_tools] : [],
-  mcps: existing?.mcps ? [...existing.mcps] : [],
-  configuration: AgentConfigurationSchema.parse(existing?.configuration ?? {})
-})
+const buildAgentForm = (existing?: AgentWithTools, channelBinding?: ChannelBindingContext): BaseAgentForm => {
+  // Channel binding mode: use fixed values
+  if (channelBinding) {
+    return {
+      type: 'claude-code',
+      name: channelBinding.fixedName,
+      description: `Channel-bound agent for ${channelBinding.channelType}: ${channelBinding.channelName}`,
+      instructions: undefined,
+      model: '', // User still needs to select model
+      accessible_paths: [],
+      allowed_tools: [],
+      mcps: [],
+      configuration: AgentConfigurationSchema.parse({
+        permission_mode: channelBinding.fixedPermissionMode
+      })
+    }
+  }
+  // Normal mode: use existing or default values
+  return {
+    type: existing?.type ?? 'claude-code',
+    name: existing?.name ?? 'Agent',
+    description: existing?.description,
+    instructions: existing?.instructions,
+    model: existing?.model ?? '',
+    accessible_paths: existing?.accessible_paths ? [...existing.accessible_paths] : [],
+    allowed_tools: existing?.allowed_tools ? [...existing.allowed_tools] : [],
+    mcps: existing?.mcps ? [...existing.mcps] : [],
+    configuration: AgentConfigurationSchema.parse(existing?.configuration ?? {})
+  }
+}
 
 interface ShowParams {
   agent?: AgentWithTools
   afterSubmit?: (a: AgentEntity) => void
+  channelBinding?: ChannelBindingContext
 }
 
 interface Props extends ShowParams {
   resolve: (data: any) => void
 }
 
-const PopupContainer: React.FC<Props> = ({ agent, afterSubmit, resolve }) => {
+const PopupContainer: React.FC<Props> = ({ agent, afterSubmit, resolve, channelBinding }) => {
   const { t } = useTranslation()
   const [open, setOpen] = useState(true)
   const loadingRef = useRef(false)
   const { addAgent } = useAgents()
   const { updateAgent } = useUpdateAgent()
   const isEditing = (agent?: AgentWithTools) => agent !== undefined
+  const isChannelBindingMode = channelBinding !== undefined
 
-  const [form, setForm] = useState<BaseAgentForm>(() => buildAgentForm(agent))
+  const [form, setForm] = useState<BaseAgentForm>(() => buildAgentForm(agent, channelBinding))
   const [gitBashPathInfo, setGitBashPathInfo] = useState<GitBashPathInfo>({ path: null, source: null })
 
   useEffect(() => {
     if (open) {
-      setForm(buildAgentForm(agent))
+      setForm(buildAgentForm(agent, channelBinding))
     }
-  }, [agent, open])
+  }, [agent, channelBinding, open])
 
   const checkGitBash = useCallback(async () => {
     if (!isWin) return
@@ -207,10 +230,12 @@ const PopupContainer: React.FC<Props> = ({ agent, afterSubmit, resolve }) => {
       description: form.description,
       instructions: form.instructions,
       configuration: form.configuration,
+      is_system: agent?.is_system ?? false,
+      channel_bound: isChannelBindingMode,
       created_at: agent?.created_at ?? new Date().toISOString(),
       updated_at: agent?.updated_at ?? new Date().toISOString()
     }),
-    [form, agent?.id, agent?.created_at, agent?.updated_at]
+    [form, agent?.id, agent?.created_at, agent?.updated_at, agent?.is_system, isChannelBindingMode]
   )
 
   const handleModelSelect = useCallback(async (model: ApiModel) => {
@@ -342,7 +367,14 @@ const PopupContainer: React.FC<Props> = ({ agent, afterSubmit, resolve }) => {
                 <Label>
                   {t('common.name')} <RequiredMark>*</RequiredMark>
                 </Label>
-                <Input value={form.name} onChange={onNameChange} required />
+                {isChannelBindingMode ? (
+                  <LockedField>
+                    <Input value={form.name} readOnly disabled />
+                    <LockOutlined className="lock-icon" />
+                  </LockedField>
+                ) : (
+                  <Input value={form.name} onChange={onNameChange} required />
+                )}
               </FormItem>
             </FormRow>
 
@@ -408,23 +440,35 @@ const PopupContainer: React.FC<Props> = ({ agent, afterSubmit, resolve }) => {
               <Label>
                 {t('agent.settings.tooling.permissionMode.title', 'Permission mode')} <RequiredMark>*</RequiredMark>
               </Label>
-              <Select
-                value={selectedPermissionMode}
-                onChange={onPermissionModeChange}
-                style={{ width: '100%' }}
-                placeholder={t('agent.settings.tooling.permissionMode.placeholder', 'Select permission mode')}
-                optionLabelProp="label">
-                {permissionModeCards.map((item) => (
-                  <Select.Option key={item.mode} value={item.mode} label={t(item.titleKey, item.titleFallback)}>
-                    <PermissionOptionWrapper>
-                      <div className="title">{t(item.titleKey, item.titleFallback)}</div>
-                      <div className="description">{t(item.descriptionKey, item.descriptionFallback)}</div>
-                    </PermissionOptionWrapper>
-                  </Select.Option>
-                ))}
-              </Select>
+              {isChannelBindingMode ? (
+                <LockedField>
+                  <Tag color="blue">{t('agent.settings.tooling.permissionMode.bypassPermissions', 'Auto Approve')}</Tag>
+                  <LockOutlined className="lock-icon" />
+                </LockedField>
+              ) : (
+                <Select
+                  value={selectedPermissionMode}
+                  onChange={onPermissionModeChange}
+                  style={{ width: '100%' }}
+                  placeholder={t('agent.settings.tooling.permissionMode.placeholder', 'Select permission mode')}
+                  optionLabelProp="label">
+                  {permissionModeCards.map((item) => (
+                    <Select.Option key={item.mode} value={item.mode} label={t(item.titleKey, item.titleFallback)}>
+                      <PermissionOptionWrapper>
+                        <div className="title">{t(item.titleKey, item.titleFallback)}</div>
+                        <div className="description">{t(item.descriptionKey, item.descriptionFallback)}</div>
+                      </PermissionOptionWrapper>
+                    </Select.Option>
+                  ))}
+                </Select>
+              )}
               <HelpText>
-                {t('agent.settings.tooling.permissionMode.helper', 'Choose how the agent handles tool approvals.')}
+                {isChannelBindingMode
+                  ? t(
+                      'agent.settings.tooling.permissionMode.channelBoundHelper',
+                      'Permission mode is fixed to Auto Approve for channel-bound agents.'
+                    )
+                  : t('agent.settings.tooling.permissionMode.helper', 'Choose how the agent handles tool approvals.')}
               </HelpText>
             </FormItem>
 
@@ -539,6 +583,18 @@ const FormItem = styled.div`
   display: flex;
   flex-direction: column;
   gap: 8px;
+`
+
+const LockedField = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+
+  .lock-icon {
+    color: var(--color-text-3);
+    font-size: 12px;
+  }
 `
 
 const GitBashInputWrapper = styled.div`

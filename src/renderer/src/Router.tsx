@@ -13,6 +13,7 @@ import CodeToolsPage from './pages/code/CodeToolsPage'
 import FilesPage from './pages/files/FilesPage'
 import HomePage from './pages/home/HomePage'
 import KnowledgePage from './pages/knowledge/KnowledgePage'
+import SpeedyPage from './pages/landing/SpeedyPage'
 import MinAppPage from './pages/minapps/MinAppPage'
 import MinAppsPage from './pages/minapps/MinAppsPage'
 import NotesPage from './pages/notes/NotesPage'
@@ -31,7 +32,8 @@ const Router: FC = () => {
     return (
       <ErrorBoundary>
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<SpeedyPage />} />
+          <Route path="/expert" element={<HomePage />} />
           <Route path="/store" element={<AssistantPresetsPage />} />
           <Route path="/paintings/*" element={<PaintingsRoutePage />} />
           <Route path="/translate" element={<TranslatePage />} />

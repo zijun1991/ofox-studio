@@ -3,6 +3,8 @@ import { useSettings } from '@renderer/hooks/useSettings'
 import AgentSettingsPopup from '@renderer/pages/settings/AgentSettings/AgentSettingsPopup'
 import { AgentLabel } from '@renderer/pages/settings/AgentSettings/shared'
 import { EVENT_NAMES, EventEmitter } from '@renderer/services/EventService'
+import { useAppSelector } from '@renderer/store'
+import { getChannelByAgent, isAgentBound } from '@renderer/store/channels'
 import type { AgentEntity } from '@renderer/types'
 import { cn } from '@renderer/utils'
 import type { MenuProps } from 'antd'
@@ -11,8 +13,6 @@ import { Bot, MoreVertical } from 'lucide-react'
 import type { FC } from 'react'
 import { memo, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-
-// const logger = loggerService.withContext('AgentItem')
 
 interface AgentItemProps {
   agent: AgentEntity
@@ -24,6 +24,8 @@ interface AgentItemProps {
 const AgentItem: FC<AgentItemProps> = ({ agent, isActive, onDelete, onPress }) => {
   const { t } = useTranslation()
   const { clickAssistantToShowTopic, topicPosition, assistantIconType } = useSettings()
+  const boundChannel = useAppSelector((state) => getChannelByAgent(state, agent.id))
+  const isBound = useAppSelector((state) => isAgentBound(state, agent.id))
   const [isHovered, setIsHovered] = useState(false)
 
   const handlePress = useCallback(() => {
@@ -40,15 +42,19 @@ const AgentItem: FC<AgentItemProps> = ({ agent, isActive, onDelete, onPress }) =
     e.stopPropagation()
   }, [])
 
-  const menuItems: MenuProps['items'] = useMemo(
-    () => [
+  const menuItems: MenuProps['items'] = useMemo(() => {
+    const items: MenuProps['items'] = [
       {
         label: t('common.edit'),
         key: 'edit',
         icon: <EditIcon size={14} />,
         onClick: () => AgentSettingsPopup.show({ agentId: agent.id })
-      },
-      {
+      }
+    ]
+
+    // Only show delete option for non-system agents and non-channel-bound agents
+    if (!agent.is_system && !isBound) {
+      items.push({
         label: t('common.delete'),
         key: 'delete',
         icon: <DeleteIcon size={14} className="lucide-custom" />,
@@ -62,10 +68,11 @@ const AgentItem: FC<AgentItemProps> = ({ agent, isActive, onDelete, onPress }) =
             onOk: () => onDelete(agent)
           })
         }
-      }
-    ],
-    [t, agent, onDelete]
-  )
+      })
+    }
+
+    return items
+  }, [t, agent, onDelete, isBound, boundChannel])
 
   return (
     <Dropdown

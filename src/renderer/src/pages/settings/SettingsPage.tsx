@@ -5,18 +5,20 @@ import ModelSettings from '@renderer/pages/settings/ModelSettings/ModelSettings'
 import { Divider as AntDivider } from 'antd'
 import {
   Brain,
-  Cloud,
   Command,
   FileCode,
+  GraduationCap,
   HardDrive,
   Info,
   MonitorCog,
   Package,
   PictureInPicture2,
+  Radio,
   Search,
   Server,
   Settings2,
   TextCursorInput,
+  User,
   Zap
 } from 'lucide-react'
 import type { FC } from 'react'
@@ -25,13 +27,15 @@ import { Link, Route, Routes, useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 
 import AboutSettings from './AboutSettings'
+import AccountSettings from './AccountSettings'
+import ChannelSettings from './ChannelSettings'
 import DataSettings from './DataSettings/DataSettings'
 import DisplaySettings from './DisplaySettings/DisplaySettings'
 import DocProcessSettings from './DocProcessSettings'
 import GeneralSettings from './GeneralSettings'
 import MCPSettings from './MCPSettings'
 import MemorySettings from './MemorySettings'
-import { ProviderListNew } from './ProviderSettings'
+import ModelEmployeeSettings from './ModelEmployeeSettings'
 import QuickAssistantSettings from './QuickAssistantSettings'
 import QuickPhraseSettings from './QuickPhraseSettings'
 import SelectionAssistantSettings from './SelectionAssistantSettings/SelectionAssistantSettings'
@@ -43,7 +47,7 @@ const SettingsPage: FC = () => {
   const { pathname } = useLocation()
   const { t } = useTranslation()
 
-  const isRoute = (path: string): string => (pathname.startsWith(path) ? 'active' : '')
+  const isRoute = (path: string): string => (pathname === path || pathname.startsWith(`${path}/`) ? 'active' : '')
 
   return (
     <Container>
@@ -54,7 +58,7 @@ const SettingsPage: FC = () => {
         <SettingMenus>
           <MenuItemLink to="/settings/provider">
             <MenuItem className={isRoute('/settings/provider')}>
-              <Cloud size={18} />
+              <User size={18} />
               {t('settings.provider.title')}
             </MenuItem>
           </MenuItemLink>
@@ -62,6 +66,12 @@ const SettingsPage: FC = () => {
             <MenuItem className={isRoute('/settings/model')}>
               <Package size={18} />
               {t('settings.model')}
+            </MenuItem>
+          </MenuItemLink>
+          <MenuItemLink to="/settings/model-employee">
+            <MenuItem className={isRoute('/settings/model-employee')}>
+              <GraduationCap size={18} />
+              {t('settings.model_employee.label')}
             </MenuItem>
           </MenuItemLink>
           <Divider />
@@ -108,6 +118,12 @@ const SettingsPage: FC = () => {
               {t('apiServer.title')}
             </MenuItem>
           </MenuItemLink>
+          <MenuItemLink to="/settings/channels">
+            <MenuItem className={isRoute('/settings/channels')}>
+              <Radio size={18} />
+              {t('channels.title', 'Channels')}
+            </MenuItem>
+          </MenuItemLink>
           <MenuItemLink to="/settings/docprocess">
             <MenuItem className={isRoute('/settings/docprocess')}>
               <FileCode size={18} />
@@ -149,10 +165,12 @@ const SettingsPage: FC = () => {
         </SettingMenus>
         <SettingContent>
           <Routes>
-            <Route path="provider" element={<ProviderListNew />} />
+            <Route path="provider" element={<AccountSettings />} />
             <Route path="model" element={<ModelSettings />} />
+            <Route path="model-employee" element={<ModelEmployeeSettings />} />
             <Route path="websearch/*" element={<WebSearchSettings />} />
             <Route path="api-server" element={<ApiServerSettings />} />
+            <Route path="channels/*" element={<ChannelSettings />} />
             <Route path="docprocess" element={<DocProcessSettings />} />
             <Route path="quickphrase" element={<QuickPhraseSettings />} />
             <Route path="mcp/*" element={<MCPSettings />} />

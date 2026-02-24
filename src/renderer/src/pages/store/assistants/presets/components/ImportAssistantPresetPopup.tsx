@@ -145,7 +145,7 @@ const PopupContainer: React.FC<Props> = ({ resolve }) => {
   }
 
   const handleHelpClick = () => {
-    window.open('https://docs.cherry-ai.com/data-settings/assistants-subscribe', '_blank')
+    window.open('https://docs.ofox.ai/data-settings/assistants-subscribe', '_blank')
   }
 
   return (

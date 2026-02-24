@@ -78,13 +78,26 @@ const MessageItem: FC<Props> = ({
   const { setTimeoutTimer } = useTimer()
   const isEditing = editingMessageId === message.id
 
+  // Scroll message into view when editing starts, with extra padding to avoid inputbar occlusion
   useEffect(() => {
     if (isEditing && messageContainerRef.current) {
-      scrollIntoView(messageContainerRef.current, {
-        behavior: 'smooth',
-        block: 'center',
-        container: 'nearest'
-      })
+      // Add extra padding to account for the message editor height and inputbar
+      const extraPadding = 300 // Approximate height of editor + inputbar
+      const container = messageContainerRef.current.parentElement?.closest('#messages') as HTMLElement | null
+      if (container) {
+        const elementRect = messageContainerRef.current.getBoundingClientRect()
+        const containerRect = container.getBoundingClientRect()
+        const elementTopWithinContainer = elementRect.top - containerRect.top + container.scrollTop
+        const desiredTop =
+          elementTopWithinContainer - Math.max(0, container.clientHeight - elementRect.height) / 2 - extraPadding
+        container.scrollTo({ top: Math.max(0, desiredTop), behavior: 'smooth' })
+      } else {
+        scrollIntoView(messageContainerRef.current, {
+          behavior: 'smooth',
+          block: 'center',
+          container: 'nearest'
+        })
+      }
     }
   }, [isEditing])
 

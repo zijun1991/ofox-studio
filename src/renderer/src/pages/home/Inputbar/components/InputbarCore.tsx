@@ -1,6 +1,9 @@
 import { HolderOutlined } from '@ant-design/icons'
 import { loggerService } from '@logger'
 import { ActionIconButton } from '@renderer/components/Buttons'
+// import TextArea from 'antd/es/input/TextArea'
+// import type { TextAreaRef } from 'antd/lib/input/TextArea'
+import MessageInput, { type MessageInputRef } from '@renderer/components/MessageInput'
 import type { QuickPanelTriggerInfo } from '@renderer/components/QuickPanel'
 import { QuickPanelReservedSymbol, QuickPanelView, useQuickPanel } from '@renderer/components/QuickPanel'
 import TranslateButton from '@renderer/components/TranslateButton'
@@ -18,8 +21,6 @@ import { formatQuotedText } from '@renderer/utils/formats'
 import { isSendMessageKeyPressed } from '@renderer/utils/input'
 import { IpcChannel } from '@shared/IpcChannel'
 import { Tooltip } from 'antd'
-import TextArea from 'antd/es/input/TextArea'
-import type { TextAreaRef } from 'antd/lib/input/TextArea'
 import { CirclePause, Languages } from 'lucide-react'
 import type { CSSProperties, FC } from 'react'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -28,6 +29,7 @@ import styled from 'styled-components'
 
 import NarrowLayout from '../../Messages/NarrowLayout'
 import AttachmentPreview from '../AttachmentPreview'
+import type { TriggersAPI } from '../context/InputbarToolsProvider'
 import {
   useInputbarToolsDispatch,
   useInputbarToolsInternalDispatch,
@@ -47,7 +49,7 @@ export interface InputbarCoreProps {
 
   text: string
   onTextChange: (text: string) => void
-  textareaRef: React.RefObject<TextAreaRef | null>
+  textareaRef: React.RefObject<MessageInputRef | null>
   resizeTextArea: (force?: boolean) => void
   focusTextarea: () => void
 
@@ -72,6 +74,12 @@ export interface InputbarCoreProps {
 
   // Override the user preference for quick panel triggers
   forceEnableQuickPanelTriggers?: boolean
+
+  // Disable "/" and "@" triggers for quick panel (used in turbo mode)
+  disableQuickPanelTriggers?: boolean
+
+  // Custom triggers API (for emitting triggers and getting menu items)
+  triggers?: TriggersAPI
 }
 
 const TextareaStyle: CSSProperties = {
@@ -121,12 +129,17 @@ export const InputbarCore: FC<InputbarCoreProps> = ({
   rightToolbar,
   topContent,
   pinnedContent,
-  forceEnableQuickPanelTriggers
+  forceEnableQuickPanelTriggers,
+  disableQuickPanelTriggers,
+  triggers: triggersProp
 }) => {
   const config = useMemo(() => getInputbarConfig(scope), [scope])
   const { files, isExpanded } = useInputbarToolsState()
-  const { setFiles, setIsExpanded, toolsRegistry, triggers } = useInputbarToolsDispatch()
+  const { setFiles, setIsExpanded, toolsRegistry, triggers: triggersFromContext } = useInputbarToolsDispatch()
   const { setExtensions } = useInputbarToolsInternalDispatch()
+
+  // Use prop triggers if provided, otherwise fall back to context
+  const triggers = triggersProp ?? triggersFromContext
   const isEmpty = text.trim().length === 0
   const [inputFocus, setInputFocus] = useState(false)
   const {
@@ -268,7 +281,7 @@ export const InputbarCore: FC<InputbarCoreProps> = ({
   }, [config.enableQuickPanel])
 
   const handleKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
       if (event.key === 'Tab' && inputFocus) {
         event.preventDefault()
         const textArea = textareaRef.current?.resizableTextArea?.textArea
@@ -354,7 +367,7 @@ export const InputbarCore: FC<InputbarCoreProps> = ({
   )
 
   const handleTextareaChange = useCallback(
-    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    (e: React.ChangeEvent<HTMLTextAreaElement> | { target: { value: string } }) => {
       const newText = e.target.value
       setText(newText)
 
@@ -402,15 +415,20 @@ export const InputbarCore: FC<InputbarCoreProps> = ({
           const hasSearchContent = searchSegment.trim().length > 0
 
           if (hasBoundary && (!hasSearchContent || isDeletion || allowResumeSearch)) {
-            if (triggerChar === QuickPanelReservedSymbol.Root && hasRootMenuItems) {
+            if (triggerChar === QuickPanelReservedSymbol.Root && hasRootMenuItems && !disableQuickPanelTriggers) {
               openRootPanelAt(lastTriggerIndex)
-            } else if (triggerChar === QuickPanelReservedSymbol.MentionModels) {
+            } else if (triggerChar === QuickPanelReservedSymbol.MentionModels && !disableQuickPanelTriggers) {
               openMentionPanelAt(lastTriggerIndex)
             }
           }
         }
 
-        if (lastSymbol === QuickPanelReservedSymbol.Root && hasValidTriggerBoundary && hasRootMenuItems) {
+        if (
+          lastSymbol === QuickPanelReservedSymbol.Root &&
+          hasValidTriggerBoundary &&
+          hasRootMenuItems &&
+          !disableQuickPanelTriggers
+        ) {
           if (quickPanel.isVisible && quickPanel.symbol !== QuickPanelReservedSymbol.Root) {
             quickPanel.close('switch-symbol')
           }
@@ -419,7 +437,11 @@ export const InputbarCore: FC<InputbarCoreProps> = ({
           }
         }
 
-        if (lastSymbol === QuickPanelReservedSymbol.MentionModels && hasValidTriggerBoundary) {
+        if (
+          lastSymbol === QuickPanelReservedSymbol.MentionModels &&
+          hasValidTriggerBoundary &&
+          !disableQuickPanelTriggers
+        ) {
           if (quickPanel.isVisible && quickPanel.symbol !== QuickPanelReservedSymbol.MentionModels) {
             quickPanel.close('switch-symbol')
           }
@@ -645,12 +667,12 @@ export const InputbarCore: FC<InputbarCoreProps> = ({
           )}
           {topContent}
 
-          <Textarea
+          <MessageInput
             ref={textareaRef}
             value={text}
             onChange={handleTextareaChange}
             onKeyDown={handleKeyDown}
-            onPaste={(e) => handlePaste(e.nativeEvent)}
+            onPaste={(e: React.ClipboardEvent<HTMLDivElement>) => handlePaste(e.nativeEvent)}
             onFocus={handleFocus}
             onBlur={() => setInputFocus(false)}
             placeholder={isTranslating ? t('chat.input.translating') : placeholder}
@@ -745,23 +767,6 @@ const InputBarContainer = styled.div`
       z-index: 5;
       pointer-events: none;
     }
-  }
-`
-
-const Textarea = styled(TextArea)`
-  padding: 0;
-  border-radius: 0;
-  display: flex;
-  resize: none !important;
-  overflow: auto;
-  width: 100%;
-  box-sizing: border-box;
-  transition: none !important;
-  &.ant-input {
-    line-height: 1.4;
-  }
-  &::-webkit-scrollbar {
-    width: 3px;
   }
 `
 

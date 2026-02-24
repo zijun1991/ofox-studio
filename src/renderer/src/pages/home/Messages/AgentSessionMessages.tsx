@@ -4,7 +4,6 @@ import { useSession } from '@renderer/hooks/agents/useSession'
 import { useTopicMessages } from '@renderer/hooks/useMessageOperations'
 import useScrollPosition from '@renderer/hooks/useScrollPosition'
 import { useSettings } from '@renderer/hooks/useSettings'
-import { EVENT_NAMES, EventEmitter } from '@renderer/services/EventService'
 import { getGroupedMessages } from '@renderer/services/MessagesService'
 import { type Topic, TopicType } from '@renderer/types'
 import { buildAgentSessionTopicId } from '@renderer/utils/agentSession'
@@ -77,13 +76,14 @@ const AgentSessionMessages: React.FC<Props> = ({ agentId, sessionId }) => {
         }
       })
     }
-  }, [scrollContainerRef])
+  }, [])
 
-  // Listen for send message events to auto-scroll to bottom
+  // Scroll to bottom when messages change
   useEffect(() => {
-    const unsubscribes = [EventEmitter.on(EVENT_NAMES.SEND_MESSAGE, scrollToBottom)]
-    return () => unsubscribes.forEach((unsub) => unsub())
-  }, [scrollToBottom])
+    if (messages.length > 0) {
+      scrollToBottom()
+    }
+  }, [messages, scrollToBottom])
 
   return (
     <MessagesContainer

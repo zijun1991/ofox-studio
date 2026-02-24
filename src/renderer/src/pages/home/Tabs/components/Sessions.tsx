@@ -2,7 +2,8 @@ import { DynamicVirtualList } from '@renderer/components/VirtualList'
 import { useCreateDefaultSession } from '@renderer/hooks/agents/useCreateDefaultSession'
 import { useSessions } from '@renderer/hooks/agents/useSessions'
 import { useRuntime } from '@renderer/hooks/useRuntime'
-import { useAppDispatch } from '@renderer/store'
+import { useAppDispatch, useAppSelector } from '@renderer/store'
+import { isAgentBound } from '@renderer/store/channels'
 import { newMessagesActions } from '@renderer/store/newMessage'
 import {
   setActiveSessionIdAction,
@@ -30,6 +31,9 @@ const Sessions: React.FC<SessionsProps> = ({ agentId }) => {
   const { activeSessionIdMap } = chat
   const dispatch = useAppDispatch()
   const { createDefaultSession, creatingSession } = useCreateDefaultSession(agentId)
+
+  // Check if agent is bound to a channel
+  const isBound = useAppSelector((state) => isAgentBound(state, agentId))
 
   const setActiveSessionId = useCallback(
     (agentId: string, sessionId: string | null) => {
@@ -105,9 +109,22 @@ const Sessions: React.FC<SessionsProps> = ({ agentId }) => {
       autoHideScrollbar
       header={
         <div className="mt-[2px]">
-          <AddButton onClick={createDefaultSession} disabled={creatingSession} className="-mt-[4px] mb-[6px]">
-            {t('agent.session.add.title')}
+          <AddButton
+            onClick={createDefaultSession}
+            disabled={creatingSession || isBound}
+            className="-mt-[4px] mb-[6px]">
+            {isBound
+              ? t('agent.session.add.channel_bound_disabled', 'Channel-Bound Agent')
+              : t('agent.session.add.title')}
           </AddButton>
+          {isBound && (
+            <DisabledHint>
+              {t(
+                'agent.session.add.channel_bound_hint',
+                'Sessions for channel-bound agents are created automatically.'
+              )}
+            </DisabledHint>
+          )}
         </div>
       }>
       {(session) => (
@@ -129,5 +146,13 @@ const StyledVirtualList = styled(DynamicVirtualList)`
   padding: 12px 10px;
   height: 100%;
 ` as typeof DynamicVirtualList
+
+const DisabledHint = styled.div`
+  font-size: 11px;
+  color: var(--color-text-3);
+  margin-top: -4px;
+  margin-bottom: 6px;
+  padding: 0 4px;
+`
 
 export default memo(Sessions)

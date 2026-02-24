@@ -1,3 +1,5 @@
+import PathTextRenderer from '@renderer/components/PathTextRenderer'
+import { useRuntime } from '@renderer/hooks/useRuntime'
 import { useSettings } from '@renderer/hooks/useSettings'
 import { getModelUniqId } from '@renderer/services/ModelService'
 import type { RootState } from '@renderer/store'
@@ -5,12 +7,16 @@ import { selectFormattedCitationsByBlockId } from '@renderer/store/messageBlock'
 import { type Model } from '@renderer/types'
 import type { MainTextMessageBlock, Message } from '@renderer/types/newMessage'
 import { determineCitationSource, withCitationTags } from '@renderer/utils/citation'
+import { extractPaths } from '@renderer/utils/pathExtractor'
 import { Flex } from 'antd'
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import styled from 'styled-components'
 
 import Markdown from '../../Markdown/Markdown'
+
+// Turbo agent ID constant - must match the one in SpeedyPage.tsx
+const TURBO_AGENT_ID = 'agent_turbo_system'
 
 interface Props {
   block: MainTextMessageBlock
@@ -22,8 +28,16 @@ interface Props {
 const MainTextBlock: React.FC<Props> = ({ block, citationBlockId, role, mentions = [] }) => {
   // Use the passed citationBlockId directly in the selector
   const { renderInputMessageAsMarkdown } = useSettings()
+  const runtime = useRuntime()
 
   const rawCitations = useSelector((state: RootState) => selectFormattedCitationsByBlockId(state, citationBlockId))
+
+  // 检查内容中是否包含路径
+  const hasPaths = useMemo(() => {
+    const segments = extractPaths(block.content)
+    const pathSegments = segments.filter((s) => s.type === 'path')
+    return pathSegments.length > 0
+  }, [block.content])
 
   // 创建引用处理函数，传递给 Markdown 组件在流式渲染中使用
   const processContent = useCallback(
@@ -40,6 +54,15 @@ const MainTextBlock: React.FC<Props> = ({ block, citationBlockId, role, mentions
     [block.citationReferences, citationBlockId, rawCitations]
   )
 
+  // 判断是否使用 PathTextRenderer
+  // 条件：
+  // 1. 用户消息且不使用 Markdown 渲染
+  // 2. 或者内容中包含路径（所有角色）
+  // 3. 不在专家模式下（专家模式禁用路径识别）
+  const { activeAgentId } = runtime.chat
+  const isExpertMode = activeAgentId !== TURBO_AGENT_ID && activeAgentId !== null
+  const shouldUsePathRenderer = !isExpertMode && ((role === 'user' && !renderInputMessageAsMarkdown) || hasPaths)
+
   return (
     <>
       {/* Render mentions associated with the message */}
@@ -50,9 +73,9 @@ const MainTextBlock: React.FC<Props> = ({ block, citationBlockId, role, mentions
           ))}
         </Flex>
       )}
-      {role === 'user' && !renderInputMessageAsMarkdown ? (
-        <p className="markdown" style={{ whiteSpace: 'pre-wrap' }}>
-          {block.content}
+      {shouldUsePathRenderer ? (
+        <p className="markdown">
+          <PathTextRenderer text={block.content} />
         </p>
       ) : (
         <Markdown block={block} postProcess={processContent} />
