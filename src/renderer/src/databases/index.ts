@@ -10,8 +10,8 @@
  * Any non-critical changes will conflict with the ongoing work.
  *
  * 🔗 Context & Status:
- * - Contribution Hold: https://github.com/CherryHQ/cherry-studio/issues/10954
- * - v2 Refactor PR   : https://github.com/CherryHQ/cherry-studio/pull/10162
+ * - Contribution Hold: https://github.com/ofox/ofox-claw/issues/10954
+ * - v2 Refactor PR   : https://github.com/ofox/ofox-claw/pull/10162
  * --------------------------------------------------------------------------
  */
 import type {
@@ -19,6 +19,7 @@ import type {
   FileMetadata,
   KnowledgeNoteItem,
   QuickPhrase,
+  TopicWorkspace,
   TranslateHistory
 } from '@renderer/types'
 // Import necessary types for blocks and new message structure
@@ -28,7 +29,7 @@ import { Dexie, type EntityTable } from 'dexie'
 import { upgradeToV5, upgradeToV7, upgradeToV8 } from './upgrades'
 
 // Database declaration (move this to its own module also)
-export const db = new Dexie('CherryStudio', {
+export const db = new Dexie('OfoxClaw', {
   chromeTransactionDurability: 'strict'
 }) as Dexie & {
   files: EntityTable<FileMetadata, 'id'>
@@ -39,6 +40,7 @@ export const db = new Dexie('CherryStudio', {
   quick_phrases: EntityTable<QuickPhrase, 'id'>
   message_blocks: EntityTable<MessageBlock, 'id'> // Correct type for message_blocks
   translate_languages: EntityTable<CustomTranslateLanguage, 'id'>
+  workspaces: EntityTable<TopicWorkspace, 'id'> // Speedy Mode workspaces
 }
 
 db.version(1).stores({
@@ -133,6 +135,19 @@ db.version(10).stores({
   translate_languages: '&id, langCode',
   quick_phrases: 'id',
   message_blocks: 'id, messageId, file.id'
+})
+
+// Version 11: Add workspaces table for Speedy Mode
+db.version(11).stores({
+  files: 'id, name, origin_name, path, size, ext, type, created_at, count',
+  topics: '&id',
+  settings: '&id, value',
+  knowledge_notes: '&id, baseId, type, content, created_at, updated_at',
+  translate_history: '&id, sourceText, targetText, sourceLanguage, targetLanguage, createdAt',
+  translate_languages: '&id, langCode',
+  quick_phrases: 'id',
+  message_blocks: 'id, messageId, file.id',
+  workspaces: '&id, topicId, createdAt, updatedAt'
 })
 
 export default db

@@ -24,6 +24,7 @@ export const getAgentTypeAvatar = (type: AgentType): string => {
 export const permissionModeCards: PermissionModeCard[] = [
   {
     mode: 'default',
+    icon: '🛡️',
     // t('agent.settings.tooling.permissionMode.default.title')
     titleKey: 'agent.settings.tooling.permissionMode.default.title',
     titleFallback: 'Normal Mode',
@@ -32,6 +33,7 @@ export const permissionModeCards: PermissionModeCard[] = [
   },
   {
     mode: 'plan',
+    icon: '📝',
     // t('agent.settings.tooling.permissionMode.plan.title')
     titleKey: 'agent.settings.tooling.permissionMode.plan.title',
     titleFallback: 'Plan Mode',
@@ -40,6 +42,7 @@ export const permissionModeCards: PermissionModeCard[] = [
   },
   {
     mode: 'acceptEdits',
+    icon: '✏️',
     // t('agent.settings.tooling.permissionMode.acceptEdits.title')
     titleKey: 'agent.settings.tooling.permissionMode.acceptEdits.title',
     titleFallback: 'Auto-edit Mode',
@@ -48,6 +51,7 @@ export const permissionModeCards: PermissionModeCard[] = [
   },
   {
     mode: 'bypassPermissions',
+    icon: '🚀',
     // t('agent.settings.tooling.permissionMode.bypassPermissions.title')
     titleKey: 'agent.settings.tooling.permissionMode.bypassPermissions.title',
     titleFallback: 'Full Auto Mode',

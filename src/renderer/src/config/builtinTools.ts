@@ -1,4 +1,4 @@
-import { Code, FileSearch, Folder, Languages, NotepadText, Palette } from 'lucide-react'
+import { Brain, Code, FileSearch, Folder, Languages, NotepadText, Palette } from 'lucide-react'
 
 /**
  * 内置工具配置
@@ -18,6 +18,14 @@ export interface BuiltinTool {
  * 包含知识库、绘画、翻译、文件、笔记、代码工具
  */
 export const BUILTIN_TOOLS: BuiltinTool[] = [
+  {
+    id: 'expert',
+    name: '专家模式',
+    nameKey: 'landing.enterExpertMode',
+    path: '/expert',
+    icon: Brain,
+    bgColor: 'linear-gradient(135deg, #8B5CF6, #A78BFA)' // 紫色，代表智能和专业
+  },
   {
     id: 'knowledge',
     name: '知识库',

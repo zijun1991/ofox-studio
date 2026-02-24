@@ -837,11 +837,11 @@ export const PROVIDER_URLS: Record<SystemProviderId, ProviderUrls> = {
       url: 'https://api.ppinfra.com/v3/openai'
     },
     websites: {
-      official: 'https://ppio.com/user/register?invited_by=JYT9GD&utm_source=github_cherry-studio&redirect=/',
+      official: 'https://ppio.com/user/register?invited_by=JYT9GD&utm_source=github_ofox-claw&redirect=/',
       apiKey:
-        'https://ppio.com/user/register?invited_by=JYT9GD&utm_source=github_cherry-studio&redirect=/settings/key-management',
-      docs: 'https://docs.cherry-ai.com/pre-basic/providers/ppio?invited_by=JYT9GD&utm_source=github_cherry-studio',
-      models: 'https://ppio.com/model-api/product/llm-api?invited_by=JYT9GD&utm_source=github_cherry-studio'
+        'https://ppio.com/user/register?invited_by=JYT9GD&utm_source=github_ofox-claw&redirect=/settings/key-management',
+      docs: 'https://docs.ofox.ai/pre-basic/providers/ppio?invited_by=JYT9GD&utm_source=github_ofox-claw',
+      models: 'https://ppio.com/model-api/product/llm-api?invited_by=JYT9GD&utm_source=github_ofox-claw'
     }
   },
   gemini: {
@@ -1063,10 +1063,10 @@ export const PROVIDER_URLS: Record<SystemProviderId, ProviderUrls> = {
       url: 'https://deepseek.alayanew.com'
     },
     websites: {
-      official: 'https://www.alayanew.com/backend/register?id=cherrystudio',
-      apiKey: ' https://www.alayanew.com/backend/register?id=cherrystudio',
-      docs: 'https://docs.alayanew.com/docs/modelService/interview?utm_source=cherrystudio',
-      models: 'https://www.alayanew.com/product/deepseek?id=cherrystudio'
+      official: 'https://www.alayanew.com/backend/register?id=ofoxclaw',
+      apiKey: ' https://www.alayanew.com/backend/register?id=ofoxclaw',
+      docs: 'https://docs.alayanew.com/docs/modelService/interview?utm_source=ofoxclaw',
+      models: 'https://www.alayanew.com/product/deepseek?id=ofoxclaw'
     }
   },
   openrouter: {
