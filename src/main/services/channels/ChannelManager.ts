@@ -185,6 +185,10 @@ export class ChannelManager {
       // Consume the stream and collect response text
       const reader = stream.getReader()
       let responseText = ''
+      let currentTurnText = '' // Text for current turn only
+      let currentTextBlockId: string | null = null // Track current text block ID to avoid duplicates
+      let currentTextContent = '' // Accumulate text for current block
+      let processedTextBlockIds = new Set<string>() // Track processed block IDs to avoid duplicates
       let agentSessionId = ''
 
       // Chunk types that should be ignored when building the response text
@@ -217,7 +221,6 @@ export class ChannelManager {
         'llm_response_created',
         'llm_response_in_progress',
         'llm_response_complete',
-        'text-start',
         'text-complete'
       ])
 
@@ -229,14 +232,47 @@ export class ChannelManager {
           // Forward stream chunks to renderer for real-time UI
           this.forwardStreamChunk(channel.sessionId, value)
 
-          // Only accumulate text-delta chunks for the response
-          // Explicitly ignore thinking, tool calls, and other non-text content
-          if (value.type === 'text-delta' && 'text' in value && value.text) {
-            responseText += value.text
+          // Track text blocks using text-start / text-end pairing
+          if (value.type === 'text-start') {
+            currentTextBlockId = (value as any).id
+            currentTextContent = ''
           }
-          // 流结束时，如果有完整文本，使用它替换累积内容（处理非流式消息的情况）
-          if (value.type === 'text-end' && (value as any).providerMetadata?.text?.value) {
-            responseText = (value as any).providerMetadata.text.value
+
+          // Accumulate text-delta for current block (only if block not yet processed)
+          if (value.type === 'text-delta' && currentTextBlockId && 'text' in value && value.text) {
+            currentTextContent += value.text
+          }
+
+          // At text-end, finalize the text for this block (only once per block ID)
+          if (value.type === 'text-end' && currentTextBlockId) {
+            // Skip if this block was already processed (prevents duplicates)
+            if (!processedTextBlockIds.has(currentTextBlockId)) {
+              // Prefer complete text from providerMetadata (streaming messages)
+              // otherwise use accumulated content
+              const finalText = (value as any).providerMetadata?.text?.value || currentTextContent
+              if (finalText) {
+                currentTurnText += finalText
+                logger.debug('Finalized text block', {
+                  channelId: channel.id,
+                  textBlockId: currentTextBlockId,
+                  textLength: finalText.length
+                })
+              }
+              processedTextBlockIds.add(currentTextBlockId)
+            }
+            currentTextBlockId = null
+            currentTextContent = ''
+          }
+
+          // At finish-step, save current turn text and reset for next turn
+          // This ensures we only keep the LAST turn's text for channel response
+          if (value.type === 'finish-step') {
+            if (currentTurnText) {
+              responseText = currentTurnText // Overwrite with latest turn's text
+            }
+            // Reset for next turn
+            currentTurnText = ''
+            processedTextBlockIds.clear()
           }
 
           // Extract agent_session_id from stream chunks for context resume

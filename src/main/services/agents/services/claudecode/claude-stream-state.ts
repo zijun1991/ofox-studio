@@ -88,10 +88,31 @@ export class ClaudeStreamState {
   private pendingToolCalls = new Map<string, PendingToolCall>()
   private stepActive = false
   /**
+   * Tracks whether text content has already been emitted via streaming events.
+   * Used to prevent duplicate text emission from aggregated assistant messages.
+   */
+  private textEmitted = false
+  /**
    * Tracks whether the next user message should be suppressed because it contains
    * skill content injected after a Skill tool result.
    */
   private expectingSkillContent = false
+
+  /**
+   * Marks that text content has been emitted via streaming events.
+   * This prevents duplicate text emission from aggregated assistant messages.
+   */
+  markTextEmitted(): void {
+    this.textEmitted = true
+  }
+
+  /**
+   * Checks whether text content was already emitted via streaming events.
+   * Returns true if text was already streamed, false otherwise.
+   */
+  hasTextEmitted(): boolean {
+    return this.textEmitted
+  }
 
   constructor(options: ClaudeStreamStateOptions) {
     this.logger = loggerService.withContext('ClaudeStreamState')
@@ -290,6 +311,18 @@ export class ClaudeStreamState {
     this.resetPendingUsage()
     this.stepActive = false
     this.expectingSkillContent = false
+    // Note: textEmitted is NOT reset here because the non-streaming assistant
+    // message arrives AFTER message_stop. We reset it in handleAssistantMessage
+    // when we detect that text was already emitted via streaming.
+  }
+
+  /**
+   * Resets the textEmitted flag after handling the non-streaming assistant message.
+   * This is called separately from resetStep() because of timing issues:
+   * message_stop calls resetStep() BEFORE the assistant message arrives.
+   */
+  resetTextEmitted(): void {
+    this.textEmitted = false
   }
 
   getNamespacedToolCallId(rawToolCallId: string): string {

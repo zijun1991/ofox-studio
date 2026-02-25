@@ -144,6 +144,22 @@ function handleAssistantMessage(
   const providerMetadata = sdkMessageToProviderMetadata(message)
   const content = message.message.content
   const isStreamingActive = state.hasActiveStep()
+  const textAlreadyEmitted = state.hasTextEmitted()
+
+  // If text was already emitted via streaming events, skip generating text blocks
+  // for this aggregated assistant message to avoid duplicates.
+  // This check is needed because message_stop calls resetStep() BEFORE the
+  // assistant message arrives, so hasActiveStep() returns false.
+  if (textAlreadyEmitted) {
+    state.resetTextEmitted()
+    return chunks
+  }
+
+  // If streaming is active, the text has already been processed via stream events.
+  // Skip generating text blocks for this aggregated assistant message to avoid duplicates.
+  if (isStreamingActive) {
+    return chunks
+  }
 
   if (typeof content === 'string') {
     const sanitizedContent = stripLocalCommandTags(content)
@@ -151,14 +167,12 @@ function handleAssistantMessage(
       return chunks
     }
 
-    if (!isStreamingActive) {
-      state.beginStep()
-      chunks.push({
-        type: 'start-step',
-        request: { body: '' },
-        warnings: []
-      })
-    }
+    state.beginStep()
+    chunks.push({
+      type: 'start-step',
+      request: { body: '' },
+      warnings: []
+    })
 
     const textId = message.uuid?.toString() || generateMessageId()
     chunks.push({
@@ -480,6 +494,9 @@ function handleStreamEvent(
 
       switch (block.kind) {
         case 'text':
+          // Mark that text was emitted via streaming to prevent duplicate
+          // text emission from the non-streaming assistant message
+          state.markTextEmitted()
           chunks.push({
             type: 'text-end',
             id: block.id,

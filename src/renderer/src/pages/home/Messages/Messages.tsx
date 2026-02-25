@@ -266,9 +266,16 @@ const Messages: React.FC<MessagesProps> = ({ assistant, topic, setActiveTopic, o
       }>
     ) => {
       const { sessionId } = event.detail
+      const builtTopicId = buildAgentSessionTopicId(sessionId)
       // Check if the message is for the current topic
       // For agent sessions, topicId is prefixed with 'agent-session:'
-      if (topic.id === buildAgentSessionTopicId(sessionId)) {
+      logger.debug('Channel message received', {
+        sessionId,
+        topicId: topic.id,
+        builtTopicId,
+        matches: topic.id === builtTopicId
+      })
+      if (topic.id === builtTopicId) {
         logger.debug('Refreshing messages for channel message', { sessionId, topicId: topic.id })
         // Force reload messages from database
         dispatch(loadTopicMessagesThunk(topic.id, true))
