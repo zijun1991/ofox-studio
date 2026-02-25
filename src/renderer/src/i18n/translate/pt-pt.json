@@ -252,6 +252,7 @@
             "title": "Ignorar verificações de permissão",
             "warning": "Use com cautela — todas as ferramentas serão executadas sem solicitar aprovação."
           },
+          "channelBoundHelper": "O modo de permissão está fixado em Aprovação Automática para agentes vinculados a canais.",
           "confirmChange": {
             "description": "Alternar modos atualiza as ferramentas aprovadas automaticamente.",
             "title": "Alterar modo de permissão?"
@@ -748,8 +749,21 @@
     "add_title": "Adicionar Canal",
     "agent_id": "ID do Agente",
     "binding": "Vinculação de Agente",
+    "binding_already_bound": "O canal já está vinculado a um agente",
+    "binding_create_hint": "Criar um novo Agente e vinculá-lo a este canal",
+    "binding_edit_error": "Falha ao abrir o agente para edição",
+    "binding_error": "Falha ao criar e vincular agente",
+    "binding_locked_hint": "Agente está vinculado, clique para navegar para a página de edição do agente",
+    "binding_no_agent": "Nenhum agente vinculado a este canal",
+    "binding_status": "Status de Vinculação",
+    "binding_success": "Agente criado e vinculado com sucesso",
+    "bound": "Bound",
+    "bound_agent": "Agente Vinculado",
+    "bound_session": "Sessão Vinculada",
+    "create_agent_and_bind": "Criar e Vincular",
     "delete_confirm": "Tem certeza de que deseja excluir este canal?",
     "deleted": "Canal excluído",
+    "edit_agent": "Editar Agente",
     "email": {
       "folder": "Pasta",
       "from_address": "Endereço de Origem",
@@ -770,6 +784,17 @@
     "name_placeholder": "exemplo: Meu Webhook",
     "name_required": "Por favor, insira um nome de canal",
     "not_found": "Canal não encontrado",
+    "proxy": {
+      "current_config": "Configuração Atual",
+      "mode": "Modo Proxy",
+      "mode_custom": "Use Proxy Personalizado",
+      "mode_global": "Seguir Proxy Global",
+      "title": "Configuração de Proxy",
+      "url": "URL do Proxy",
+      "url_help": "Suporta proxies HTTP, HTTPS, SOCKS4, SOCKS5. Exemplo: http://192.168.0.42:7890 ou socks5://127.0.0.1:1080",
+      "url_placeholder": "ex. socks5://127.0.0.1:1080",
+      "url_required": "Por favor, insira a URL do proxy"
+    },
     "saved": "Canal salvo",
     "session_id": "ID da Sessão",
     "telegram": {
@@ -783,10 +808,12 @@
       "poll_interval": "Intervalo de Sondagem (seg)"
     },
     "test_connection": "Testar Conexão",
+    "test_connection_error": "Teste de conexão falhou",
     "title": "Canais",
     "type": "Tipo",
     "type_placeholder": "Selecionar tipo de canal",
     "type_required": "Por favor, selecione um tipo de canal",
+    "unbound": "Unbound",
     "webhook": {
       "config": "Configuração de Webhook",
       "endpoint": "Endpoint",
@@ -1412,6 +1439,8 @@
     "more": "Mais",
     "name": "Nome",
     "next_match": "Próxima partida",
+    "no": "Não",
+    "noData": "Sem dados",
     "no_results": "Nenhum resultado",
     "none": "Nenhum",
     "off": "Desligado",
@@ -1466,6 +1495,7 @@
     "upload_image": "Carregar arquivo de imagem",
     "uploaded_image": "Imagem carregada",
     "warning": "Aviso",
+    "yes": "Sim",
     "you": "Você"
   },
   "dialog": {
@@ -3380,6 +3410,95 @@
       "undo": "desfazer"
     }
   },
+  "scheduler": {
+    "create": "Criar Tarefa",
+    "createTitle": "Criar Tarefa Agendada",
+    "cron": {
+      "custom": "Personalizado",
+      "everyDay": "Todos os dias",
+      "everyHour": "Cada hora",
+      "everyMinute": "Cada minuto",
+      "everyMonth": "Todo mês",
+      "everyWeek": "Toda semana",
+      "weekdays": "Todos os dias da semana"
+    },
+    "daily": "Diariamente",
+    "deleteConfirm": {
+      "description": "Tem certeza de que deseja excluir esta tarefa agendada?",
+      "title": "Excluir Tarefa"
+    },
+    "deleteFailed": "Falha ao excluir tarefa",
+    "deleteSuccess": "Tarefa excluída com sucesso",
+    "disabled": "Tarefa desativada",
+    "editTitle": "Editar Tarefa Agendada",
+    "empty": {
+      "description": "Clique no botão abaixo para criar sua primeira tarefa agendada",
+      "title": "Nenhuma Tarefa Agendada"
+    },
+    "enabled": "Tarefa ativada",
+    "form": {
+      "agent": "Selecionar Agente",
+      "agentPlaceholder": "Selecione o Agente a ser executado",
+      "agentRequired": "Por favor, selecione um Agente",
+      "basicInfo": "Informações Básicas",
+      "cronCustom": "Cron Personalizado",
+      "cronExpression": "Expressão Cron",
+      "cronMode": "Modo de Agendamento",
+      "cronPreset": "Modelo Predefinido",
+      "description": "Descrição",
+      "descriptionPlaceholder": "Inserir descrição (opcional)",
+      "invalidCron": "Expressão Cron inválida",
+      "message": "Conteúdo da Mensagem",
+      "messageContent": "Conteúdo da Mensagem",
+      "messagePlaceholder": "Insira o conteúdo da mensagem para enviar...",
+      "messageRequired": "Por favor, insira o conteúdo da mensagem",
+      "name": "Nome da Tarefa",
+      "namePlaceholder": "Insira o nome da tarefa",
+      "nameRequired": "Por favor, insira o nome da tarefa",
+      "schedule": "Configurações de Agenda",
+      "session": "Selecionar Sessão",
+      "sessionPlaceholder": "Selecione a Sessão para enviar mensagem",
+      "sessionRequired": "Por favor, selecione uma Sessão",
+      "target": "Alvo de Execução",
+      "timezone": "Fuso horário"
+    },
+    "lastRun": "Última execução",
+    "logs": {
+      "columns": {
+        "duration": "Duração",
+        "error": "Mensagem de Erro",
+        "message": "Mensagem Enviada",
+        "preview": "Pré-visualização da Resposta",
+        "status": "Status",
+        "triggeredAt": "Disparado Em"
+      },
+      "statusFailed": "Falhou",
+      "statusRunning": "Correndo",
+      "statusSuccess": "Sucesso",
+      "statusTimeout": "Tempo esgotado",
+      "title": "Registros de Execução"
+    },
+    "noNextRun": "Sem próxima execução",
+    "presets": {
+      "every30Minutes": "A cada 30 minutos",
+      "every5Minutes": "A cada 5 minutos",
+      "every6Hours": "A cada 6 horas",
+      "everyDay": "Todos os dias",
+      "everyHour": "A cada hora",
+      "everyMinute": "A cada minuto",
+      "everyWeek": "Todas as semanas",
+      "everyWeekday": "Todos os dias da semana"
+    },
+    "saveSuccess": "Tarefa salva com sucesso",
+    "statusDisabled": "Deficiente",
+    "statusEnabled": "Ativado",
+    "tabs": {
+      "logs": "Registros de Execução",
+      "schedulers": "Tarefas"
+    },
+    "title": "Tarefas Agendadas",
+    "toggleFailed": "Falha ao alternar o status da tarefa"
+  },
   "selection": {
     "action": {
       "builtin": {
@@ -4459,6 +4578,7 @@
         "no": "sem descrição",
         "nowledge_mem": "Requer a aplicação Nowledge Mem em execução localmente. Mantém conversas de IA, ferramentas, notas, agentes e ficheiros numa memória privada no seu computador. Transfira de https://mem.nowledge.co/",
         "python": "Executar código Python num ambiente sandbox seguro. Utilizar Pyodide para executar Python, suportando a maioria das bibliotecas padrão e pacotes de computação científica",
+        "scheduler": "Gerenciamento de Tarefas Agendadas MCP Server. Fornece funcionalidade para criar, listar, atualizar, excluir e alternar tarefas agendadas. Envia mensagens para Sessões de Agente especificadas quando acionado.",
         "sequentialthinking": "Uma implementação de servidor MCP que fornece ferramentas para resolução dinâmica e reflexiva de problemas através de um processo de pensamento estruturado"
       },
       "command": "Comando",
@@ -5565,6 +5685,7 @@
     "notes": "Notas",
     "openclaw": "OpenClaw",
     "paintings": "Pinturas",
+    "scheduler": "Agendador",
     "settings": "Configurações",
     "store": "Biblioteca de assistentes",
     "translate": "Traduzir"

@@ -29,6 +29,13 @@
       "when": 1764000000000,
       "tag": "0003_add_is_system",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1740470400000,
+      "tag": "0004_add_schedulers",
+      "breakpoints": true
     }
   ]
 }

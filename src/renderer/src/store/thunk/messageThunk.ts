@@ -693,7 +693,7 @@ const fetchAndProcessAgentResponseImpl = async (
     const adapter = new AiSdkToChunkAdapter(
       streamProcessorCallbacks,
       [],
-      false,
+      true,
       false,
       (sessionId) => {
         persistAgentSessionId(sessionId)
@@ -1081,7 +1081,19 @@ export const deleteSingleMessageThunk =
   (topicId: string, messageId: string) => async (dispatch: AppDispatch, getState: () => RootState) => {
     const currentState = getState()
     const messageToDelete = currentState.messages.entities[messageId]
-    if (!messageToDelete || messageToDelete.topicId !== topicId) {
+    if (!messageToDelete) {
+      logger.error(`[deleteSingleMessage] Message ${messageId} not found.`)
+      return
+    }
+
+    // 对于 Agent Session，消息存储的 topicId 可能没有前缀，但传入的 topicId 有前缀
+    // 需要规范化比较
+    const normalizedPassedTopicId = isAgentSessionTopicId(topicId) ? extractAgentSessionIdFromTopicId(topicId) : topicId
+    const normalizedMessageTopicId = isAgentSessionTopicId(messageToDelete.topicId)
+      ? extractAgentSessionIdFromTopicId(messageToDelete.topicId)
+      : messageToDelete.topicId
+
+    if (normalizedMessageTopicId !== normalizedPassedTopicId) {
       logger.error(`[deleteSingleMessage] Message ${messageId} not found in topic ${topicId}.`)
       return
     }

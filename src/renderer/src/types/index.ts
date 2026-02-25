@@ -30,6 +30,7 @@ export * from './ocr'
 export * from './ofox'
 export * from './plugin'
 export * from './provider'
+export * from './scheduler'
 export * from './workspace'
 
 export type McpMode = 'disabled' | 'auto' | 'manual'
@@ -858,7 +859,8 @@ export const BuiltinMCPServerNames = {
   didiMCP: '@cherry/didi-mcp',
   browser: '@cherry/browser',
   nowledgeMem: '@cherry/nowledge-mem',
-  hub: '@cherry/hub'
+  hub: '@cherry/hub',
+  scheduler: '@cherry/scheduler'
 } as const
 
 export type BuiltinMCPServerName = (typeof BuiltinMCPServerNames)[keyof typeof BuiltinMCPServerNames]
@@ -1018,6 +1020,12 @@ export type S3Config = {
 }
 
 export type { Message } from './newMessage'
+export {
+  AssistantMessageStatus,
+  MessageBlockStatus,
+  MessageBlockType,
+  UserMessageStatus
+} from './newMessage'
 export * from './tool'
 
 // Memory Service Types

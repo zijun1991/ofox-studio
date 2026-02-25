@@ -483,7 +483,10 @@ function handleStreamEvent(
           chunks.push({
             type: 'text-end',
             id: block.id,
-            providerMetadata
+            providerMetadata: {
+              ...providerMetadata,
+              text: { value: block.text }
+            }
           })
           break
         case 'reasoning':
@@ -619,7 +622,7 @@ function handleContentBlockDelta(
       chunks.push({
         type: 'text-delta',
         id: block.id,
-        text: block.text,
+        text: delta.text,
         providerMetadata
       })
       break

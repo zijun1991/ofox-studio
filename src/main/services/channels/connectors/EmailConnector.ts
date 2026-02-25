@@ -27,6 +27,13 @@ export class EmailConnector extends BaseChannelConnector {
     return this.channel.emailConfig
   }
 
+  private get customProxyUrl(): string | undefined {
+    if (this.channel.proxyConfig?.mode === 'custom' && this.channel.proxyConfig.url) {
+      return this.channel.proxyConfig.url
+    }
+    return undefined
+  }
+
   async start(onMessage: (msg: ChannelInboundMessage) => Promise<void>): Promise<void> {
     this.onMessage = onMessage
     const config = this.emailConfig
@@ -35,6 +42,14 @@ export class EmailConnector extends BaseChannelConnector {
     }
 
     try {
+      const proxyUrl = this.customProxyUrl
+      if (proxyUrl) {
+        logger.info('Using custom proxy for Email', {
+          channelId: this.channel.id,
+          proxyUrl
+        })
+      }
+
       // Initialize IMAP client
       const { ImapFlow: ImapFlowClass } = await import('imapflow')
       this.imapClient = new ImapFlowClass({
@@ -45,7 +60,8 @@ export class EmailConnector extends BaseChannelConnector {
           user: config.imapUser,
           pass: config.imapPassword
         },
-        logger: false
+        logger: false,
+        ...(proxyUrl && { proxy: proxyUrl })
       })
 
       await this.imapClient.connect()
@@ -59,7 +75,8 @@ export class EmailConnector extends BaseChannelConnector {
         auth: {
           user: config.smtpUser,
           pass: config.smtpPassword
-        }
+        },
+        ...(proxyUrl && { proxy: proxyUrl })
       })
 
       // Get current max UID to only process new messages
@@ -148,6 +165,8 @@ export class EmailConnector extends BaseChannelConnector {
     }
 
     try {
+      const proxyUrl = this.customProxyUrl
+
       // Test IMAP
       const { ImapFlow: ImapFlowClass } = await import('imapflow')
       const imapClient = new ImapFlowClass({
@@ -158,7 +177,8 @@ export class EmailConnector extends BaseChannelConnector {
           user: config.imapUser,
           pass: config.imapPassword
         },
-        logger: false
+        logger: false,
+        ...(proxyUrl && { proxy: proxyUrl })
       })
 
       await imapClient.connect()
@@ -173,7 +193,8 @@ export class EmailConnector extends BaseChannelConnector {
         auth: {
           user: config.smtpUser,
           pass: config.smtpPassword
-        }
+        },
+        ...(proxyUrl && { proxy: proxyUrl })
       })
 
       await transport.verify()

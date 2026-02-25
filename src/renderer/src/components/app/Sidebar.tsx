@@ -14,6 +14,7 @@ import { ThemeMode } from '@renderer/types'
 import { isEmoji } from '@renderer/utils'
 import { Avatar, Tooltip } from 'antd'
 import {
+  Clock,
   Code,
   FileSearch,
   Folder,
@@ -101,6 +102,17 @@ const Sidebar: FC = () => {
               <Monitor size={20} className="icon" />
             )}
           </Icon>
+        </Tooltip>
+        <Tooltip title={t('title.scheduler')} mouseEnterDelay={0.8} placement="right">
+          <StyledLink
+            onClick={async () => {
+              hideMinappPopup()
+              await to('/scheduler')
+            }}>
+            <Icon theme={theme} className={pathname.startsWith('/scheduler') && !minappShow ? 'active' : ''}>
+              <Clock size={20} className="icon" />
+            </Icon>
+          </StyledLink>
         </Tooltip>
         <Tooltip title={t('settings.title')} mouseEnterDelay={0.8} placement="right">
           <StyledLink

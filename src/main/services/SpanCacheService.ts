@@ -388,8 +388,13 @@ class SpanCacheService implements TraceCache {
     try {
       await fs.access(filePath)
       return true
-    } catch (err) {
-      logger.error('delete trace file error:', err as Error)
+    } catch (err: unknown) {
+      // 文件不存在是正常情况，不需要打印错误日志
+      // 只在非 ENOENT 错误时记录
+      const nodeError = err as NodeJS.ErrnoException
+      if (nodeError?.code !== 'ENOENT') {
+        logger.error('access trace file error:', err as Error)
+      }
       return false
     }
   }

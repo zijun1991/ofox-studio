@@ -56,7 +56,10 @@ export function useMessageOperations(topic: Topic) {
   const deleteMessage = useCallback(
     async (id: string, traceId?: string, modelName?: string) => {
       await dispatch(deleteSingleMessageThunk(topic.id, id))
-      window.api.trace.cleanHistory(topic.id, traceId || '', modelName)
+      // 只在 traceId 存在时才清理 trace 文件
+      if (traceId) {
+        window.api.trace.cleanHistory(topic.id, traceId, modelName)
+      }
     },
     [dispatch, topic.id]
   )

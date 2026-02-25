@@ -6,7 +6,7 @@ import type {
   ListOptions
 } from '@types'
 import type { TextStreamPart } from 'ai'
-import { and, desc, eq, not } from 'drizzle-orm'
+import { and, desc, eq, not, sql } from 'drizzle-orm'
 
 import { BaseService } from '../BaseService'
 import { sessionMessagesTable } from '../database/schema'
@@ -139,11 +139,17 @@ export class SessionMessageService extends BaseService {
     return { messages }
   }
 
-  async deleteSessionMessage(sessionId: string, messageId: number): Promise<boolean> {
+  async deleteSessionMessage(sessionId: string, messageUuid: string): Promise<boolean> {
     const database = await this.getDatabase()
+    // 通过 UUID（存储在 content.message.id 中）删除消息
     const result = await database
       .delete(sessionMessagesTable)
-      .where(and(eq(sessionMessagesTable.id, messageId), eq(sessionMessagesTable.session_id, sessionId)))
+      .where(
+        and(
+          eq(sessionMessagesTable.session_id, sessionId),
+          sql`json_extract(${sessionMessagesTable.content}, '$.message.id') = ${messageUuid}`
+        )
+      )
 
     return result.rowsAffected > 0
   }

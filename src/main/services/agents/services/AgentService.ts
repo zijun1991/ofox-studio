@@ -2,19 +2,24 @@ import os from 'node:os'
 import path from 'node:path'
 
 import { loggerService } from '@logger'
+import { PluginInstaller } from '@main/services/agents/plugins/PluginInstaller'
 import { pluginService } from '@main/services/agents/plugins/PluginService'
-import { getDataPath } from '@main/utils'
+import { getDataPath, getResourcePath } from '@main/utils'
+import { findAllSkillDirectories, parseSkillMetadata } from '@main/utils/markdownParser'
 import type {
   AgentEntity,
   CreateAgentRequest,
   CreateAgentResponse,
   GetAgentResponse,
+  InstalledPlugin,
   ListOptions,
   UpdateAgentRequest,
   UpdateAgentResponse
 } from '@types'
-import { AgentBaseSchema } from '@types'
+import { AgentBaseSchema, BuiltinMCPServerNames } from '@types'
 import { asc, count, desc, eq } from 'drizzle-orm'
+import { app } from 'electron'
+import * as fs from 'fs'
 
 import { BaseService } from '../BaseService'
 import { type AgentRow, agentsTable, type InsertAgentRow } from '../database/schema'
@@ -28,6 +33,7 @@ export const TURBO_AGENT_ID = 'agent_turbo_system'
 export class AgentService extends BaseService {
   private static instance: AgentService | null = null
   private readonly modelFields: AgentModelField[] = ['model', 'plan_model', 'small_model']
+  private readonly installer = new PluginInstaller()
 
   static getInstance(): AgentService {
     if (!AgentService.instance) {
@@ -68,6 +74,136 @@ export class AgentService extends BaseService {
     const database = await this.getDatabase()
     await database.insert(agentsTable).values(insertData)
     logger.info('Turbo agent created successfully')
+
+    // Initialize preset skills for the new Turbo agent
+    await this.initializePresetSkills(defaultPath)
+  }
+
+  /**
+   * Initialize preset skills from resources/preset-skills directory
+   * This copies bundled skills to the agent's workspace on first run
+   */
+  private async initializePresetSkills(workdir: string): Promise<void> {
+    const presetSkillsPath = app.isPackaged
+      ? path.join(getResourcePath(), 'preset-skills')
+      : path.join(app.getAppPath(), 'preset-skills')
+
+    // Check if preset-skills directory exists
+    try {
+      await fs.promises.access(presetSkillsPath, fs.constants.R_OK)
+    } catch {
+      logger.debug('Preset skills directory not found, skipping initialization', { presetSkillsPath })
+      return
+    }
+
+    // Find all skill directories
+    const skillDirs = await findAllSkillDirectories(presetSkillsPath, presetSkillsPath)
+    if (skillDirs.length === 0) {
+      logger.debug('No preset skills found', { presetSkillsPath })
+      return
+    }
+
+    const targetSkillsPath = path.join(workdir, '.claude', 'skills')
+    const claudePath = path.join(workdir, '.claude')
+    const cachePath = path.join(claudePath, 'plugins.json')
+
+    // Ensure .claude/skills directory exists
+    await fs.promises.mkdir(targetSkillsPath, { recursive: true })
+
+    const installedPlugins: InstalledPlugin[] = []
+
+    for (const { folderPath, sourcePath } of skillDirs) {
+      const skillName = path.basename(folderPath)
+      const destPath = path.join(targetSkillsPath, skillName)
+
+      // Skip if already installed
+      try {
+        await fs.promises.access(destPath, fs.constants.R_OK)
+        logger.debug('Preset skill already exists, skipping', { skillName, destPath })
+        continue
+      } catch {
+        // Skill doesn't exist, proceed with installation
+      }
+
+      try {
+        // Parse skill metadata
+        const metadata = await parseSkillMetadata(folderPath, sourcePath, 'skills')
+
+        // Install skill using PluginInstaller
+        await this.installer.installSkill(TURBO_AGENT_ID, folderPath, destPath)
+
+        // Create installed plugin entry
+        const installedPlugin: InstalledPlugin = {
+          filename: metadata.filename,
+          type: 'skill',
+          metadata: {
+            ...metadata,
+            installedAt: Date.now()
+          }
+        }
+        installedPlugins.push(installedPlugin)
+
+        logger.info('Preset skill installed', { skillName, destPath })
+      } catch (error) {
+        logger.warn('Failed to install preset skill', {
+          skillName,
+          error: error instanceof Error ? error.message : String(error)
+        })
+      }
+    }
+
+    // Update plugins cache if any skills were installed
+    if (installedPlugins.length > 0) {
+      await this.updatePluginsCache(claudePath, cachePath, installedPlugins)
+      logger.info('Preset skills initialization completed', {
+        count: installedPlugins.length,
+        skills: installedPlugins.map((p) => p.filename)
+      })
+    }
+  }
+
+  /**
+   * Update the plugins.json cache file with installed preset skills
+   */
+  private async updatePluginsCache(
+    claudePath: string,
+    cachePath: string,
+    newPlugins: InstalledPlugin[]
+  ): Promise<void> {
+    let existingPlugins: InstalledPlugin[] = []
+    let version = 1
+
+    // Read existing cache if it exists
+    try {
+      const content = await fs.promises.readFile(cachePath, 'utf-8')
+      const data = JSON.parse(content)
+      existingPlugins = data.plugins || []
+      version = data.version || 1
+    } catch {
+      // Cache doesn't exist or is invalid, start fresh
+    }
+
+    // Merge new plugins with existing (avoid duplicates by filename + type)
+    const pluginMap = new Map<string, InstalledPlugin>()
+    for (const plugin of existingPlugins) {
+      const key = `${plugin.type}:${plugin.filename}`
+      pluginMap.set(key, plugin)
+    }
+    for (const plugin of newPlugins) {
+      const key = `${plugin.type}:${plugin.filename}`
+      if (!pluginMap.has(key)) {
+        pluginMap.set(key, plugin)
+      }
+    }
+
+    const cacheData = {
+      version,
+      lastUpdated: Date.now(),
+      plugins: Array.from(pluginMap.values())
+    }
+
+    await fs.promises.mkdir(claudePath, { recursive: true })
+    await fs.promises.writeFile(cachePath, JSON.stringify(cacheData, null, 2), 'utf-8')
   }
 
   // Agent Methods
@@ -82,6 +218,14 @@ export class AgentService extends BaseService {
 
     if (req.accessible_paths !== undefined) {
       req.accessible_paths = this.ensurePathsExist(req.accessible_paths)
+    }
+
+    // Add default MCP Servers (scheduler) for all agents
+    if (!req.mcps) {
+      req.mcps = []
+    }
+    if (!req.mcps.includes(BuiltinMCPServerNames.scheduler)) {
+      req.mcps.push(BuiltinMCPServerNames.scheduler)
     }
 
     await this.validateAgentModels(req.type, {

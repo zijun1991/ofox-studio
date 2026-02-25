@@ -252,6 +252,7 @@
             "title": "Full Auto Mode",
             "warning": "Use with caution — all tools will run without asking for approval."
           },
+          "channelBoundHelper": "Permission mode is fixed to Auto Approve for channel-bound agents.",
           "confirmChange": {
             "description": "Switching modes updates the automatically approved tools.",
             "title": "Change permission mode?"
@@ -748,18 +749,21 @@
     "add_title": "Add Channel",
     "agent_id": "Agent ID",
     "binding": "Agent Binding",
-    "binding_status": "Binding Status",
-    "binding_create_hint": "Create a new Agent and bind to this channel",
     "binding_already_bound": "Channel is already bound to an agent",
-    "binding_success": "Agent created and bound successfully",
-    "binding_error": "Failed to create and bind agent",
-    "binding_no_agent": "No agent bound to this channel",
+    "binding_create_hint": "Create a new Agent and bind to this channel",
     "binding_edit_error": "Failed to open agent for editing",
+    "binding_error": "Failed to create and bind agent",
     "binding_locked_hint": "Agent is bound, click to navigate to agent edit page",
-    "unbound": "Unbound",
+    "binding_no_agent": "No agent bound to this channel",
+    "binding_status": "Binding Status",
+    "binding_success": "Agent created and bound successfully",
+    "bound": "Bound",
+    "bound_agent": "Bound Agent",
+    "bound_session": "Bound Session",
     "create_agent_and_bind": "Create and Bind",
     "delete_confirm": "Are you sure you want to delete this channel?",
     "deleted": "Channel deleted",
+    "edit_agent": "Edit Agent",
     "email": {
       "folder": "Folder",
       "from_address": "From Address",
@@ -780,6 +784,17 @@
     "name_placeholder": "e.g. My Webhook",
     "name_required": "Please enter a channel name",
     "not_found": "Channel not found",
+    "proxy": {
+      "current_config": "Current Config",
+      "mode": "Proxy Mode",
+      "mode_custom": "Use Custom Proxy",
+      "mode_global": "Follow Global Proxy",
+      "title": "Proxy Configuration",
+      "url": "Proxy URL",
+      "url_help": "Supports HTTP, HTTPS, SOCKS4, SOCKS5 proxies. Example: http://192.168.0.42:7890 or socks5://127.0.0.1:1080",
+      "url_placeholder": "e.g. socks5://127.0.0.1:1080",
+      "url_required": "Please enter proxy URL"
+    },
     "saved": "Channel saved",
     "session_id": "Session ID",
     "telegram": {
@@ -793,10 +808,12 @@
       "poll_interval": "Poll Interval (sec)"
     },
     "test_connection": "Test Connection",
+    "test_connection_error": "Connection test failed",
     "title": "Channels",
     "type": "Type",
     "type_placeholder": "Select channel type",
     "type_required": "Please select a channel type",
+    "unbound": "Unbound",
     "webhook": {
       "config": "Webhook Configuration",
       "endpoint": "Endpoint",
@@ -1422,9 +1439,10 @@
     "more": "More",
     "name": "Name",
     "next_match": "Next match",
+    "no": "No",
+    "noData": "No data",
     "no_results": "No results",
     "none": "None",
-    "no": "No",
     "off": "Off",
     "on": "On",
     "open": "Open",
@@ -3392,6 +3410,95 @@
       "undo": "Undo"
     }
   },
+  "scheduler": {
+    "create": "Create Task",
+    "createTitle": "Create Scheduled Task",
+    "cron": {
+      "custom": "Custom",
+      "everyDay": "Every day",
+      "everyHour": "Every hour",
+      "everyMinute": "Every minute",
+      "everyMonth": "Every month",
+      "everyWeek": "Every week",
+      "weekdays": "Every weekday"
+    },
+    "daily": "Daily",
+    "deleteConfirm": {
+      "description": "Are you sure you want to delete this scheduled task?",
+      "title": "Delete Task"
+    },
+    "deleteFailed": "Failed to delete task",
+    "deleteSuccess": "Task deleted successfully",
+    "disabled": "Task disabled",
+    "editTitle": "Edit Scheduled Task",
+    "empty": {
+      "description": "Click the button below to create your first scheduled task",
+      "title": "No Scheduled Tasks"
+    },
+    "enabled": "Task enabled",
+    "form": {
+      "agent": "Select Agent",
+      "agentPlaceholder": "Select the Agent to execute",
+      "agentRequired": "Please select an Agent",
+      "basicInfo": "Basic Information",
+      "cronCustom": "Custom Cron",
+      "cronExpression": "Cron Expression",
+      "cronMode": "Schedule Mode",
+      "cronPreset": "Preset Template",
+      "description": "Description",
+      "descriptionPlaceholder": "Enter description (optional)",
+      "invalidCron": "Invalid Cron expression",
+      "message": "Message Content",
+      "messageContent": "Message Content",
+      "messagePlaceholder": "Enter the message content to send...",
+      "messageRequired": "Please enter message content",
+      "name": "Task Name",
+      "namePlaceholder": "Enter task name",
+      "nameRequired": "Please enter task name",
+      "schedule": "Schedule Settings",
+      "session": "Select Session",
+      "sessionPlaceholder": "Select the Session to send message to",
+      "sessionRequired": "Please select a Session",
+      "target": "Execution Target",
+      "timezone": "Timezone"
+    },
+    "lastRun": "Last run",
+    "logs": {
+      "columns": {
+        "duration": "Duration",
+        "error": "Error Message",
+        "message": "Message Sent",
+        "preview": "Response Preview",
+        "status": "Status",
+        "triggeredAt": "Triggered At"
+      },
+      "statusFailed": "Failed",
+      "statusRunning": "Running",
+      "statusSuccess": "Success",
+      "statusTimeout": "Timeout",
+      "title": "Execution Logs"
+    },
+    "noNextRun": "No next run",
+    "presets": {
+      "every30Minutes": "Every 30 minutes",
+      "every5Minutes": "Every 5 minutes",
+      "every6Hours": "Every 6 hours",
+      "everyDay": "Every day",
+      "everyHour": "Every hour",
+      "everyMinute": "Every minute",
+      "everyWeek": "Every week",
+      "everyWeekday": "Every weekday"
+    },
+    "saveSuccess": "Task saved successfully",
+    "statusDisabled": "Disabled",
+    "statusEnabled": "Enabled",
+    "tabs": {
+      "logs": "Execution Logs",
+      "schedulers": "Tasks"
+    },
+    "title": "Scheduled Tasks",
+    "toggleFailed": "Failed to toggle task status"
+  },
   "selection": {
     "action": {
       "builtin": {
@@ -4471,6 +4578,7 @@
         "no": "No description",
         "nowledge_mem": "Requires Nowledge Mem app running locally. Keeps AI chats, tools, notes, agents, and files in private memory on your computer. Download from https://mem.nowledge.co/",
         "python": "Execute Python code in a secure sandbox environment. Run Python with Pyodide, supporting most standard libraries and scientific computing packages",
+        "scheduler": "Scheduled Task Management MCP Server. Provides functionality to create, list, update, delete, and toggle scheduled tasks. Sends messages to specified Agent Sessions when triggered",
         "sequentialthinking": "A MCP server implementation that provides tools for dynamic and reflective problem solving through structured thinking processes"
       },
       "command": "Command",
@@ -5577,6 +5685,7 @@
     "notes": "Notes",
     "openclaw": "OpenClaw",
     "paintings": "Paintings",
+    "scheduler": "Scheduler",
     "settings": "Settings",
     "store": "Assistant Library",
     "translate": "Translate"

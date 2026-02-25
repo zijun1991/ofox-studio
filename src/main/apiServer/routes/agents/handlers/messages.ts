@@ -267,14 +267,14 @@ export const deleteMessage = async (req: Request, res: Response): Promise<Respon
   try {
     const agentId = getParamString(req.params.agentId)!
     const sessionId = getParamString(req.params.sessionId)!
-    const messageId = Number(getParamString(req.params.messageId))
+    const messageUuid = getParamString(req.params.messageId)!
 
     await verifyAgentAndSession(agentId, sessionId)
 
-    const deleted = await sessionMessageService.deleteSessionMessage(sessionId, messageId)
+    const deleted = await sessionMessageService.deleteSessionMessage(sessionId, messageUuid)
 
     if (!deleted) {
-      logger.warn('Session message not found', { agentId, sessionId, messageId })
+      logger.warn('Session message not found', { agentId, sessionId, messageUuid })
       return res.status(404).json({
         error: {
           message: 'Message not found for this session',
@@ -284,7 +284,7 @@ export const deleteMessage = async (req: Request, res: Response): Promise<Respon
       })
     }
 
-    logger.info('Session message deleted', { agentId, sessionId, messageId })
+    logger.info('Session message deleted', { agentId, sessionId, messageUuid })
     return res.status(204).send()
   } catch (error: any) {
     if (error?.status === 404) {

@@ -252,6 +252,7 @@
             "title": "略過所有權限檢查",
             "warning": "警告：所有工具都會在無核准情況下執行。"
           },
+          "channelBoundHelper": "權限模式固定為自動批准適用於頻道綁定的代理。",
           "confirmChange": {
             "description": "切換模式會更新自動預先授權的工具。",
             "title": "確認切換權限模式？"
@@ -748,18 +749,21 @@
     "add_title": "新增頻道",
     "agent_id": "Agent ID",
     "binding": "Agent 綁定",
-    "binding_status": "綁定狀態",
-    "binding_create_hint": "建立一個新的 Agent 並綁定到此頻道",
     "binding_already_bound": "該頻道已綁定到 Agent",
-    "binding_success": "Agent 建立並綁定成功",
-    "binding_error": "建立並綁定 Agent 失敗",
-    "binding_no_agent": "該頻道未綁定 Agent",
+    "binding_create_hint": "建立一個新的 Agent 並綁定到此頻道",
     "binding_edit_error": "無法開啟 Agent 進行編輯",
+    "binding_error": "建立並綁定 Agent 失敗",
     "binding_locked_hint": "Agent 已綁定，點擊可跳轉到 Agent 編輯頁面",
-    "unbound": "未綁定",
+    "binding_no_agent": "該頻道未綁定 Agent",
+    "binding_status": "綁定狀態",
+    "binding_success": "Agent 建立並綁定成功",
+    "bound": "已綁定",
+    "bound_agent": "綁定的 Agent",
+    "bound_session": "綁定的 Session",
     "create_agent_and_bind": "建立並綁定",
     "delete_confirm": "確定要刪除此頻道嗎？",
     "deleted": "頻道已刪除",
+    "edit_agent": "編輯 Agent",
     "email": {
       "folder": "資料夾",
       "from_address": "發件人地址",
@@ -780,6 +784,17 @@
     "name_placeholder": "例如：我的 Webhook",
     "name_required": "請輸入頻道名稱",
     "not_found": "找不到頻道",
+    "proxy": {
+      "current_config": "目前設定",
+      "mode": "代理模式",
+      "mode_custom": "使用自訂代理",
+      "mode_global": "跟隨全域代理",
+      "title": "代理設定",
+      "url": "代理位址",
+      "url_help": "支援 HTTP、HTTPS、SOCKS4、SOCKS5 代理。例如：http://192.168.0.42:7890 或 socks5://127.0.0.1:1080",
+      "url_placeholder": "例如：socks5://127.0.0.1:1080",
+      "url_required": "請輸入代理位址"
+    },
     "saved": "頻道已儲存",
     "session_id": "Session ID",
     "telegram": {
@@ -793,10 +808,12 @@
       "poll_interval": "輪詢間隔（秒）"
     },
     "test_connection": "測試連線",
+    "test_connection_error": "連線測試失敗",
     "title": "頻道",
     "type": "類型",
     "type_placeholder": "選擇頻道類型",
     "type_required": "請選擇頻道類型",
+    "unbound": "未綁定",
     "webhook": {
       "config": "Webhook 設定",
       "endpoint": "端點",
@@ -1422,9 +1439,10 @@
     "more": "更多",
     "name": "名稱",
     "next_match": "下一場比賽",
+    "no": "否",
+    "noData": "暫無資料",
     "no_results": "沒有結果",
     "none": "無",
-    "no": "否",
     "off": "關閉",
     "on": "開啟",
     "open": "開啟",
@@ -3392,6 +3410,95 @@
       "undo": "復原"
     }
   },
+  "scheduler": {
+    "create": "建立任務",
+    "createTitle": "建立排程工作",
+    "cron": {
+      "custom": "客製化",
+      "everyDay": "每一天",
+      "everyHour": "每小時",
+      "everyMinute": "每分每秒",
+      "everyMonth": "每個月",
+      "everyWeek": "每週",
+      "weekdays": "每個工作日"
+    },
+    "daily": "每天",
+    "deleteConfirm": {
+      "description": "您確定要刪除這個排程任務嗎？",
+      "title": "刪除任務"
+    },
+    "deleteFailed": "刪除任務失敗",
+    "deleteSuccess": "任務已成功刪除",
+    "disabled": "任務已停用",
+    "editTitle": "編輯排程任務",
+    "empty": {
+      "description": "點擊下方按鈕建立您的第一個排程任務",
+      "title": "沒有排程任務"
+    },
+    "enabled": "任務已啟用",
+    "form": {
+      "agent": "選擇代理",
+      "agentPlaceholder": "選擇要執行的代理",
+      "agentRequired": "請選擇一個代理",
+      "basicInfo": "基本資訊",
+      "cronCustom": "自定義排程",
+      "cronExpression": "Cron 表達式",
+      "cronMode": "排程模式",
+      "cronPreset": "預設範本",
+      "description": "描述",
+      "descriptionPlaceholder": "輸入描述（選填）",
+      "invalidCron": "無效的 Cron 表達式",
+      "message": "訊息內容",
+      "messageContent": "訊息內容",
+      "messagePlaceholder": "輸入要發送的訊息內容...",
+      "messageRequired": "請輸入訊息內容",
+      "name": "任務名稱",
+      "namePlaceholder": "輸入任務名稱",
+      "nameRequired": "請輸入任務名稱",
+      "schedule": "排程設定",
+      "session": "選擇會話",
+      "sessionPlaceholder": "選擇要發送訊息的會話",
+      "sessionRequired": "請選擇一個時段",
+      "target": "執行目標",
+      "timezone": "時區"
+    },
+    "lastRun": "最後執行",
+    "logs": {
+      "columns": {
+        "duration": "持續時間",
+        "error": "錯誤訊息",
+        "message": "訊息已傳送",
+        "preview": "回應預覽",
+        "status": "狀態",
+        "triggeredAt": "觸發於"
+      },
+      "statusFailed": "失敗",
+      "statusRunning": "跑步",
+      "statusSuccess": "成功",
+      "statusTimeout": "超時",
+      "title": "執行日誌"
+    },
+    "noNextRun": "無下次執行",
+    "presets": {
+      "every30Minutes": "每 30 分鐘",
+      "every5Minutes": "每 5 分鐘",
+      "every6Hours": "每 6 小時",
+      "everyDay": "每天",
+      "everyHour": "每小時",
+      "everyMinute": "每分鐘",
+      "everyWeek": "每週",
+      "everyWeekday": "每個工作日"
+    },
+    "saveSuccess": "任務已成功儲存",
+    "statusDisabled": "Disabled",
+    "statusEnabled": "已啟用",
+    "tabs": {
+      "logs": "執行日誌",
+      "schedulers": "任務"
+    },
+    "title": "已排程任務",
+    "toggleFailed": "切換任務狀態失敗"
+  },
   "selection": {
     "action": {
       "builtin": {
@@ -4471,6 +4578,7 @@
         "no": "無描述",
         "nowledge_mem": "需要本機執行 Nowledge Mem 應用程式。將 AI 對話、工具、筆記、代理和檔案保存在電腦上的私人記憶體中。請從 https://mem.nowledge.co/ 下載",
         "python": "在安全的沙盒環境中執行 Python 程式碼。使用 Pyodide 執行 Python，支援大多數標準函式庫和科學計算套件",
+        "scheduler": "排程任務管理 MCP 伺服器。提供建立、列出、更新、刪除及切換排程任務功能。觸發時會向指定代理工作階段發送訊息。",
         "sequentialthinking": "一個 MCP 伺服器實做，提供了透過結構化思維過程進行動態和反思性問題解決的工具"
       },
       "command": "指令",
@@ -5577,6 +5685,7 @@
     "notes": "筆記",
     "openclaw": "OpenClaw",
     "paintings": "繪畫",
+    "scheduler": "排程器",
     "settings": "設定",
     "store": "助手庫",
     "translate": "翻譯"

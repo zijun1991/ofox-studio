@@ -532,6 +532,11 @@ class FileStorage {
         return fs.readFileSync(filePath, 'utf-8')
       }
     } catch (error) {
+      const nodeError = error as NodeJS.ErrnoException
+      if (nodeError.code === 'ENOENT') {
+        // 文件不存在是预期情况，不记录为错误
+        throw new Error(`File not found: ${filePath}`)
+      }
       logger.error('Failed to read text file:', error as Error)
       throw new Error(`Failed to read file: ${filePath}.`)
     }

@@ -1,5 +1,6 @@
 import { loggerService } from '@logger'
 import type { ChannelInboundMessage, ChannelOutboundMessage, TelegramChannelConfig } from '@types'
+import type { Dispatcher } from 'undici'
 
 import { BaseChannelConnector, type ConnectorStatus } from './BaseChannelConnector'
 
@@ -20,6 +21,7 @@ export class TelegramConnector extends BaseChannelConnector {
   private pollTimer: ReturnType<typeof setTimeout> | null = null
   private lastUpdateId = 0
   private abortController: AbortController | null = null
+  private customDispatcher: Dispatcher | null = null
 
   private get telegramConfig(): TelegramChannelConfig | undefined {
     return this.channel.telegramConfig
@@ -41,6 +43,16 @@ export class TelegramConnector extends BaseChannelConnector {
     }
 
     try {
+      // Initialize custom proxy dispatcher if configured
+      if (this.channel.proxyConfig?.mode === 'custom' && this.channel.proxyConfig.url) {
+        const { proxyManager } = await import('../../ProxyManager')
+        this.customDispatcher = proxyManager.createDispatcherForProxy(this.channel.proxyConfig.url)
+        logger.info('Using custom proxy for Telegram', {
+          channelId: this.channel.id,
+          proxyUrl: this.channel.proxyConfig.url
+        })
+      }
+
       // Verify bot token by calling getMe
       const me = await this.apiCall<{ id: number; first_name: string; username?: string }>('getMe')
       logger.info('Telegram bot authenticated', {
@@ -69,6 +81,15 @@ export class TelegramConnector extends BaseChannelConnector {
     if (this.abortController) {
       this.abortController.abort()
       this.abortController = null
+    }
+
+    if (this.customDispatcher) {
+      try {
+        await this.customDispatcher.close()
+      } catch (error) {
+        logger.warn('Failed to close custom dispatcher', { error })
+      }
+      this.customDispatcher = null
     }
 
     this.onMessage = null
@@ -123,7 +144,17 @@ export class TelegramConnector extends BaseChannelConnector {
       return { success: false, message: 'Bot token is required' }
     }
 
+    // Track if we created dispatcher just for this test
+    let createdDispatcherForTest = false
+
     try {
+      // Initialize custom proxy dispatcher for test if configured
+      if (!this.customDispatcher && this.channel.proxyConfig?.mode === 'custom' && this.channel.proxyConfig.url) {
+        const { proxyManager } = await import('../../ProxyManager')
+        this.customDispatcher = proxyManager.createDispatcherForProxy(this.channel.proxyConfig.url)
+        createdDispatcherForTest = true
+      }
+
       const me = await this.apiCall<{ id: number; first_name: string; username?: string }>('getMe')
       return {
         success: true,
@@ -133,6 +164,16 @@ export class TelegramConnector extends BaseChannelConnector {
       return {
         success: false,
         message: error instanceof Error ? error.message : 'Connection test failed'
+      }
+    } finally {
+      // Clean up dispatcher if it was created just for this test
+      if (createdDispatcherForTest && this.customDispatcher) {
+        try {
+          await this.customDispatcher.close()
+        } catch {
+          // Ignore cleanup errors
+        }
+        this.customDispatcher = null
       }
     }
   }
@@ -145,6 +186,7 @@ export class TelegramConnector extends BaseChannelConnector {
     if (this._status !== 'connected' || !this.onMessage) return
 
     const intervalMs = (this.telegramConfig?.pollIntervalSec || 2) * 1000
+    logger.debug('Scheduling next poll', { channelId: this.channel.id, intervalMs })
 
     this.pollTimer = setTimeout(async () => {
       await this.pollForUpdates()
@@ -154,6 +196,12 @@ export class TelegramConnector extends BaseChannelConnector {
 
   private async pollForUpdates(): Promise<void> {
     if (!this.onMessage) return
+
+    const pollStartTime = Date.now()
+    logger.debug('Starting poll for updates', {
+      channelId: this.channel.id,
+      lastUpdateId: this.lastUpdateId
+    })
 
     try {
       this.abortController = new AbortController()
@@ -168,10 +216,26 @@ export class TelegramConnector extends BaseChannelConnector {
         this.abortController.signal
       )
 
+      const pollDuration = Date.now() - pollStartTime
+      logger.debug('Poll completed', {
+        channelId: this.channel.id,
+        updateCount: updates.length,
+        pollDurationMs: pollDuration,
+        lastUpdateId: this.lastUpdateId
+      })
+
       for (const update of updates) {
         this.lastUpdateId = update.update_id
 
-        if (!update.message?.text) continue
+        if (!update.message?.text) {
+          logger.debug('Skipping non-text update', {
+            channelId: this.channel.id,
+            updateId: update.update_id,
+            hasMessage: !!update.message,
+            hasText: !!update.message?.text
+          })
+          continue
+        }
 
         const chatId = update.message.chat.id
         const config = this.telegramConfig
@@ -181,6 +245,13 @@ export class TelegramConnector extends BaseChannelConnector {
           logger.debug('Ignoring message from non-allowed chat', { channelId: this.channel.id, chatId })
           continue
         }
+
+        logger.info('Received Telegram message', {
+          channelId: this.channel.id,
+          chatId,
+          from: update.message.from?.username || update.message.from?.first_name,
+          textLength: update.message.text.length
+        })
 
         const metadata: TelegramMetadata = {
           chatId,
@@ -204,9 +275,25 @@ export class TelegramConnector extends BaseChannelConnector {
       if (error instanceof DOMException && error.name === 'AbortError') {
         return // Expected on stop
       }
-      logger.error('Error polling Telegram updates', { channelId: this.channel.id, error })
-      this._status = 'error'
-      this._errorMessage = error instanceof Error ? error.message : 'Poll failed'
+
+      const isNetworkError =
+        error instanceof TypeError ||
+        (error instanceof Error && error.message.includes('fetch failed')) ||
+        (error instanceof Error && error.message.includes('SocketError'))
+
+      if (isNetworkError) {
+        // Don't set error status for transient network issues, just log and retry
+        logger.warn('Temporary network error polling Telegram, will retry', {
+          channelId: this.channel.id,
+          error: error instanceof Error ? error.message : 'Unknown network error'
+        })
+        // Reset status to connected so polling continues
+        this._status = 'connected'
+      } else {
+        logger.error('Error polling Telegram updates', { channelId: this.channel.id, error })
+        this._status = 'error'
+        this._errorMessage = error instanceof Error ? error.message : 'Poll failed'
+      }
     } finally {
       this.abortController = null
     }
@@ -214,20 +301,53 @@ export class TelegramConnector extends BaseChannelConnector {
 
   private async apiCall<T>(method: string, params?: Record<string, unknown>, signal?: AbortSignal): Promise<T> {
     const url = `${this.apiBase}/${method}`
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: params ? JSON.stringify(params) : undefined,
-      signal
+    const callStartTime = Date.now()
+
+    logger.debug('Making Telegram API call', {
+      channelId: this.channel.id,
+      method,
+      params: params ? { ...params, timeout: params.timeout } : undefined
     })
 
-    const data = (await response.json()) as { ok: boolean; result: T; description?: string }
+    try {
+      const fetchOptions: RequestInit & { dispatcher?: Dispatcher } = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: params ? JSON.stringify(params) : undefined,
+        signal
+      }
 
-    if (!data.ok) {
-      throw new Error(`Telegram API error: ${data.description || 'Unknown error'}`)
+      if (this.customDispatcher) {
+        fetchOptions.dispatcher = this.customDispatcher
+      }
+
+      const response = await fetch(url, fetchOptions)
+
+      const callDuration = Date.now() - callStartTime
+      logger.debug('Telegram API call completed', {
+        channelId: this.channel.id,
+        method,
+        callDurationMs: callDuration,
+        status: response.status
+      })
+
+      const data = (await response.json()) as { ok: boolean; result: T; description?: string }
+
+      if (!data.ok) {
+        throw new Error(`Telegram API error: ${data.description || 'Unknown error'}`)
+      }
+
+      return data.result
+    } catch (error) {
+      const callDuration = Date.now() - callStartTime
+      logger.error('Telegram API call failed', {
+        channelId: this.channel.id,
+        method,
+        callDurationMs: callDuration,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      })
+      throw error
     }
-
-    return data.result
   }
 }
 

@@ -2,11 +2,11 @@ import AgentModalPopup from '@renderer/components/Popups/agent/AgentModal'
 import { useAgentClient } from '@renderer/hooks/agents/useAgentClient'
 import { useAppDispatch, useAppSelector } from '@renderer/store'
 import { deleteChannel, setChannelEnabled, updateChannel } from '@renderer/store/channels'
-import type { ChannelEntity } from '@renderer/types/channel'
+import type { ChannelEntity, ChannelProxyConfig } from '@renderer/types/channel'
 import { generateChannelBoundAgentName } from '@renderer/types/channel'
-import { Button, Input, InputNumber, message, Popconfirm, Select, Switch } from 'antd'
+import { Button, Form, Input, InputNumber, message, Modal, Popconfirm, Select, Switch } from 'antd'
 import type { FC } from 'react'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 import styled from 'styled-components'
@@ -21,10 +21,49 @@ const ChannelDetail: FC = () => {
   const channel = useAppSelector((state) => state.channels.channels.find((c) => c.id === channelId))
   const status = useAppSelector((state) => (channelId ? state.channels.statuses[channelId] : undefined))
   const [isCreatingAgent, setIsCreatingAgent] = useState(false)
+  const [isTestingConnection, setIsTestingConnection] = useState(false)
+  const [proxyModalOpen, setProxyModalOpen] = useState(false)
   const agentClient = useAgentClient()
 
   // Check if channel is already bound to an agent
   const isBound = !!(channel?.agentId && channel?.sessionId)
+
+  // State for agent and session names
+  const [agentName, setAgentName] = useState<string | null>(null)
+  const [sessionName, setSessionName] = useState<string | null>(null)
+  const [isLoadingNames, setIsLoadingNames] = useState(false)
+
+  // Fetch agent and session names when bound
+  useEffect(() => {
+    const fetchNames = async () => {
+      if (!channel?.agentId || !channel?.sessionId) return
+
+      setIsLoadingNames(true)
+      try {
+        const [agent, session] = await Promise.all([
+          agentClient.getAgent(channel.agentId),
+          agentClient.getSession(channel.agentId, channel.sessionId)
+        ])
+        setAgentName(agent.name || channel.agentId)
+        setSessionName(session.name || channel.sessionId)
+      } catch (error) {
+        console.warn('Failed to fetch agent/session names:', error)
+        // Fallback to IDs
+        setAgentName(channel.agentId)
+        setSessionName(channel.sessionId)
+      } finally {
+        setIsLoadingNames(false)
+      }
+    }
+
+    if (isBound) {
+      fetchNames()
+    } else {
+      setAgentName(null)
+      setSessionName(null)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [channel?.agentId, channel?.sessionId, isBound])
 
   const syncChannelsToMainProcess = useCallback((updated: ChannelEntity) => {
     const allChannels = window.store.getState().channels.channels
@@ -71,14 +110,23 @@ const ChannelDetail: FC = () => {
   }, [channel, dispatch, navigate, t, agentClient])
 
   const handleTestConnection = useCallback(async () => {
-    if (!channel) return
-    const result = await window.api.channels.testConnection(channel)
-    if (result.success) {
-      message.success(result.message)
-    } else {
-      message.error(result.message)
+    if (!channel || isTestingConnection) return
+
+    setIsTestingConnection(true)
+    try {
+      const result = await window.api.channels.testConnection(channel)
+      if (result.success) {
+        message.success(result.message)
+      } else {
+        message.error(result.message)
+      }
+    } catch (error) {
+      console.error('Test connection failed:', error)
+      message.error(t('channels.test_connection_error', 'Connection test failed'))
+    } finally {
+      setIsTestingConnection(false)
     }
-  }, [channel])
+  }, [channel, isTestingConnection, t])
 
   const handleCreateBoundAgent = useCallback(async () => {
     if (!channel || isBound) {
@@ -187,6 +235,21 @@ const ChannelDetail: FC = () => {
     [channel, dispatch, t, syncChannelsToMainProcess]
   )
 
+  const handleSaveProxyConfig = useCallback(
+    (config: Partial<NonNullable<ChannelEntity['proxyConfig']>>) => {
+      if (!channel) return
+      const updated: ChannelEntity = {
+        ...channel,
+        proxyConfig: { ...channel.proxyConfig, ...config } as ChannelEntity['proxyConfig'],
+        updatedAt: new Date().toISOString()
+      }
+      dispatch(updateChannel(updated))
+      syncChannelsToMainProcess(updated)
+      message.success(t('channels.saved', 'Channel saved'))
+    },
+    [channel, dispatch, t, syncChannelsToMainProcess]
+  )
+
   const handleNameChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       if (!channel) return
@@ -238,7 +301,9 @@ const ChannelDetail: FC = () => {
             <SettingRow>
               <SettingRowTitle>{t('channels.bound_agent', 'Bound Agent')}</SettingRowTitle>
               <BoundInfo>
-                <AgentIdDisplay>{channel.agentId}</AgentIdDisplay>
+                <NameDisplay>
+                  {isLoadingNames ? t('common.loading', 'Loading...') : agentName || channel.agentId}
+                </NameDisplay>
                 <BoundBadge>{t('channels.bound', 'Bound')}</BoundBadge>
               </BoundInfo>
             </SettingRow>
@@ -246,7 +311,9 @@ const ChannelDetail: FC = () => {
             <SettingRow>
               <SettingRowTitle>{t('channels.bound_session', 'Bound Session')}</SettingRowTitle>
               <BoundInfo>
-                <SessionIdDisplay>{channel.sessionId}</SessionIdDisplay>
+                <NameDisplay>
+                  {isLoadingNames ? t('common.loading', 'Loading...') : sessionName || channel.sessionId}
+                </NameDisplay>
                 <BoundBadge>{t('channels.bound', 'Bound')}</BoundBadge>
               </BoundInfo>
             </SettingRow>
@@ -514,6 +581,38 @@ const ChannelDetail: FC = () => {
         </SettingGroup>
       )}
 
+      {/* Proxy Configuration - Only for Telegram and Email */}
+      {(channel.type === 'telegram' || channel.type === 'email') && (
+        <SettingGroup>
+          <SettingTitle>{t('channels.proxy.title', 'Proxy Configuration')}</SettingTitle>
+          <SettingDivider />
+          <SettingRow>
+            <SettingRowTitle>{t('channels.proxy.current_config', 'Current Config')}</SettingRowTitle>
+            <ProxyConfigDisplay>
+              {channel.proxyConfig?.mode === 'custom' ? (
+                <span>
+                  <CustomBadge>{t('channels.proxy.mode_custom')}</CustomBadge>
+                  <ProxyUrl>{channel.proxyConfig.url}</ProxyUrl>
+                </span>
+              ) : (
+                <GlobalBadge>{t('channels.proxy.mode_global')}</GlobalBadge>
+              )}
+              <Button type="link" size="small" onClick={() => setProxyModalOpen(true)}>
+                {t('common.configure', 'Configure')}
+              </Button>
+            </ProxyConfigDisplay>
+          </SettingRow>
+        </SettingGroup>
+      )}
+
+      {/* Proxy Config Modal */}
+      <ProxyConfigModal
+        open={proxyModalOpen}
+        onClose={() => setProxyModalOpen(false)}
+        initialConfig={channel.proxyConfig}
+        onSave={handleSaveProxyConfig}
+      />
+
       {/* Action Buttons */}
       <ButtonRow>
         <Popconfirm
@@ -523,7 +622,9 @@ const ChannelDetail: FC = () => {
           cancelText={t('common.no', 'No')}>
           <Button danger>{t('common.delete', 'Delete')}</Button>
         </Popconfirm>
-        <Button onClick={handleTestConnection}>{t('channels.test_connection', 'Test Connection')}</Button>
+        <Button onClick={handleTestConnection} loading={isTestingConnection}>
+          {t('channels.test_connection', 'Test Connection')}
+        </Button>
       </ButtonRow>
     </SettingContainer>
   )
@@ -590,18 +691,8 @@ const BoundInfo = styled.div`
   gap: 8px;
 `
 
-const AgentIdDisplay = styled.span`
-  font-family: monospace;
-  font-size: 12px;
-  color: var(--color-text-2);
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`
-
-const SessionIdDisplay = styled.span`
-  font-family: monospace;
-  font-size: 12px;
+const NameDisplay = styled.span`
+  font-size: 13px;
   color: var(--color-text-2);
   max-width: 200px;
   overflow: hidden;
@@ -633,5 +724,127 @@ const HelpText = styled.div`
   color: var(--color-text-3);
   margin-top: 8px;
 `
+
+// Proxy Config styled components
+const ProxyConfigDisplay = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`
+
+const CustomBadge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  background-color: var(--color-warning-bg, rgba(250, 173, 20, 0.1));
+  color: var(--color-warning, #faad14);
+`
+
+const GlobalBadge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  background-color: var(--color-fill-tertiary, rgba(0, 0, 0, 0.04));
+  color: var(--color-text-3);
+`
+
+const ProxyUrl = styled.span`
+  margin-left: 8px;
+  font-family: monospace;
+  font-size: 12px;
+  color: var(--color-text-2);
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`
+
+// Proxy Config Modal Component
+interface ProxyConfigModalProps {
+  open: boolean
+  onClose: () => void
+  initialConfig?: ChannelProxyConfig
+  onSave: (config: ChannelProxyConfig) => void
+}
+
+const ProxyConfigModal: FC<ProxyConfigModalProps> = ({ open, onClose, initialConfig, onSave }) => {
+  const { t } = useTranslation()
+  const [form] = Form.useForm()
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (open) {
+      form.setFieldsValue({
+        mode: initialConfig?.mode || 'global',
+        url: initialConfig?.url || ''
+      })
+    }
+  }, [open, initialConfig, form])
+
+  const handleOk = async () => {
+    try {
+      setLoading(true)
+      const values = await form.validateFields()
+      onSave({
+        mode: values.mode,
+        url: values.mode === 'custom' ? values.url : undefined
+      })
+      form.resetFields()
+      onClose()
+    } catch {
+      // Validation error
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleCancel = () => {
+    form.resetFields()
+    onClose()
+  }
+
+  return (
+    <Modal
+      title={t('channels.proxy.title', 'Proxy Configuration')}
+      open={open}
+      onOk={handleOk}
+      onCancel={handleCancel}
+      confirmLoading={loading}
+      okText={t('common.save', 'Save')}
+      cancelText={t('common.cancel', 'Cancel')}
+      destroyOnClose
+      centered
+      width={480}>
+      <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
+        <Form.Item name="mode" label={t('channels.proxy.mode', 'Proxy Mode')}>
+          <Select>
+            <Select.Option value="global">{t('channels.proxy.mode_global', 'Follow Global Proxy')}</Select.Option>
+            <Select.Option value="custom">{t('channels.proxy.mode_custom', 'Use Custom Proxy')}</Select.Option>
+          </Select>
+        </Form.Item>
+        <Form.Item noStyle shouldUpdate={(prev, curr) => prev.mode !== curr.mode}>
+          {({ getFieldValue }) =>
+            getFieldValue('mode') === 'custom' && (
+              <Form.Item
+                name="url"
+                label={t('channels.proxy.url', 'Proxy URL')}
+                rules={[{ required: true, message: t('channels.proxy.url_required', 'Please enter proxy URL') }]}
+                extra={t(
+                  'channels.proxy.url_help',
+                  'Supports HTTP, HTTPS, SOCKS4, SOCKS5 proxies. Example: http://192.168.0.42:7890 or socks5://127.0.0.1:1080'
+                )}>
+                <Input placeholder={t('channels.proxy.url_placeholder', 'e.g. socks5://127.0.0.1:1080')} />
+              </Form.Item>
+            )
+          }
+        </Form.Item>
+      </Form>
+    </Modal>
+  )
+}
 
 export default ChannelDetail

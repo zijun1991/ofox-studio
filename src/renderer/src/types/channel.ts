@@ -61,6 +61,19 @@ export const TelegramChannelConfigSchema = z.object({
 })
 export type TelegramChannelConfig = z.infer<typeof TelegramChannelConfigSchema>
 
+// ---- Proxy Configuration ----
+export const ProxyModeSchema = z.enum(['global', 'custom'])
+export type ProxyMode = z.infer<typeof ProxyModeSchema>
+
+export const ChannelProxyConfigSchema = z.object({
+  /** Proxy mode: 'global' follows global proxy settings, 'custom' uses custom proxy URL */
+  mode: ProxyModeSchema.default('global'),
+  /** Custom proxy URL (only used when mode is 'custom') */
+  /** Examples: socks5://127.0.0.1:1080, http://192.168.0.42:7890 */
+  url: z.string().optional()
+})
+export type ChannelProxyConfig = z.infer<typeof ChannelProxyConfigSchema>
+
 // ---- Channel entity ----
 export const ChannelEntitySchema = z.object({
   id: z.string(),
@@ -77,6 +90,9 @@ export const ChannelEntitySchema = z.object({
   webhookConfig: WebhookChannelConfigSchema.optional(),
   emailConfig: EmailChannelConfigSchema.optional(),
   telegramConfig: TelegramChannelConfigSchema.optional(),
+
+  // Proxy configuration (for Telegram and Email channels)
+  proxyConfig: ChannelProxyConfigSchema.optional(),
 
   // Metadata
   lastMessageAt: z.string().optional(),

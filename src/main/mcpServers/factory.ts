@@ -12,6 +12,7 @@ import FileSystemServer from './filesystem'
 import HubServer from './hub'
 import MemoryServer from './memory'
 import PythonServer from './python'
+import SchedulerServer from './scheduler'
 import ThinkingServer from './sequentialthinking'
 
 const logger = loggerService.withContext('MCPFactory')
@@ -55,6 +56,9 @@ export function createInMemoryMCPServer(
     }
     case BuiltinMCPServerNames.hub: {
       return new HubServer().server
+    }
+    case BuiltinMCPServerNames.scheduler: {
+      return new SchedulerServer().server
     }
     default:
       throw new Error(`Unknown in-memory MCP server: ${name}`)

@@ -15,7 +15,7 @@ import { isDev, isLinux, isWin } from './constant'
 import process from 'node:process'
 
 import { registerIpc } from './ipc'
-import { agentService } from './services/agents'
+import { agentService, schedulerService } from './services/agents'
 import { analyticsService } from './services/AnalyticsService'
 import { apiServerService } from './services/ApiServerService'
 import { appMenuService } from './services/AppMenuService'
@@ -204,6 +204,26 @@ if (!app.requestSingleInstanceLock()) {
     initSelectionService()
 
     runAsyncFunction(async () => {
+      // Initialize SchedulerService
+      try {
+        await schedulerService.initialize()
+        logger.info('SchedulerService initialized')
+
+        // Register scheduler service handler with MCP Server
+        const { setSchedulerServiceHandler } = await import('./mcpServers/scheduler')
+        setSchedulerServiceHandler({
+          createScheduler: (data) => schedulerService.createScheduler(data),
+          getScheduler: (id) => schedulerService.getScheduler(id),
+          listSchedulers: (options) => schedulerService.listSchedulers(options),
+          updateScheduler: (id, updates) => schedulerService.updateScheduler(id, updates),
+          deleteScheduler: (id) => schedulerService.deleteScheduler(id),
+          toggleScheduler: (id, enabled) => schedulerService.toggleScheduler(id, enabled)
+        })
+        logger.info('Scheduler MCP Server handler registered')
+      } catch (error: any) {
+        logger.error('Failed to initialize SchedulerService:', error)
+      }
+
       // Ensure Turbo agent exists for Speedy Mode
       try {
         await agentService.ensureTurboAgentExists()
@@ -298,6 +318,7 @@ if (!app.requestSingleInstanceLock()) {
       await openClawService.stopGateway()
       await mcpService.cleanup()
       await apiServerService.stop()
+      await schedulerService.shutdown()
 
       // Stop all channel connectors
       const { channelManager } = await import('./services/channels')

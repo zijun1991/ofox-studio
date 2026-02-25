@@ -5,6 +5,7 @@ import { HelpTooltip } from '@renderer/components/TooltipIcons'
 import { TopView } from '@renderer/components/TopView'
 import { permissionModeCards } from '@renderer/config/agent'
 import { isWin } from '@renderer/config/constant'
+import { useAgentClient } from '@renderer/hooks/agents/useAgentClient'
 import { useAgents } from '@renderer/hooks/agents/useAgents'
 import { useUpdateAgent } from '@renderer/hooks/agents/useUpdateAgent'
 import SelectAgentBaseModelButton from '@renderer/pages/home/components/SelectAgentBaseModelButton'
@@ -13,6 +14,7 @@ import type {
   AgentEntity,
   ApiModel,
   BaseAgentForm,
+  CreateSessionForm,
   PermissionMode,
   Tool,
   UpdateAgentForm
@@ -79,6 +81,7 @@ const PopupContainer: React.FC<Props> = ({ agent, afterSubmit, resolve, channelB
   const loadingRef = useRef(false)
   const { addAgent } = useAgents()
   const { updateAgent } = useUpdateAgent()
+  const agentClient = useAgentClient()
   const isEditing = (agent?: AgentWithTools) => agent !== undefined
   const isChannelBindingMode = channelBinding !== undefined
 
@@ -324,7 +327,25 @@ const PopupContainer: React.FC<Props> = ({ agent, afterSubmit, resolve, channelB
           loadingRef.current = false
           throw result.error
         }
-        afterSubmit?.(result.data)
+
+        // 频道绑定模式：创建 Session 并返回绑定信息
+        if (isChannelBindingMode) {
+          try {
+            const sessionForm = {
+              ...result.data,
+              id: undefined,
+              name: 'Channel Session'
+            } satisfies CreateSessionForm
+            const session = await agentClient.createSession(result.data.id, sessionForm)
+            resolve({ agentId: result.data.id, sessionId: session.id })
+          } catch (sessionError) {
+            logger.error('Failed to create session for channel-bound agent:', sessionError as Error)
+            // 即使 session 创建失败，agent 已经创建了，仍然返回 agentId（但没有 sessionId）
+            resolve({ agentId: result.data.id })
+          }
+        } else {
+          afterSubmit?.(result.data)
+        }
       }
       loadingRef.current = false
       setOpen(false)
@@ -343,7 +364,10 @@ const PopupContainer: React.FC<Props> = ({ agent, afterSubmit, resolve, channelB
       updateAgent,
       afterSubmit,
       addAgent,
-      gitBashPathInfo.path
+      gitBashPathInfo.path,
+      isChannelBindingMode,
+      agentClient,
+      resolve
     ]
   )
 
@@ -442,7 +466,9 @@ const PopupContainer: React.FC<Props> = ({ agent, afterSubmit, resolve, channelB
               </Label>
               {isChannelBindingMode ? (
                 <LockedField>
-                  <Tag color="blue">{t('agent.settings.tooling.permissionMode.bypassPermissions', 'Auto Approve')}</Tag>
+                  <Tag color="blue">
+                    {t('agent.settings.tooling.permissionMode.bypassPermissions.title', 'Auto Approve')}
+                  </Tag>
                   <LockOutlined className="lock-icon" />
                 </LockedField>
               ) : (

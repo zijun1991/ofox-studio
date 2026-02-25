@@ -210,7 +210,8 @@ export class AiSdkToChunkAdapter {
       case 'text-end':
         this.onChunk({
           type: ChunkType.TEXT_COMPLETE,
-          text: (chunk.providerMetadata?.text?.value as string) ?? final.text ?? ''
+          // 在 accumulate 模式下，onTextChunk 已经发送了完整文本，这里不再发送
+          text: this.accumulate ? '' : ((chunk.providerMetadata?.text?.value as string) ?? final.text ?? '')
         })
         final.text = ''
         break

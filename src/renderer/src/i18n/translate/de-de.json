@@ -252,6 +252,7 @@
             "title": "Alle Berechtigungsprüfungen überspringen",
             "warning": "Gefahr: Alle Tools werden ohne Genehmigung ausgeführt."
           },
+          "channelBoundHelper": "Berechtigungsmodus ist für kanalgebundene Agenten auf \"Automatische Genehmigung\" festgelegt.",
           "confirmChange": {
             "description": "Das Wechseln des Modus aktualisiert die automatisch vorab autorisierten Tools.",
             "title": "Berechtigungsmodus-Wechsel bestätigen?"
@@ -748,8 +749,21 @@
     "add_title": "Kanal hinzufügen",
     "agent_id": "Agent ID",
     "binding": "Agent Binding",
+    "binding_already_bound": "Kanal ist bereits an einen Agenten gebunden",
+    "binding_create_hint": "Erstellen Sie einen neuen Agenten und binden Sie ihn an diesen Kanal",
+    "binding_edit_error": "Fehler beim Öffnen des Agenten zum Bearbeiten",
+    "binding_error": "Fehler beim Erstellen und Binden des Agenten",
+    "binding_locked_hint": "Agent ist gebunden, klicken Sie, um zur Agentenbearbeitungsseite zu navigieren",
+    "binding_no_agent": "Kein Agent an diesen Kanal gebunden.",
+    "binding_status": "Bindungsstatus",
+    "binding_success": "Agent erfolgreich erstellt und gebunden.",
+    "bound": "Gebunden",
+    "bound_agent": "Gebundener Agent",
+    "bound_session": "Gebundene Sitzung",
+    "create_agent_and_bind": "Erstellen und Binden",
     "delete_confirm": "Sind Sie sicher, dass Sie diesen Kanal löschen möchten?",
     "deleted": "Kanal gelöscht",
+    "edit_agent": "Agent bearbeiten",
     "email": {
       "folder": "Ordner",
       "from_address": "Absender",
@@ -770,6 +784,17 @@
     "name_placeholder": "z.B. Mein Webhook",
     "name_required": "Bitte geben Sie einen Kanalnamen ein",
     "not_found": "Kanal nicht gefunden",
+    "proxy": {
+      "current_config": "Aktuelle Konfiguration",
+      "mode": "Proxy-Modus",
+      "mode_custom": "Benutzerdefinierten Proxy verwenden",
+      "mode_global": "Global Proxy folgen",
+      "title": "Proxy-Konfiguration",
+      "url": "Proxy-URL",
+      "url_help": "Unterstützt HTTP-, HTTPS-, SOCKS4- und SOCKS5-Proxys. Beispiel: http://192.168.0.42:7890 oder socks5://127.0.0.1:1080",
+      "url_placeholder": "z.B. socks5://127.0.0.1:1080",
+      "url_required": "Bitte geben Sie die Proxy-URL ein"
+    },
     "saved": "Kanal gespeichert",
     "session_id": "Sitzungs-ID",
     "telegram": {
@@ -783,10 +808,12 @@
       "poll_interval": "Abfrageintervall (Sek.)"
     },
     "test_connection": "Verbindung testen",
+    "test_connection_error": "Verbindungstest fehlgeschlagen",
     "title": "Kanäle",
     "type": "Typ",
     "type_placeholder": "Kanaltyp auswählen",
     "type_required": "Bitte wählen Sie einen Kanaltyp aus.",
+    "unbound": "Unbound",
     "webhook": {
       "config": "Webhook-Konfiguration",
       "endpoint": "Endpoint",
@@ -1412,6 +1439,8 @@
     "more": "Mehr",
     "name": "Name",
     "next_match": "Nächstes Spiel",
+    "no": "Nein",
+    "noData": "Keine Daten",
     "no_results": "Keine Ergebnisse",
     "none": "Keine",
     "off": "Aus",
@@ -1466,6 +1495,7 @@
     "upload_image": "Bilddatei hochladen",
     "uploaded_image": "Hochgeladenes Bild",
     "warning": "Warnung",
+    "yes": "Ja",
     "you": "Sie"
   },
   "dialog": {
@@ -3380,6 +3410,95 @@
       "undo": "Rückgängig"
     }
   },
+  "scheduler": {
+    "create": "Aufgabe erstellen",
+    "createTitle": "Geplante Aufgabe erstellen",
+    "cron": {
+      "custom": "Benutzerdefiniert",
+      "everyDay": "Jeden Tag",
+      "everyHour": "Jede Stunde",
+      "everyMinute": "Jede Minute",
+      "everyMonth": "Jeden Monat",
+      "everyWeek": "Jede Woche",
+      "weekdays": "Jeden Werktag"
+    },
+    "daily": "Täglich",
+    "deleteConfirm": {
+      "description": "Sind Sie sicher, dass Sie diese geplante Aufgabe löschen möchten?",
+      "title": "Aufgabe löschen"
+    },
+    "deleteFailed": "Fehler beim Löschen der Aufgabe",
+    "deleteSuccess": "Aufgabe erfolgreich gelöscht.",
+    "disabled": "Aufgabe deaktiviert",
+    "editTitle": "Geplante Aufgabe bearbeiten",
+    "empty": {
+      "description": "Klicken Sie auf die Schaltfläche unten, um Ihre erste geplante Aufgabe zu erstellen.",
+      "title": "Keine geplanten Aufgaben"
+    },
+    "enabled": "Aufgabe aktiviert",
+    "form": {
+      "agent": "Agent auswählen",
+      "agentPlaceholder": "Wählen Sie den Agenten aus, der ausgeführt werden soll",
+      "agentRequired": "Bitte wählen Sie einen Agenten aus.",
+      "basicInfo": "Grundlegende Informationen",
+      "cronCustom": "Benutzerdefinierter Cron",
+      "cronExpression": "Cron-Ausdruck",
+      "cronMode": "Zeitplanmodus",
+      "cronPreset": "Voreingestellte Vorlage",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Beschreibung eingeben (optional)",
+      "invalidCron": "Ungültiger Cron-Ausdruck",
+      "message": "Nachrichteninhalt",
+      "messageContent": "Nachrichteninhalt",
+      "messagePlaceholder": "Geben Sie den Nachrichteninhalt zum Senden ein...",
+      "messageRequired": "Bitte geben Sie den Nachrichteninhalt ein",
+      "name": "Aufgabenname",
+      "namePlaceholder": "Aufgabennamen eingeben",
+      "nameRequired": "Bitte geben Sie den Aufgabennamen ein",
+      "schedule": "Zeitplaneinstellungen",
+      "session": "Sitzung auswählen",
+      "sessionPlaceholder": "Wählen Sie die Sitzung aus, an die die Nachricht gesendet werden soll",
+      "sessionRequired": "Bitte wählen Sie eine Sitzung aus",
+      "target": "Ausführungsziel",
+      "timezone": "Zeitzone"
+    },
+    "lastRun": "Letzte Ausführung",
+    "logs": {
+      "columns": {
+        "duration": "Dauer",
+        "error": "Fehlermeldung",
+        "message": "Nachricht gesendet",
+        "preview": "Antwortvorschau",
+        "status": "Status",
+        "triggeredAt": "Ausgelöst um"
+      },
+      "statusFailed": "Fehlgeschlagen",
+      "statusRunning": "Laufen",
+      "statusSuccess": "Erfolg",
+      "statusTimeout": "Zeitüberschreitung",
+      "title": "Ausführungsprotokolle"
+    },
+    "noNextRun": "Keine nächste Ausführung",
+    "presets": {
+      "every30Minutes": "Alle 30 Minuten",
+      "every5Minutes": "Alle 5 Minuten",
+      "every6Hours": "Alle 6 Stunden",
+      "everyDay": "Jeden Tag",
+      "everyHour": "Jede Stunde",
+      "everyMinute": "Jede Minute",
+      "everyWeek": "Jede Woche",
+      "everyWeekday": "Jeden Werktag"
+    },
+    "saveSuccess": "Aufgabe erfolgreich gespeichert.",
+    "statusDisabled": "Behinderte",
+    "statusEnabled": "Aktiviert",
+    "tabs": {
+      "logs": "Ausführungsprotokolle",
+      "schedulers": "Aufgaben"
+    },
+    "title": "Geplante Aufgaben",
+    "toggleFailed": "Fehler beim Umschalten des Aufgabenstatus"
+  },
   "selection": {
     "action": {
       "builtin": {
@@ -4459,6 +4578,7 @@
         "no": "Keine Beschreibung",
         "nowledge_mem": "Erfordert lokal laufende Nowledge Mem App. Speichert KI-Chats, Tools, Notizen, Agenten und Dateien in einem privaten Speicher auf Ihrem Computer. Download unter https://mem.nowledge.co/",
         "python": "Python-Code in einem sicheren Sandbox-Umgebung ausführen. Verwendung von Pyodide für Python, Unterstützung für die meisten Standardbibliotheken und wissenschaftliche Pakete",
+        "scheduler": "Geplante Aufgabenverwaltung MCP-Server. Bietet Funktionen zum Erstellen, Auflisten, Aktualisieren, Löschen und Umschalten geplanter Aufgaben. Sendet Nachrichten an angegebene Agentensitzungen bei Auslösung.",
         "sequentialthinking": "MCP-Server-Implementierung mit strukturiertem Denkprozess, der dynamische und reflektierende Problemlösungen ermöglicht"
       },
       "command": "Befehl",
@@ -5565,6 +5685,7 @@
     "notes": "Notizen",
     "openclaw": "OpenClaw",
     "paintings": "Zeichnen",
+    "scheduler": "Scheduler",
     "settings": "Einstellungen",
     "store": "Assistenten-Bibliothek",
     "translate": "Übersetzen"

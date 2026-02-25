@@ -7,11 +7,13 @@
 
 // Service classes
 export { AgentService } from './AgentService'
+export { SchedulerService } from './SchedulerService'
 export { SessionMessageService } from './SessionMessageService'
 export { SessionService } from './SessionService'
 
 // Service instances (singletons)
 export { agentService } from './AgentService'
+export { schedulerService } from './SchedulerService'
 export { sessionMessageService } from './SessionMessageService'
 export { sessionService } from './SessionService'
 
@@ -24,3 +26,13 @@ export type {
   ListOptions as SessionListOptions,
   UpdateSessionRequest
 } from '@types'
+
+// Scheduler types
+export type {
+  CreateSchedulerRequest,
+  ListSchedulerLogsOptions,
+  ListSchedulersOptions,
+  SchedulerEntity,
+  SchedulerLogEntity,
+  UpdateSchedulerRequest
+} from './SchedulerService'

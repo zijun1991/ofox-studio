@@ -67,13 +67,17 @@ export const createTextCallbacks = (deps: TextCallbacksDependencies) => {
 
     onTextComplete: async (finalText: string) => {
       if (mainTextBlockId) {
+        // 如果 finalText 为空，保留当前 Redux store 中的内容（处理 accumulate 模式的情况）
+        const currentBlock = getState().messageBlocks.entities[mainTextBlockId]
+        const contentToSave = finalText || (currentBlock?.content ?? '')
+
         const changes = {
-          content: finalText,
+          content: contentToSave,
           status: MessageBlockStatus.SUCCESS
         }
         blockManager.smartBlockUpdate(mainTextBlockId, changes, MessageBlockType.MAIN_TEXT, true)
         if (handleCompactTextComplete) {
-          await handleCompactTextComplete(finalText, mainTextBlockId)
+          await handleCompactTextComplete(contentToSave, mainTextBlockId)
         }
         mainTextBlockId = null
       } else {

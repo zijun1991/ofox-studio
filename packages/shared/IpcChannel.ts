@@ -102,6 +102,7 @@ export enum IpcChannel {
   // agent messages
   AgentMessage_PersistExchange = 'agent-message:persist-exchange',
   AgentMessage_GetHistory = 'agent-message:get-history',
+  AgentMessage_Delete = 'agent-message:delete',
 
   AgentToolPermission_Request = 'agent-tool-permission:request',
   AgentToolPermission_Response = 'agent-tool-permission:response',
@@ -436,5 +437,17 @@ export enum IpcChannel {
   Channel_TestConnection = 'channel:test-connection',
   Channel_GetStatuses = 'channel:get-statuses',
   Channel_StatusChanged = 'channel:status-changed',
-  Channel_MessageEvent = 'channel:message-event'
+  Channel_MessageEvent = 'channel:message-event',
+
+  // Scheduler
+  Scheduler_Create = 'scheduler:create',
+  Scheduler_Get = 'scheduler:get',
+  Scheduler_List = 'scheduler:list',
+  Scheduler_Update = 'scheduler:update',
+  Scheduler_Delete = 'scheduler:delete',
+  Scheduler_Toggle = 'scheduler:toggle',
+
+  // Scheduler Logs
+  SchedulerLog_List = 'scheduler-log:list',
+  SchedulerLog_Clear = 'scheduler-log:clear'
 }

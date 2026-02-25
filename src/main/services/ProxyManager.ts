@@ -579,6 +579,34 @@ export class ProxyManager {
     global[Symbol.for('undici.globalDispatcher.1')] = this.proxyDispatcher
   }
 
+  /**
+   * Create a Dispatcher for a specific proxy URL (used by channel connectors with undici fetch)
+   */
+  createDispatcherForProxy(proxyUrl: string): Dispatcher {
+    const url = new URL(proxyUrl)
+    if (url.protocol === 'http:' || url.protocol === 'https:') {
+      return new EnvHttpProxyAgent({
+        httpProxy: proxyUrl,
+        httpsProxy: proxyUrl
+      })
+    }
+
+    return socksDispatcher({
+      port: parseInt(url.port),
+      type: url.protocol === 'socks4:' ? 4 : 5,
+      host: url.hostname,
+      userId: url.username || undefined,
+      password: url.password || undefined
+    })
+  }
+
+  /**
+   * Create a ProxyAgent for a specific proxy URL (used by libraries that accept http.Agent)
+   */
+  createProxyAgent(proxyUrl: string): ProxyAgent {
+    return new ProxyAgent({ getProxyForUrl: () => proxyUrl })
+  }
+
   private async setSessionsProxy(config: ProxyConfig): Promise<void> {
     const sessions = [session.defaultSession, session.fromPartition('persist:webview')]
     await Promise.all(sessions.map((session) => session.setProxy(config)))

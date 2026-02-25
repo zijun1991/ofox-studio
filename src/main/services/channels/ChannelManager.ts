@@ -1,6 +1,7 @@
 import { loggerService } from '@logger'
 import { IpcChannel } from '@shared/IpcChannel'
 import type {
+  AgentPersistedMessage,
   ChannelEntity,
   ChannelInboundMessage,
   ChannelMessageEvent,
@@ -8,12 +9,50 @@ import type {
   ChannelStatus,
   ChannelStatusEvent
 } from '@types'
+import { AssistantMessageStatus, MessageBlockStatus, MessageBlockType, UserMessageStatus } from '@types'
 import { BrowserWindow } from 'electron'
+import { v4 as uuidv4 } from 'uuid'
 
-import { sessionMessageService, sessionService } from '../agents'
+import { agentMessageRepository } from '../agents/database/sessionMessageRepository'
+import { sessionMessageService, sessionService } from '../agents/services'
 import type { BaseChannelConnector } from './connectors/BaseChannelConnector'
 
 const logger = loggerService.withContext('ChannelManager')
+
+/**
+ * Create a simple AgentPersistedMessage for channel messages
+ */
+function createChannelMessage(
+  role: 'user' | 'assistant',
+  content: string,
+  topicId: string = ''
+): AgentPersistedMessage {
+  const now = new Date().toISOString()
+  const messageId = uuidv4()
+  const blockId = uuidv4()
+
+  return {
+    message: {
+      id: messageId,
+      role,
+      assistantId: '',
+      topicId,
+      createdAt: now,
+      status: role === 'user' ? UserMessageStatus.SUCCESS : AssistantMessageStatus.SUCCESS,
+      blocks: [blockId]
+    },
+    blocks: [
+      {
+        id: blockId,
+        messageId,
+        type: MessageBlockType.MAIN_TEXT,
+        createdAt: now,
+        status: MessageBlockStatus.SUCCESS,
+        content
+      }
+    ]
+  }
+}
 
 export class ChannelManager {
   private static instance: ChannelManager | null = null
@@ -125,6 +164,16 @@ export class ChannelManager {
         return
       }
 
+      // Persist user message
+      await agentMessageRepository.persistExchange({
+        sessionId: channel.sessionId,
+        agentSessionId: '',
+        user: {
+          payload: createChannelMessage('user', message.content, channel.sessionId),
+          createdAt: new Date().toISOString()
+        }
+      })
+
       // Send message through the agent session
       const abortController = new AbortController()
       const { stream, completion } = await sessionMessageService.createSessionMessage(
@@ -136,6 +185,41 @@ export class ChannelManager {
       // Consume the stream and collect response text
       const reader = stream.getReader()
       let responseText = ''
+      let agentSessionId = ''
+
+      // Chunk types that should be ignored when building the response text
+      const IGNORED_CHUNK_TYPES = new Set([
+        'reasoning-delta',
+        'reasoning-start',
+        'reasoning-complete',
+        'thinking-delta',
+        'thinking-start',
+        'thinking-complete',
+        'tool-input-delta',
+        'tool-input-start',
+        'tool-call',
+        'tool-result',
+        'mcp_tool_created',
+        'mcp_tool_pending',
+        'mcp_tool_in_progress',
+        'mcp_tool_complete',
+        'mcp_tool_streaming',
+        'image-delta',
+        'image-created',
+        'image-complete',
+        'audio-delta',
+        'audio-start',
+        'audio-complete',
+        'error',
+        'block_created',
+        'block_in_progress',
+        'block_complete',
+        'llm_response_created',
+        'llm_response_in_progress',
+        'llm_response_complete',
+        'text-start',
+        'text-complete'
+      ])
 
       try {
         while (true) {
@@ -145,9 +229,42 @@ export class ChannelManager {
           // Forward stream chunks to renderer for real-time UI
           this.forwardStreamChunk(channel.sessionId, value)
 
-          // Accumulate text response
-          if (value.type === 'text-delta' && value.text) {
+          // Only accumulate text-delta chunks for the response
+          // Explicitly ignore thinking, tool calls, and other non-text content
+          if (value.type === 'text-delta' && 'text' in value && value.text) {
             responseText += value.text
+          }
+          // 流结束时，如果有完整文本，使用它替换累积内容（处理非流式消息的情况）
+          if (value.type === 'text-end' && (value as any).providerMetadata?.text?.value) {
+            responseText = (value as any).providerMetadata.text.value
+          }
+
+          // Extract agent_session_id from stream chunks for context resume
+          const providerMetadata = (value as any).providerMetadata
+          if (providerMetadata?.anthropic?.session_id) {
+            agentSessionId = providerMetadata.anthropic.session_id
+            logger.debug('Extracted agent_session_id from stream', {
+              channelId: channel.id,
+              agentSessionId,
+              chunkType: value.type
+            })
+          } else if (providerMetadata?.anthropic) {
+            // Log when providerMetadata exists but session_id is missing
+            logger.debug('No session_id in providerMetadata.anthropic', {
+              channelId: channel.id,
+              chunkType: value.type,
+              anthropicKeys: Object.keys(providerMetadata.anthropic)
+            })
+          }
+
+          if (!IGNORED_CHUNK_TYPES.has(value.type)) {
+            // Log unknown chunk types for debugging
+            const chunkValue = value as { type: string; text?: string }
+            logger.debug('Received unhandled chunk type in channel', {
+              channelId: channel.id,
+              chunkType: value.type,
+              hasText: 'text' in chunkValue && !!chunkValue.text
+            })
           }
         }
       } catch (streamError) {
@@ -157,8 +274,33 @@ export class ChannelManager {
       // Wait for completion
       await completion
 
-      // Send response back through the channel
+      // Persist assistant message
       if (responseText) {
+        logger.info('Persisting assistant message', {
+          channelId: channel.id,
+          sessionId: channel.sessionId,
+          agentSessionId: agentSessionId || '(empty)',
+          responseTextLength: responseText.length
+        })
+        await agentMessageRepository.persistExchange({
+          sessionId: channel.sessionId,
+          agentSessionId,
+          assistant: {
+            payload: createChannelMessage('assistant', responseText, channel.sessionId),
+            createdAt: new Date().toISOString()
+          }
+        })
+
+        // Emit outbound event for UI to refresh message list immediately
+        this.emitMessageEvent({
+          channelId: channel.id,
+          sessionId: channel.sessionId,
+          direction: 'outbound',
+          content: responseText,
+          timestamp: new Date().toISOString()
+        })
+
+        // Send response back through the channel
         const outbound: ChannelOutboundMessage = {
           channelId: channel.id,
           channelType: channel.type,
@@ -188,16 +330,6 @@ export class ChannelManager {
 
     try {
       await connector.sendResponse(message)
-
-      // Emit outbound event for UI
-      this.emitMessageEvent({
-        channelId: message.channelId,
-        sessionId: this.channels.find((c) => c.id === message.channelId)?.sessionId ?? '',
-        direction: 'outbound',
-        content: message.content,
-        timestamp: message.sentAt
-      })
-
       logger.info('Outbound message sent', { channelId: message.channelId })
     } catch (error) {
       logger.error('Failed to send outbound message', { channelId: message.channelId, error })

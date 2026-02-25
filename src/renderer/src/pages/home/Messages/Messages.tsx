@@ -18,7 +18,11 @@ import { estimateHistoryTokens } from '@renderer/services/TokenService'
 import store, { useAppDispatch } from '@renderer/store'
 import { messageBlocksSelectors, updateOneBlock } from '@renderer/store/messageBlock'
 import { newMessagesActions } from '@renderer/store/newMessage'
-import { saveMessageAndBlocksToDB, updateMessageAndBlocksThunk } from '@renderer/store/thunk/messageThunk'
+import {
+  loadTopicMessagesThunk,
+  saveMessageAndBlocksToDB,
+  updateMessageAndBlocksThunk
+} from '@renderer/store/thunk/messageThunk'
 import type { Assistant, Topic } from '@renderer/types'
 import type { MessageBlock } from '@renderer/types/newMessage'
 import { type Message, MessageBlockType } from '@renderer/types/newMessage'
@@ -28,6 +32,7 @@ import {
   removeSpecialCharactersForFileName,
   runAsyncFunction
 } from '@renderer/utils'
+import { buildAgentSessionTopicId } from '@renderer/utils/agentSession'
 import { updateCodeBlock } from '@renderer/utils/markdown'
 import { getMainTextContent } from '@renderer/utils/messageUtils/find'
 import { isTextLikeBlock } from '@renderer/utils/messageUtils/is'
@@ -248,6 +253,34 @@ const Messages: React.FC<MessagesProps> = ({ assistant, topic, setActiveTopic, o
       })
     }).then(() => onFirstUpdate?.())
   }, [assistant, messages, onFirstUpdate])
+
+  // Listen for channel message events to refresh messages
+  useEffect(() => {
+    const handleChannelMessage = (
+      event: CustomEvent<{
+        sessionId: string
+        channelId: string
+        direction: string
+        content: string
+        timestamp: string
+      }>
+    ) => {
+      const { sessionId } = event.detail
+      // Check if the message is for the current topic
+      // For agent sessions, topicId is prefixed with 'agent-session:'
+      if (topic.id === buildAgentSessionTopicId(sessionId)) {
+        logger.debug('Refreshing messages for channel message', { sessionId, topicId: topic.id })
+        // Force reload messages from database
+        dispatch(loadTopicMessagesThunk(topic.id, true))
+        scrollToBottom()
+      }
+    }
+
+    window.addEventListener('channel-message-received', handleChannelMessage as EventListener)
+    return () => {
+      window.removeEventListener('channel-message-received', handleChannelMessage as EventListener)
+    }
+  }, [dispatch, topic.id, scrollToBottom])
 
   const loadMoreMessages = useCallback(() => {
     if (!hasMore || isLoadingMore) return

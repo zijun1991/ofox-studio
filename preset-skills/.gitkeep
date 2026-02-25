@@ -1,0 +1,28 @@
+# Preset Skills
+
+此目录用于存放需要打包到应用中的预置 skills。
+
+## 目录结构
+
+```
+preset-skills/
+└── <skill-name>/
+    └── SKILL.md
+```
+
+## SKILL.md 格式
+
+```markdown
+---
+name: skill-name
+description: Skill 的描述
+---
+
+# Skill 标题
+
+Skill 的详细说明和使用方法...
+```
+
+## 打包说明
+
+此目录中的 skills 会在应用首次启动时自动复制到极速模式 Agent 的工作目录中。

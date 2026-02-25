@@ -39,6 +39,7 @@ import fontList from 'font-list'
 
 import { agentMessageRepository } from './services/agents/database'
 import { PluginService } from './services/agents/plugins/PluginService'
+import { schedulerService, sessionMessageService } from './services/agents/services'
 import { analyticsService } from './services/AnalyticsService'
 import { apiServerService } from './services/ApiServerService'
 import appService from './services/AppService'
@@ -270,6 +271,18 @@ export async function registerIpc(mainWindow: BrowserWindow, app: Electron.App) 
         return await agentMessageRepository.getSessionHistory(sessionId)
       } catch (error) {
         logger.error('Failed to get agent session history', error as Error)
+        throw error
+      }
+    }
+  )
+
+  ipcMain.handle(
+    IpcChannel.AgentMessage_Delete,
+    async (_event, { sessionId, messageUuid }: { sessionId: string; messageUuid: string }): Promise<boolean> => {
+      try {
+        return await sessionMessageService.deleteSessionMessage(sessionId, messageUuid)
+      } catch (error) {
+        logger.error('Failed to delete agent session message', error as Error)
         throw error
       }
     }
@@ -1176,4 +1189,78 @@ export async function registerIpc(mainWindow: BrowserWindow, app: Electron.App) 
   ipcMain.handle(IpcChannel.Channel_Stop, (_, channelId: string) => channelManager.stopChannel(channelId))
   ipcMain.handle(IpcChannel.Channel_TestConnection, (_, channel) => channelManager.testConnection(channel))
   ipcMain.handle(IpcChannel.Channel_GetStatuses, () => channelManager.getChannelStatuses())
+
+  // Scheduler
+  ipcMain.handle(IpcChannel.Scheduler_Create, async (_, data) => {
+    try {
+      return await schedulerService.createScheduler(data)
+    } catch (error) {
+      logger.error('Failed to create scheduler', error as Error)
+      throw error
+    }
+  })
+
+  ipcMain.handle(IpcChannel.Scheduler_Get, async (_, id: string) => {
+    try {
+      return await schedulerService.getScheduler(id)
+    } catch (error) {
+      logger.error('Failed to get scheduler', error as Error)
+      throw error
+    }
+  })
+
+  ipcMain.handle(IpcChannel.Scheduler_List, async (_, options?) => {
+    try {
+      return await schedulerService.listSchedulers(options)
+    } catch (error) {
+      logger.error('Failed to list schedulers', error as Error)
+      throw error
+    }
+  })
+
+  ipcMain.handle(IpcChannel.Scheduler_Update, async (_, id: string, updates) => {
+    try {
+      return await schedulerService.updateScheduler(id, updates)
+    } catch (error) {
+      logger.error('Failed to update scheduler', error as Error)
+      throw error
+    }
+  })
+
+  ipcMain.handle(IpcChannel.Scheduler_Delete, async (_, id: string) => {
+    try {
+      return await schedulerService.deleteScheduler(id)
+    } catch (error) {
+      logger.error('Failed to delete scheduler', error as Error)
+      throw error
+    }
+  })
+
+  ipcMain.handle(IpcChannel.Scheduler_Toggle, async (_, id: string, enabled: boolean) => {
+    try {
+      return await schedulerService.toggleScheduler(id, enabled)
+    } catch (error) {
+      logger.error('Failed to toggle scheduler', error as Error)
+      throw error
+    }
+  })
+
+  // Scheduler Logs
+  ipcMain.handle(IpcChannel.SchedulerLog_List, async (_, options?) => {
+    try {
+      return await schedulerService.listLogs(options)
+    } catch (error) {
+      logger.error('Failed to list scheduler logs', error as Error)
+      throw error
+    }
+  })
+
+  ipcMain.handle(IpcChannel.SchedulerLog_Clear, async (_, schedulerId?: string) => {
+    try {
+      return await schedulerService.clearLogs(schedulerId)
+    } catch (error) {
+      logger.error('Failed to clear scheduler logs', error as Error)
+      throw error
+    }
+  })
 }

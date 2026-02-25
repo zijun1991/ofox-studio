@@ -437,14 +437,19 @@ export class AgentMessageDataSource implements MessageDataSource {
     }
   }
 
-  // oxlint-disable-next-line no-unused-vars
-  async deleteMessage(topicId: string, _messageId: string): Promise<void> {
-    // Agent session messages cannot be deleted individually
-    logger.warn(`deleteMessage called for agent session ${topicId}, operation not supported`)
+  async deleteMessage(topicId: string, messageId: string): Promise<void> {
+    const sessionId = extractSessionId(topicId)
 
-    // In a full implementation, you might want to:
-    // 1. Implement soft delete in backend
-    // 2. Or just hide from UI without actual deletion
+    try {
+      await window.electron.ipcRenderer.invoke(IpcChannel.AgentMessage_Delete, {
+        sessionId,
+        messageUuid: messageId
+      })
+      logger.silly(`Deleted message ${messageId} from agent session ${sessionId}`)
+    } catch (error) {
+      logger.error(`Failed to delete message ${messageId}:`, error as Error)
+      throw error
+    }
   }
 
   // oxlint-disable-next-line no-unused-vars

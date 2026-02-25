@@ -252,6 +252,7 @@
             "title": "権限チェックをバイパス",
             "warning": "注意して使用してください — すべてのツールは承認なしで実行されます。"
           },
+          "channelBoundHelper": "チャネルバインドエージェントの許可モードは自動承認に固定されています。",
           "confirmChange": {
             "description": "モードを切り替えると、自動承認されたツールが更新されます。",
             "title": "パーミッションモードを変更しますか？"
@@ -748,8 +749,21 @@
     "add_title": "チャンネルを追加",
     "agent_id": "エージェントID",
     "binding": "エージェントバインディング",
+    "binding_already_bound": "チャネルは既にエージェントにバインドされています",
+    "binding_create_hint": "新しいエージェントを作成し、このチャンネルにバインドします",
+    "binding_edit_error": "エージェントの編集を開くことができませんでした",
+    "binding_error": "エージェントの作成とバインドに失敗しました",
+    "binding_locked_hint": "エージェントがバインドされています、エージェント編集ページに移動するにはクリックしてください",
+    "binding_no_agent": "このチャンネルにバインドされたエージェントはありません",
+    "binding_status": "バインド状態",
+    "binding_success": "エージェントが正常に作成され、バインドされました",
+    "bound": "Bound",
+    "bound_agent": "バウンドエージェント",
+    "bound_session": "Bound Session",
+    "create_agent_and_bind": "作成とバインド",
     "delete_confirm": "このチャンネルを削除してもよろしいですか？",
     "deleted": "チャンネルが削除されました",
+    "edit_agent": "エージェントを編集",
     "email": {
       "folder": "フォルダ",
       "from_address": "送信元アドレス",
@@ -770,6 +784,17 @@
     "name_placeholder": "例：私のWebhook",
     "name_required": "チャンネル名を入力してください",
     "not_found": "チャンネルが見つかりません",
+    "proxy": {
+      "current_config": "現在の設定",
+      "mode": "プロキシモード",
+      "mode_custom": "カスタムプロキシを使用する",
+      "mode_global": "グローバルプロキシをフォローする",
+      "title": "プロキシ設定",
+      "url": "プロキシURL",
+      "url_help": "HTTP、HTTPS、SOCKS4、SOCKS5 プロキシをサポートしています。例：http://192.168.0.42:7890 または socks5://127.0.0.1:1080",
+      "url_placeholder": "例：socks5://127.0.0.1:1080",
+      "url_required": "プロキシURLを入力してください"
+    },
     "saved": "チャンネルを保存しました",
     "session_id": "セッションID",
     "telegram": {
@@ -783,10 +808,12 @@
       "poll_interval": "ポーリング間隔（秒）"
     },
     "test_connection": "接続テスト",
+    "test_connection_error": "接続テストに失敗しました",
     "title": "チャンネル",
     "type": "タイプ",
     "type_placeholder": "チャンネルタイプを選択",
     "type_required": "チャンネルタイプを選択してください",
+    "unbound": "アンバウンド",
     "webhook": {
       "config": "Webhook設定",
       "endpoint": "エンドポイント",
@@ -1412,6 +1439,8 @@
     "more": "もっと",
     "name": "名前",
     "next_match": "次の試合",
+    "no": "いいえ",
+    "noData": "データなし",
     "no_results": "検索結果なし",
     "none": "無",
     "off": "オフ",
@@ -1466,6 +1495,7 @@
     "upload_image": "画像ファイルをアップロード",
     "uploaded_image": "アップロードされた画像",
     "warning": "警告",
+    "yes": "はい",
     "you": "あなた"
   },
   "dialog": {
@@ -3380,6 +3410,95 @@
       "undo": "取り消す"
     }
   },
+  "scheduler": {
+    "create": "タスクを作成",
+    "createTitle": "スケジュールされたタスクを作成",
+    "cron": {
+      "custom": "カスタム",
+      "everyDay": "毎日",
+      "everyHour": "毎時",
+      "everyMinute": "毎分",
+      "everyMonth": "毎月",
+      "everyWeek": "毎週",
+      "weekdays": "毎日"
+    },
+    "daily": "日々",
+    "deleteConfirm": {
+      "description": "この予定されたタスクを削除してもよろしいですか？",
+      "title": "タスクの削除"
+    },
+    "deleteFailed": "タスクの削除に失敗しました",
+    "deleteSuccess": "タスクが正常に削除されました",
+    "disabled": "タスクが無効化されました",
+    "editTitle": "スケジュールされたタスクの編集",
+    "empty": {
+      "description": "以下のボタンをクリックして、初めてのスケジュールタスクを作成してください",
+      "title": "スケジュールされたタスクはありません"
+    },
+    "enabled": "タスクが有効化されました",
+    "form": {
+      "agent": "エージェントを選択",
+      "agentPlaceholder": "実行するエージェントを選択",
+      "agentRequired": "エージェントを選択してください",
+      "basicInfo": "基本情報",
+      "cronCustom": "カスタムCron",
+      "cronExpression": "Cron式",
+      "cronMode": "スケジュールモード",
+      "cronPreset": "プリセットテンプレート",
+      "description": "説明",
+      "descriptionPlaceholder": "説明を入力してください（任意）",
+      "invalidCron": "無効なCron式",
+      "message": "メッセージ内容",
+      "messageContent": "メッセージ内容",
+      "messagePlaceholder": "送信するメッセージの内容を入力してください...",
+      "messageRequired": "メッセージ内容を入力してください",
+      "name": "タスク名",
+      "namePlaceholder": "タスク名を入力",
+      "nameRequired": "タスク名を入力してください",
+      "schedule": "スケジュール設定",
+      "session": "セッションを選択",
+      "sessionPlaceholder": "メッセージを送信するセッションを選択",
+      "sessionRequired": "セッションを選択してください",
+      "target": "実行対象",
+      "timezone": "タイムゾーン"
+    },
+    "lastRun": "最終実行",
+    "logs": {
+      "columns": {
+        "duration": "期間",
+        "error": "エラーメッセージ",
+        "message": "メッセージ送信済み",
+        "preview": "応答プレビュー",
+        "status": "ステータス",
+        "triggeredAt": "トリガーされた時間"
+      },
+      "statusFailed": "失敗しました",
+      "statusRunning": "走る",
+      "statusSuccess": "成功",
+      "statusTimeout": "タイムアウト",
+      "title": "実行ログ"
+    },
+    "noNextRun": "次回の実行はありません",
+    "presets": {
+      "every30Minutes": "30分ごと",
+      "every5Minutes": "5分ごと",
+      "every6Hours": "6時間ごと",
+      "everyDay": "毎日",
+      "everyHour": "毎時間",
+      "everyMinute": "毎分",
+      "everyWeek": "毎週",
+      "everyWeekday": "毎週日"
+    },
+    "saveSuccess": "タスクが正常に保存されました",
+    "statusDisabled": "無効",
+    "statusEnabled": "有効",
+    "tabs": {
+      "logs": "実行ログ",
+      "schedulers": "タスク"
+    },
+    "title": "スケジュールされたタスク",
+    "toggleFailed": "タスク状態の切り替えに失敗しました"
+  },
   "selection": {
     "action": {
       "builtin": {
@@ -4459,6 +4578,7 @@
         "no": "説明なし",
         "nowledge_mem": "Nowledge Mem アプリをローカルで実行する必要があります。AI チャット、ツール、ノート、エージェント、ファイルをコンピューター上のプライベートメモリに保存します。https://mem.nowledge.co/ からダウンロードしてください",
         "python": "安全なサンドボックス環境でPythonコードを実行します。Pyodideを使用してPythonを実行し、ほとんどの標準ライブラリと科学計算パッケージをサポートしています。",
+        "scheduler": "スケジュールタスク管理MCPサーバー。指定されたエージェントセッションがトリガーされたときにメッセージを送信する、スケジュールタスクの作成、一覧表示、更新、削除、および切り替え機能を提供します。",
         "sequentialthinking": "構造化された思考プロセスを通じて動的かつ反省的な問題解決を行うためのツールを提供するMCPサーバーの実装"
       },
       "command": "コマンド",
@@ -5565,6 +5685,7 @@
     "notes": "ノート",
     "openclaw": "オープンクロー",
     "paintings": "ペインティング",
+    "scheduler": "スケジューラー",
     "settings": "設定",
     "store": "アシスタントライブラリ",
     "translate": "翻訳"

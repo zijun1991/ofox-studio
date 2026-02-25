@@ -252,6 +252,7 @@
             "title": "Omite verificările de permisiune",
             "warning": "Folosește cu precauție — toate instrumentele vor rula fără a cere aprobare."
           },
+          "channelBoundHelper": "Modul de permisiune este setat la Auto Aprobare pentru agenții legați de canal.",
           "confirmChange": {
             "description": "Schimbarea modurilor actualizează instrumentele aprobate automat.",
             "title": "Schimbi modul de permisiune?"
@@ -748,8 +749,21 @@
     "add_title": "Adaugă Canal",
     "agent_id": "ID Agent",
     "binding": "Legarea Agentului",
+    "binding_already_bound": "Canalul este deja legat de un agent",
+    "binding_create_hint": "Creează un Agent nou și asociază-l la acest canal",
+    "binding_edit_error": "Nu s-a putut deschide agentul pentru editare",
+    "binding_error": "Nu s-a reușit crearea și legarea agentului",
+    "binding_locked_hint": "Agent este legat, faceți clic pentru a naviga la pagina de editare a agentului",
+    "binding_no_agent": "Niciun agent nu este legat de acest canal.",
+    "binding_status": "Stare de Legare",
+    "binding_success": "Agent creat și legat cu succes",
+    "bound": "Legat",
+    "bound_agent": "Agent Legat",
+    "bound_session": "Sesiune Legată",
+    "create_agent_and_bind": "Creați și Legați",
     "delete_confirm": "Sigur dorești să ștergi acest canal?",
     "deleted": "Canal șters.",
+    "edit_agent": "Editează Agent",
     "email": {
       "folder": "Dosar",
       "from_address": "De la Adresă",
@@ -770,6 +784,17 @@
     "name_placeholder": "ex. Webhook-ul meu",
     "name_required": "Vă rugăm să introduceți un nume de canal",
     "not_found": "Canalul nu a fost găsit",
+    "proxy": {
+      "current_config": "Configurația curentă",
+      "mode": "Modul Proxy",
+      "mode_custom": "Utilizați Proxy Personalizat",
+      "mode_global": "Urmează Proxy Global",
+      "title": "Configurare Proxy",
+      "url": "URL Proxy",
+      "url_help": "Suportă proxy-uri HTTP, HTTPS, SOCKS4, SOCKS5. Exemplu: http://192.168.0.42:7890 sau socks5://127.0.0.1:1080",
+      "url_placeholder": "de exemplu, socks5://127.0.0.1:1080",
+      "url_required": "Vă rugăm să introduceți URL-ul proxy"
+    },
     "saved": "Canal salvat",
     "session_id": "ID sesiune",
     "telegram": {
@@ -783,10 +808,12 @@
       "poll_interval": "Intervalul de sondare (sec)"
     },
     "test_connection": "Testează Conexiunea",
+    "test_connection_error": "Test de conexiune eșuat",
     "title": "Canale",
     "type": "Tip",
     "type_placeholder": "Selectați tipul canalului",
     "type_required": "Vă rugăm să selectați un tip de canal",
+    "unbound": "Unbound",
     "webhook": {
       "config": "Configurarea Webhook",
       "endpoint": "Endpoint",
@@ -1412,6 +1439,8 @@
     "more": "Mai mult",
     "name": "Nume",
     "next_match": "Următorul meci",
+    "no": "Nu",
+    "noData": "Niciun date",
     "no_results": "Niciun rezultat",
     "none": "Nimic",
     "off": "Oprit",
@@ -1466,6 +1495,7 @@
     "upload_image": "Încarcă fișier imagine",
     "uploaded_image": "Imagine încărcată",
     "warning": "Avertisment",
+    "yes": "Da",
     "you": "Tu"
   },
   "dialog": {
@@ -3380,6 +3410,95 @@
       "undo": "Anulează"
     }
   },
+  "scheduler": {
+    "create": "Creează Sarcină",
+    "createTitle": "Creează Sarcina Programată",
+    "cron": {
+      "custom": "Personalizat",
+      "everyDay": "În fiecare zi",
+      "everyHour": "În fiecare oră",
+      "everyMinute": "Fiecare minut",
+      "everyMonth": "În fiecare lună",
+      "everyWeek": "În fiecare săptămână",
+      "weekdays": "În fiecare zi lucrătoare"
+    },
+    "daily": "Zilnic",
+    "deleteConfirm": {
+      "description": "Sigur doriți să ștergeți această sarcină programată?",
+      "title": "Șterge Sarcina"
+    },
+    "deleteFailed": "Nu s-a putut șterge sarcina",
+    "deleteSuccess": "Sarcina a fost ștearsă cu succes.",
+    "disabled": "Sarcina dezactivată",
+    "editTitle": "Editează Sarcina Programată",
+    "empty": {
+      "description": "Apăsați butonul de mai jos pentru a vă crea prima sarcină programată.",
+      "title": "Nu există sarcini planificate"
+    },
+    "enabled": "Sarcina activată",
+    "form": {
+      "agent": "Selectați Agent",
+      "agentPlaceholder": "Selectați Agentul pentru execuție",
+      "agentRequired": "Vă rugăm să selectați un Agent",
+      "basicInfo": "Informații de bază",
+      "cronCustom": "Cron Personalizat",
+      "cronExpression": "Expresie Cron",
+      "cronMode": "Mod de Programare",
+      "cronPreset": "Șablon Prestabilit",
+      "description": "Descriere",
+      "descriptionPlaceholder": "Introduceți descrierea (opțional)",
+      "invalidCron": "Expresie Cron invalidă",
+      "message": "Conținutul mesajului",
+      "messageContent": "Conținutul mesajului",
+      "messagePlaceholder": "Introduceți conținutul mesajului de trimis...",
+      "messageRequired": "Introduceți conținutul mesajului",
+      "name": "Numele Sarcinii",
+      "namePlaceholder": "Introduceți numele sarcinii",
+      "nameRequired": "Vă rugăm să introduceți numele sarcinii",
+      "schedule": "Setări Program",
+      "session": "Selectează Sesiunea",
+      "sessionPlaceholder": "Selectați Sesiunea pentru a trimite mesaj",
+      "sessionRequired": "Vă rugăm să selectați o sesiune",
+      "target": "Țintă de Execuție",
+      "timezone": "Fus orar"
+    },
+    "lastRun": "Ultima cursă",
+    "logs": {
+      "columns": {
+        "duration": "Durată",
+        "error": "Mesaj de eroare",
+        "message": "Mesaj Trimis",
+        "preview": "Previzualizare Răspuns",
+        "status": "Status",
+        "triggeredAt": "Declanșat La"
+      },
+      "statusFailed": "Eșuat",
+      "statusRunning": "Alergând",
+      "statusSuccess": "Succes",
+      "statusTimeout": "Timeout",
+      "title": "Jurnale de execuție"
+    },
+    "noNextRun": "Nu există următoarea rulare",
+    "presets": {
+      "every30Minutes": "La fiecare 30 de minute",
+      "every5Minutes": "La fiecare 5 minute",
+      "every6Hours": "La fiecare 6 ore",
+      "everyDay": "În fiecare zi",
+      "everyHour": "În fiecare oră",
+      "everyMinute": "Fiecare minut",
+      "everyWeek": "În fiecare săptămână",
+      "everyWeekday": "În fiecare zi lucrătoare"
+    },
+    "saveSuccess": "Sarcina salvată cu succes",
+    "statusDisabled": "Dezactivat",
+    "statusEnabled": "Activat",
+    "tabs": {
+      "logs": "Jurnale de execuție",
+      "schedulers": "Sarcini"
+    },
+    "title": "Sarcini Programate",
+    "toggleFailed": "Nu s-a putut comuta starea sarcinii"
+  },
   "selection": {
     "action": {
       "builtin": {
@@ -4459,6 +4578,7 @@
         "no": "Fără descriere",
         "nowledge_mem": "Necesită aplicația Nowledge Mem rulând local. Păstrează chat-urile AI, instrumentele, notițele, agenții și fișierele în memoria privată de pe computerul tău. Descarcă de la https://mem.nowledge.co/",
         "python": "Execută cod Python într-un mediu sandbox securizat. Rulează Python cu Pyodide, suportând majoritatea bibliotecilor standard și pachetelor de calcul științific",
+        "scheduler": "Managementul Sarcinilor Programate Server MCP. Oferă funcționalități pentru crearea, listarea, actualizarea, ștergerea și comutarea sarcinilor programate. Trimite mesaje către Sesiunile Agentului specificate atunci când sunt declanșate.",
         "sequentialthinking": "O implementare de server MCP care oferă instrumente pentru rezolvarea dinamică și reflexivă a problemelor prin procese de gândire structurată"
       },
       "command": "Comandă",
@@ -5565,6 +5685,7 @@
     "notes": "Notițe",
     "openclaw": "OpenClaw",
     "paintings": "Imagini",
+    "scheduler": "Planificator",
     "settings": "Setări",
     "store": "Bibliotecă asistenți",
     "translate": "Traducere"

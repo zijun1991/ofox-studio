@@ -18,7 +18,7 @@ import {
   type ToolPermissionResultPayload,
   toolPermissionsActions
 } from '@renderer/store/toolPermissions'
-import type { ChannelStatusEvent } from '@renderer/types/channel'
+import type { ChannelMessageEvent, ChannelStatusEvent } from '@renderer/types/channel'
 import { delay, runAsyncFunction } from '@renderer/utils'
 import { checkDataLimit } from '@renderer/utils'
 import { defaultLanguage } from '@shared/config/constant'
@@ -117,7 +117,34 @@ export function useAppInit() {
       }
     )
 
-    return () => removeStatusListener()
+    // Listen for channel message events to trigger message refresh
+    const removeMessageListener = window.api.channels.onMessageEvent(
+      (_event: Electron.IpcRendererEvent, event: ChannelMessageEvent) => {
+        logger.debug('Received channel message event', {
+          channelId: event.channelId,
+          sessionId: event.sessionId,
+          direction: event.direction
+        })
+        // Emit a custom event that the message list can listen to
+        // The sessionId is used directly as topicId for agent sessions
+        window.dispatchEvent(
+          new CustomEvent('channel-message-received', {
+            detail: {
+              sessionId: event.sessionId,
+              channelId: event.channelId,
+              direction: event.direction,
+              content: event.content,
+              timestamp: event.timestamp
+            }
+          })
+        )
+      }
+    )
+
+    return () => {
+      removeStatusListener()
+      removeMessageListener()
+    }
   }, [dispatch])
 
   useEffect(() => {

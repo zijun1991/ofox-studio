@@ -51,6 +51,7 @@ enum InitState {
  */
 export class DatabaseManager {
   private static instance: DatabaseManager | null = null
+  private static initPromise: Promise<DatabaseManager> | null = null
 
   private client: Client | null = null
   private db: LibSQLDatabase<typeof schema> | null = null
@@ -58,17 +59,27 @@ export class DatabaseManager {
 
   /**
    * Get the singleton instance (database initialization starts automatically)
+   * Handles concurrent calls by returning the same promise
    */
   public static async getInstance(): Promise<DatabaseManager> {
     if (DatabaseManager.instance) {
       return DatabaseManager.instance
     }
 
-    const instance = new DatabaseManager()
-    await instance.initialize()
-    DatabaseManager.instance = instance
+    // If initialization is already in progress, wait for it
+    if (DatabaseManager.initPromise) {
+      return DatabaseManager.initPromise
+    }
 
-    return instance
+    // Start initialization and cache the promise
+    DatabaseManager.initPromise = (async () => {
+      const instance = new DatabaseManager()
+      await instance.initialize()
+      DatabaseManager.instance = instance
+      return instance
+    })()
+
+    return DatabaseManager.initPromise
   }
 
   /**
@@ -220,9 +231,10 @@ export class DatabaseManager {
       return
     }
 
-    // Detach singleton first so concurrent getInstance() creates a fresh connection
+    // Detach singleton and initPromise first so concurrent getInstance() creates a fresh connection
     // instead of returning a stale instance with null client.
     DatabaseManager.instance = null
+    DatabaseManager.initPromise = null
 
     if (instance.client) {
       try {

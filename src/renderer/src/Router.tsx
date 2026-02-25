@@ -19,6 +19,7 @@ import MinAppsPage from './pages/minapps/MinAppsPage'
 import NotesPage from './pages/notes/NotesPage'
 import OpenClawPage from './pages/openclaw/OpenClawPage'
 import PaintingsRoutePage from './pages/paintings/PaintingsRoutePage'
+import SchedulerPage from './pages/scheduler/SchedulerPage'
 import SettingsPage from './pages/settings/SettingsPage'
 import AssistantPresetsPage from './pages/store/assistants/presets/AssistantPresetsPage'
 import ToolsPage from './pages/tools/ToolsPage'
@@ -48,6 +49,7 @@ const Router: FC = () => {
           <Route path="/launchpad" element={<ToolsPage />} />
           <Route path="/tools/:toolId" element={<ToolWebViewPage />} />
           <Route path="/tools" element={<ToolsPage />} />
+          <Route path="/scheduler" element={<SchedulerPage />} />
         </Routes>
       </ErrorBoundary>
     )
