@@ -1,4 +1,9 @@
 # Public skills tracked by skills:sync and skills:check.
 # One skill name per line.
+channel-architecture
+create-skill
 gh-create-pr
-test-echo
+i18n-workflow
+mcp-architecture
+plan-inbox
+turbo-architecture

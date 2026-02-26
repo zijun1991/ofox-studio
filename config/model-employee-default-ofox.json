@@ -1,0 +1,385 @@
+{
+  "version": "1.0.0",
+  "exportedAt": "2026-02-26T13:41:12.833Z",
+  "employees": [
+    {
+      "name": "Claude Opus",
+      "description": "Anthropic 最强模型，擅长复杂推理和深度分析",
+      "soul": "你是 Claude Opus，Anthropic 最强大的 AI 助手。你擅长复杂推理、深度分析、创意写作和多步骤任务。你具备强大的视觉理解能力和工具使用能力，能够处理高难度的编程、研究和分析任务。你的回答应该准确、专业、结构清晰，并在不确定时诚实说明。",
+      "model": {
+        "id": "anthropic/claude-opus-4.6",
+        "provider": "ofox-anthropic",
+        "name": "Claude Opus 4.6",
+        "group": "claude-opus",
+        "owned_by": "bedrock",
+        "description": "Opus 4.6 is Anthropic's strongest model for coding and long-running professional tasks. Built for agents that operate across entire workflows.",
+        "endpoint_type": "anthropic",
+        "capabilities": [
+          {
+            "type": "vision"
+          },
+          {
+            "type": "function_calling"
+          },
+          {
+            "type": "reasoning"
+          }
+        ],
+        "pricing": {
+          "input_per_million_tokens": 5,
+          "output_per_million_tokens": 25
+        },
+        "providerName": "Ofox Anthropic"
+      },
+      "educationLevel": "phd"
+    },
+    {
+      "name": "Claude Sonnet",
+      "description": "Anthropic 平衡型模型，编程能力世界领先",
+      "soul": "你是 Claude Sonnet，Anthropic 的平衡型 AI 助手。你在编程、分析和通用任务上表现出色，具有优秀的性价比。你擅长迭代开发、复杂代码库导航和端到端项目管理。你的回答应该准确、专业、结构清晰。",
+      "model": {
+        "id": "anthropic/claude-sonnet-4.6",
+        "provider": "ofox-anthropic",
+        "name": "Claude Sonnet 4.6",
+        "group": "claude-sonnet",
+        "owned_by": "bedrock",
+        "description": "Sonnet 4.6 is Anthropic's most capable Sonnet-class model with frontier performance across coding, agents, and professional work.",
+        "endpoint_type": "anthropic",
+        "capabilities": [
+          {
+            "type": "vision"
+          },
+          {
+            "type": "function_calling"
+          },
+          {
+            "type": "reasoning"
+          }
+        ],
+        "pricing": {
+          "input_per_million_tokens": 3,
+          "output_per_million_tokens": 15
+        },
+        "providerName": "Ofox Anthropic"
+      },
+      "educationLevel": "master"
+    },
+    {
+      "name": "Claude Haiku",
+      "description": "Anthropic 快速模型，响应迅速且成本低廉",
+      "soul": "你是 Claude Haiku，Anthropic 的快速响应 AI 助手。你针对近即时响应进行了优化，在编码任务上表现出色。你的回答应该简洁、准确、高效。",
+      "model": {
+        "id": "anthropic/claude-haiku-4.5",
+        "provider": "ofox-anthropic",
+        "name": "Claude Haiku 4.5",
+        "group": "claude-haiku",
+        "owned_by": "bedrock",
+        "description": "Anthropic's fastest and most cost-effective model optimized for near-instant responsiveness.",
+        "endpoint_type": "anthropic",
+        "capabilities": [
+          {
+            "type": "vision"
+          },
+          {
+            "type": "function_calling"
+          },
+          {
+            "type": "reasoning"
+          }
+        ],
+        "pricing": {
+          "input_per_million_tokens": 1,
+          "output_per_million_tokens": 5
+        },
+        "providerName": "Ofox Anthropic"
+      },
+      "educationLevel": "undergraduate"
+    },
+    {
+      "name": "GLM 5",
+      "description": "智谱旗舰模型，开源领域领先",
+      "model": {
+        "id": "z-ai/glm-5",
+        "provider": "ofox-anthropic",
+        "name": "Z.ai: GLM-5",
+        "group": "glm",
+        "owned_by": "zhipu",
+        "description": "GLM-5 is Z.ai’s flagship open-source foundation model engineered for complex systems design and long-horizon agent workflows. Built for expert developers, it delivers production-grade performance on large-scale programming tasks, rivaling leading closed-source models. With advanced agentic planning, deep backend reasoning, and iterative self-correction, GLM-5 moves beyond code generation to full-system construction and autonomous execution.",
+        "endpoint_type": "anthropic",
+        "capabilities": [
+          {
+            "type": "function_calling"
+          },
+          {
+            "type": "reasoning"
+          }
+        ],
+        "pricing": {
+          "input_per_million_tokens": 1,
+          "output_per_million_tokens": 3.1999999999999997
+        },
+        "context_window": 200000,
+        "providerName": "Ofox Anthropic"
+      },
+      "educationLevel": "phd"
+    },
+    {
+      "name": "GLM 4.7",
+      "description": "智谱高效模型，中文理解优秀",
+      "model": {
+        "id": "z-ai/glm-4.7",
+        "provider": "ofox-anthropic",
+        "name": "Z.ai: GLM 4.7",
+        "group": "glm",
+        "owned_by": "zhipu",
+        "description": "Zhipu GLM-4.7 - latest flagship model with advanced reasoning, 128K context, and web search capabilities. Best-in-class Chinese language understanding.",
+        "endpoint_type": "anthropic",
+        "capabilities": [
+          {
+            "type": "function_calling"
+          },
+          {
+            "type": "reasoning"
+          }
+        ],
+        "pricing": {
+          "input_per_million_tokens": 0.39999999999999997,
+          "output_per_million_tokens": 2
+        },
+        "context_window": 200000,
+        "providerName": "Ofox Anthropic"
+      },
+      "educationLevel": "master"
+    },
+    {
+      "name": "GLM Flash",
+      "description": "智谱免费模型，性价比极高",
+      "model": {
+        "id": "z-ai/glm-4.7-flash:free",
+        "provider": "ofox-anthropic",
+        "name": "Z.ai: GLM-4.7-Flash (Free)",
+        "group": "glm",
+        "owned_by": "zhipu",
+        "description": "As a 30B-class SOTA model, GLM-4.7-Flash offers a new option that balances performance and efficiency. It is further optimized for agentic coding use cases, strengthening coding capabilities, long-horizon task planning, and tool collaboration, and has achieved leading performance among open-source models of the same size on several current public benchmark leaderboards.",
+        "endpoint_type": "anthropic",
+        "capabilities": [
+          {
+            "type": "function_calling"
+          }
+        ],
+        "context_window": 200000,
+        "providerName": "Ofox Anthropic"
+      },
+      "educationLevel": "high_school"
+    },
+    {
+      "name": "DeepSeek V3",
+      "description": "DeepSeek 最新模型，代码能力出色",
+      "model": {
+        "id": "deepseek/deepseek-v3.2",
+        "provider": "ofox-anthropic",
+        "name": "DeepSeek V3.2",
+        "group": "deepseek",
+        "owned_by": "openrouter",
+        "description": "DeepSeek's latest model building upon instruction following and coding abilities. Pre-trained on 15 trillion tokens with excellent cost-performance ratio.",
+        "endpoint_type": "anthropic",
+        "capabilities": [
+          {
+            "type": "function_calling"
+          }
+        ],
+        "pricing": {
+          "input_per_million_tokens": 0.29,
+          "output_per_million_tokens": 0.43
+        },
+        "context_window": 128000,
+        "providerName": "Ofox Anthropic"
+      },
+      "educationLevel": "undergraduate"
+    },
+    {
+      "name": "MiniMax M2.5",
+      "description": "MiniMax 生产力模型，办公场景专家",
+      "model": {
+        "id": "minimax/minimax-m2.5",
+        "provider": "ofox-anthropic",
+        "name": "MiniMax: MiniMax M2.5",
+        "group": "minimax",
+        "owned_by": "minimax",
+        "description": "MiniMax-M2.5 is a SOTA large language model designed for real-world productivity. Trained in a diverse range of complex real-world digital working environments, M2.5 builds upon the coding expertise of M2.1 to extend into general office work, reaching fluency in generating and operating Word, Excel, and Powerpoint files, context switching between diverse software environments, and working across different agent and human teams. Scoring 80.2% on SWE-Bench Verified, 51.3% on Multi-SWE-Bench, and 76.3% on BrowseComp, M2.5 is also more token efficient than previous generations, having been trained to optimize its actions and output through planning.",
+        "endpoint_type": "anthropic",
+        "capabilities": [
+          {
+            "type": "function_calling"
+          },
+          {
+            "type": "reasoning"
+          }
+        ],
+        "pricing": {
+          "input_per_million_tokens": 0.3,
+          "output_per_million_tokens": 1.2
+        },
+        "context_window": 200000,
+        "providerName": "Ofox Anthropic"
+      },
+      "educationLevel": "master"
+    },
+    {
+      "name": "Kimi K2.5",
+      "description": "Moonshot 多模态模型，视觉编码能力强",
+      "model": {
+        "id": "moonshotai/kimi-k2.5",
+        "provider": "ofox-anthropic",
+        "name": "MoonshotAI: Kimi K2.5",
+        "group": "kimi",
+        "owned_by": "MoonshotAI",
+        "description": "Kimi K2.5 is Moonshot AI''s native multimodal model, delivering state-of-the-art visual coding capability and a self-directed agent swarm paradigm. Built on Kimi K2 with continued pretraining over approximately 15T mixed visual and text tokens, it delivers strong performance in general reasoning, visual coding, and agentic tool-calling.",
+        "endpoint_type": "anthropic",
+        "capabilities": [
+          {
+            "type": "vision"
+          },
+          {
+            "type": "function_calling"
+          },
+          {
+            "type": "reasoning"
+          }
+        ],
+        "pricing": {
+          "input_per_million_tokens": 0.6,
+          "output_per_million_tokens": 3
+        },
+        "context_window": 262144,
+        "providerName": "Ofox Anthropic"
+      },
+      "educationLevel": "master"
+    },
+    {
+      "name": "豆包 Pro",
+      "description": "字节跳动旗舰模型，多模态全能",
+      "model": {
+        "id": "volcengine/doubao-seed-2.0-pro",
+        "provider": "ofox-anthropic",
+        "name": "Doubao Seed 2.0 Pro",
+        "group": "doubao",
+        "owned_by": "volcengine",
+        "description": "Doubao-Seed-2.0-pro是旗舰级全能通用模型，面向 Agent 时代的复杂推理与长链路任务执行场景。强调多模态理解、长上下文推理、结构化生成与工具增强执行。复杂指令与多约束执行能力突出，可稳定应对多步复杂规划、复杂图文推理、视频内容理解与高难度分析等场景。",
+        "endpoint_type": "anthropic",
+        "capabilities": [
+          {
+            "type": "vision"
+          },
+          {
+            "type": "function_calling"
+          },
+          {
+            "type": "reasoning"
+          }
+        ],
+        "pricing": {
+          "input_per_million_tokens": 0.67,
+          "output_per_million_tokens": 3.36
+        },
+        "context_window": 256000,
+        "providerName": "Ofox Anthropic"
+      },
+      "educationLevel": "master"
+    },
+    {
+      "name": "豆包 Lite",
+      "description": "字节跳动均衡模型，性价比之选",
+      "model": {
+        "id": "volcengine/doubao-seed-2.0-lite",
+        "provider": "ofox-anthropic",
+        "name": "Doubao Seed 2.0 Lite",
+        "group": "doubao",
+        "owned_by": "volcengine",
+        "description": "Doubao-Seed-2.0-lite 是面向高频企业场景兼顾性能与成本的均衡型模型，综合能力超越上一代Doubao-Seed-1.8。胜任非结构化信息处理、内容创作、搜索推荐、数据分析等生产型工作，支持长上下文、多源信息融合、多步指令执行与高保真结构化输出。在保障稳定效果的同时显著优化成本。",
+        "endpoint_type": "anthropic",
+        "capabilities": [
+          {
+            "type": "vision"
+          },
+          {
+            "type": "function_calling"
+          },
+          {
+            "type": "reasoning"
+          }
+        ],
+        "pricing": {
+          "input_per_million_tokens": 0.13,
+          "output_per_million_tokens": 0.76
+        },
+        "context_window": 256000,
+        "providerName": "Ofox Anthropic"
+      },
+      "educationLevel": "undergraduate"
+    },
+    {
+      "name": "豆包 Mini",
+      "description": "字节跳动轻量模型，极速响应",
+      "model": {
+        "id": "volcengine/doubao-seed-2.0-mini",
+        "provider": "ofox-anthropic",
+        "name": "Doubao Seed 2.0 Mini",
+        "group": "doubao",
+        "owned_by": "volcengine",
+        "description": "Doubao-Seed-2.0-mini 面向低时延、高并发与成本敏感场景，强调快速响应与灵活推理部署。模型效果与Doubao-Seed-1.6相当。支持256k上下文、4档思考长度和多模态理解，适合成本和速度优先的轻量级任务。",
+        "endpoint_type": "anthropic",
+        "capabilities": [
+          {
+            "type": "vision"
+          },
+          {
+            "type": "function_calling"
+          },
+          {
+            "type": "reasoning"
+          }
+        ],
+        "pricing": {
+          "input_per_million_tokens": 0.06,
+          "output_per_million_tokens": 0.56
+        },
+        "context_window": 256000,
+        "providerName": "Ofox Anthropic"
+      },
+      "educationLevel": "high_school"
+    },
+    {
+      "name": "Qwen 3.5",
+      "description": "阿里最新多模态模型，混合架构",
+      "model": {
+        "id": "bailian/qwen3.5-plus",
+        "provider": "ofox-anthropic",
+        "name": "Qwen3.5 Plus",
+        "group": "qwen3.5",
+        "owned_by": "dashscope",
+        "description": "Qwen3.5原生视觉语言系列Plus模型，基于混合架构设计，融合了线性注意力机制与稀疏混合专家模型，实现了更高的推理效率。在多项任务评测中，3.5系列均展现出与当前顶尖前沿模型相媲美的卓越性能，模型效果在纯文本与多模态方面相较3系列均实现飞跃式进步。",
+        "endpoint_type": "anthropic",
+        "capabilities": [
+          {
+            "type": "vision"
+          },
+          {
+            "type": "function_calling"
+          },
+          {
+            "type": "reasoning"
+          }
+        ],
+        "pricing": {
+          "input_per_million_tokens": 0.39999999999999997,
+          "output_per_million_tokens": 2.4
+        },
+        "context_window": 1000000,
+        "providerName": "Ofox Anthropic"
+      },
+      "educationLevel": "master"
+    }
+  ],
+  "educationLevelOrder": ["high_school", "undergraduate", "master", "phd"]
+}

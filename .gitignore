@@ -75,3 +75,6 @@ test-results
 YOUR_MEMORY_FILE_PATH
 
 .sessions/
+
+# Plan inbox (local-only, unexecuted plans)
+plan/
