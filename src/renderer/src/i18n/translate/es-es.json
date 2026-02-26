@@ -90,7 +90,8 @@
         "duplicate": "Este directorio ya está incluido.",
         "empty": "Selecciona al menos un directorio al que el agente pueda acceder.",
         "error": {
-          "at_least_one": "Por favor, seleccione al menos un directorio accesible."
+          "at_least_one": "Por favor, seleccione al menos un directorio accesible.",
+          "cannot_delete_default": "[to be translated]:The default working directory cannot be deleted."
         },
         "label": "Directorios accesibles",
         "select_failed": "Error al seleccionar el directorio."
@@ -748,6 +749,7 @@
     "add": "Agregar Canal",
     "add_title": "Agregar Canal",
     "agent_id": "ID del Agente",
+    "agent_not_bound": "[to be translated]:Please bind an Agent first before enabling the channel.",
     "binding": "Enlace de Agente",
     "binding_already_bound": "El canal ya está vinculado a un agente.",
     "binding_create_hint": "Crear un nuevo Agente y vincularlo a este canal",
@@ -802,6 +804,7 @@
       "allowed_chat_ids_placeholder": "Separados por comas, dejar vacío para todos",
       "bot_token": "Token del Bot",
       "bot_token_placeholder": "Ingresa el token de tu bot de @BotFather",
+      "bot_token_required": "[to be translated]:Please enter a Bot Token before enabling the Telegram channel.",
       "config": "Configuración del Bot de Telegram",
       "parse_mode": "Modo de análisis",
       "parse_mode_none": "Ninguno",
@@ -1385,6 +1388,7 @@
     "close": "Cerrar",
     "collapse": "Colapsar",
     "completed": "Completado",
+    "configure": "[to be translated]:Configure",
     "confirm": "Confirmar",
     "copied": "Copiado",
     "copy": "Copiar",
@@ -3478,6 +3482,8 @@
       "statusTimeout": "Tiempo de espera agotado",
       "title": "Registros de Ejecución"
     },
+    "monthly": "Mensual",
+    "monthlyOnDay": "Mensual el día {{day}}",
     "noNextRun": "Sin próxima ejecución",
     "presets": {
       "every30Minutes": "Cada 30 minutos",
@@ -3497,7 +3503,10 @@
       "schedulers": "Tareas"
     },
     "title": "Tareas Programadas",
-    "toggleFailed": "Error al alternar el estado de la tarea"
+    "toggleFailed": "Error al alternar el estado de la tarea",
+    "trigger": "[to be translated]:Run Now",
+    "triggerFailed": "[to be translated]:Failed to trigger task",
+    "triggerSuccess": "[to be translated]:Task triggered successfully"
   },
   "selection": {
     "action": {
@@ -5675,6 +5684,7 @@
   },
   "title": {
     "apps": "Aplicaciones",
+    "channels": "[to be translated]:Channels",
     "code": "Código",
     "files": "Archivos",
     "home": "Inicio",

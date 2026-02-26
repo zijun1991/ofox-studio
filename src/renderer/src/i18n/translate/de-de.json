@@ -90,7 +90,8 @@
         "duplicate": "Dieses Verzeichnis wurde bereits hinzugefügt.",
         "empty": "Bitte wählen Sie mindestens ein Verzeichnis aus, auf das der Agent zugreifen kann.",
         "error": {
-          "at_least_one": "Bitte wählen Sie mindestens ein zugängliches Verzeichnis aus"
+          "at_least_one": "Bitte wählen Sie mindestens ein zugängliches Verzeichnis aus",
+          "cannot_delete_default": "[to be translated]:The default working directory cannot be deleted."
         },
         "label": "Arbeitsverzeichnis",
         "select_failed": "Verzeichnisauswahl fehlgeschlagen"
@@ -748,6 +749,7 @@
     "add": "Kanal hinzufügen",
     "add_title": "Kanal hinzufügen",
     "agent_id": "Agent ID",
+    "agent_not_bound": "[to be translated]:Please bind an Agent first before enabling the channel.",
     "binding": "Agent Binding",
     "binding_already_bound": "Kanal ist bereits an einen Agenten gebunden",
     "binding_create_hint": "Erstellen Sie einen neuen Agenten und binden Sie ihn an diesen Kanal",
@@ -802,6 +804,7 @@
       "allowed_chat_ids_placeholder": "Kommagetrennt, leer lassen für alle",
       "bot_token": "Bot Token",
       "bot_token_placeholder": "Geben Sie Ihren Bot-Token von @BotFather ein",
+      "bot_token_required": "[to be translated]:Please enter a Bot Token before enabling the Telegram channel.",
       "config": "Telegram Bot Konfiguration",
       "parse_mode": "Parse-Modus",
       "parse_mode_none": "Keine",
@@ -1385,6 +1388,7 @@
     "close": "Schließen",
     "collapse": "Einklappen",
     "completed": "Abgeschlossen",
+    "configure": "[to be translated]:Configure",
     "confirm": "Bestätigen",
     "copied": "Kopiert",
     "copy": "Kopieren",
@@ -3478,6 +3482,8 @@
       "statusTimeout": "Zeitüberschreitung",
       "title": "Ausführungsprotokolle"
     },
+    "monthly": "Monatlich",
+    "monthlyOnDay": "Monatlich am {{day}}.",
     "noNextRun": "Keine nächste Ausführung",
     "presets": {
       "every30Minutes": "Alle 30 Minuten",
@@ -3497,7 +3503,10 @@
       "schedulers": "Aufgaben"
     },
     "title": "Geplante Aufgaben",
-    "toggleFailed": "Fehler beim Umschalten des Aufgabenstatus"
+    "toggleFailed": "Fehler beim Umschalten des Aufgabenstatus",
+    "trigger": "[to be translated]:Run Now",
+    "triggerFailed": "[to be translated]:Failed to trigger task",
+    "triggerSuccess": "[to be translated]:Task triggered successfully"
   },
   "selection": {
     "action": {
@@ -5675,6 +5684,7 @@
   },
   "title": {
     "apps": "Mini-Apps",
+    "channels": "[to be translated]:Channels",
     "code": "Code",
     "files": "Datei",
     "home": "Startseite",

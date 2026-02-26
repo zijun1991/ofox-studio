@@ -90,7 +90,8 @@
         "duplicate": "该目录已添加。",
         "empty": "请选择至少一个智能体可访问的目录。",
         "error": {
-          "at_least_one": "请至少选择一个可访问的目录"
+          "at_least_one": "请至少选择一个可访问的目录",
+          "cannot_delete_default": "默认工作目录不允许删除。"
         },
         "label": "工作目录",
         "select_failed": "选择目录失败"
@@ -748,6 +749,7 @@
     "add": "添加频道",
     "add_title": "添加频道",
     "agent_id": "Agent ID",
+    "agent_not_bound": "请先绑定一个 Agent 才能启用频道。",
     "binding": "Agent 绑定",
     "binding_already_bound": "该频道已绑定到 Agent",
     "binding_create_hint": "创建一个新的 Agent 并绑定到此频道",
@@ -802,6 +804,7 @@
       "allowed_chat_ids_placeholder": "逗号分隔，留空表示允许所有",
       "bot_token": "Bot Token",
       "bot_token_placeholder": "输入从 @BotFather 获取的 Bot Token",
+      "bot_token_required": "请先输入 Bot Token 后再启用 Telegram 频道。",
       "config": "Telegram Bot 配置",
       "parse_mode": "消息格式",
       "parse_mode_none": "无",
@@ -1385,6 +1388,7 @@
     "close": "关闭",
     "collapse": "折叠",
     "completed": "完成",
+    "configure": "配置",
     "confirm": "确认",
     "copied": "已复制",
     "copy": "复制",
@@ -3478,6 +3482,8 @@
       "statusTimeout": "超时",
       "title": "执行日志"
     },
+    "monthly": "每月执行",
+    "monthlyOnDay": "每月{{day}}日执行",
     "noNextRun": "无下次执行",
     "presets": {
       "every30Minutes": "每 30 分钟",
@@ -3497,7 +3503,10 @@
       "schedulers": "任务列表"
     },
     "title": "定时任务",
-    "toggleFailed": "切换任务状态失败"
+    "toggleFailed": "切换任务状态失败",
+    "trigger": "立即执行",
+    "triggerFailed": "触发执行失败",
+    "triggerSuccess": "任务已触发执行"
   },
   "selection": {
     "action": {
@@ -5675,6 +5684,7 @@
   },
   "title": {
     "apps": "小程序",
+    "channels": "频道",
     "code": "Code",
     "files": "文件",
     "home": "首页",

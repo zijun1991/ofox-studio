@@ -90,7 +90,8 @@
         "duplicate": "Este diretório já está incluído.",
         "empty": "Selecione pelo menos um diretório ao qual o agente possa acessar.",
         "error": {
-          "at_least_one": "Por favor, selecione pelo menos um diretório acessível."
+          "at_least_one": "Por favor, selecione pelo menos um diretório acessível.",
+          "cannot_delete_default": "[to be translated]:The default working directory cannot be deleted."
         },
         "label": "Diretórios acessíveis",
         "select_failed": "Falha ao selecionar o diretório."
@@ -748,6 +749,7 @@
     "add": "Adicionar Canal",
     "add_title": "Adicionar Canal",
     "agent_id": "ID do Agente",
+    "agent_not_bound": "[to be translated]:Please bind an Agent first before enabling the channel.",
     "binding": "Vinculação de Agente",
     "binding_already_bound": "O canal já está vinculado a um agente",
     "binding_create_hint": "Criar um novo Agente e vinculá-lo a este canal",
@@ -802,6 +804,7 @@
       "allowed_chat_ids_placeholder": "Separados por vírgulas, deixe vazio para todos",
       "bot_token": "Token do Bot",
       "bot_token_placeholder": "Insira o token do seu bot do @BotFather",
+      "bot_token_required": "[to be translated]:Please enter a Bot Token before enabling the Telegram channel.",
       "config": "Configuração do Bot do Telegram",
       "parse_mode": "Modo de Análise",
       "parse_mode_none": "Nenhum",
@@ -1385,6 +1388,7 @@
     "close": "Fechar",
     "collapse": "Recolher",
     "completed": "Concluído",
+    "configure": "[to be translated]:Configure",
     "confirm": "Confirmar",
     "copied": "Copiado",
     "copy": "Copiar",
@@ -3478,6 +3482,8 @@
       "statusTimeout": "Tempo esgotado",
       "title": "Registros de Execução"
     },
+    "monthly": "Mensal",
+    "monthlyOnDay": "Mensal no dia {{day}}",
     "noNextRun": "Sem próxima execução",
     "presets": {
       "every30Minutes": "A cada 30 minutos",
@@ -3497,7 +3503,10 @@
       "schedulers": "Tarefas"
     },
     "title": "Tarefas Agendadas",
-    "toggleFailed": "Falha ao alternar o status da tarefa"
+    "toggleFailed": "Falha ao alternar o status da tarefa",
+    "trigger": "[to be translated]:Run Now",
+    "triggerFailed": "[to be translated]:Failed to trigger task",
+    "triggerSuccess": "[to be translated]:Task triggered successfully"
   },
   "selection": {
     "action": {
@@ -5675,6 +5684,7 @@
   },
   "title": {
     "apps": "Miniaplicativos",
+    "channels": "[to be translated]:Channels",
     "code": "Código",
     "files": "Arquivos",
     "home": "Página Inicial",

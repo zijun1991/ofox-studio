@@ -90,7 +90,8 @@
         "duplicate": "Acest director este deja inclus.",
         "empty": "Selectează cel puțin un director pe care agentul îl poate accesa.",
         "error": {
-          "at_least_one": "Te rugăm să selectezi cel puțin un director accesibil."
+          "at_least_one": "Te rugăm să selectezi cel puțin un director accesibil.",
+          "cannot_delete_default": "[to be translated]:The default working directory cannot be deleted."
         },
         "label": "Directoare accesibile",
         "select_failed": "Nu s-a putut selecta directorul."
@@ -748,6 +749,7 @@
     "add": "Adaugă Canal",
     "add_title": "Adaugă Canal",
     "agent_id": "ID Agent",
+    "agent_not_bound": "[to be translated]:Please bind an Agent first before enabling the channel.",
     "binding": "Legarea Agentului",
     "binding_already_bound": "Canalul este deja legat de un agent",
     "binding_create_hint": "Creează un Agent nou și asociază-l la acest canal",
@@ -802,6 +804,7 @@
       "allowed_chat_ids_placeholder": "Separate prin virgulă, lasă liber pentru toate",
       "bot_token": "Token Bot",
       "bot_token_placeholder": "Introduceți tokenul botului dvs. de la @BotFather",
+      "bot_token_required": "[to be translated]:Please enter a Bot Token before enabling the Telegram channel.",
       "config": "Configurarea Botului Telegram",
       "parse_mode": "Mod de analiză",
       "parse_mode_none": "Niciuna",
@@ -1385,6 +1388,7 @@
     "close": "Închide",
     "collapse": "Restrânge",
     "completed": "Finalizat",
+    "configure": "[to be translated]:Configure",
     "confirm": "Confirmă",
     "copied": "Copiat",
     "copy": "Copiază",
@@ -3478,6 +3482,8 @@
       "statusTimeout": "Timeout",
       "title": "Jurnale de execuție"
     },
+    "monthly": "Lunar",
+    "monthlyOnDay": "Lunar în ziua {{day}}",
     "noNextRun": "Nu există următoarea rulare",
     "presets": {
       "every30Minutes": "La fiecare 30 de minute",
@@ -3497,7 +3503,10 @@
       "schedulers": "Sarcini"
     },
     "title": "Sarcini Programate",
-    "toggleFailed": "Nu s-a putut comuta starea sarcinii"
+    "toggleFailed": "Nu s-a putut comuta starea sarcinii",
+    "trigger": "[to be translated]:Run Now",
+    "triggerFailed": "[to be translated]:Failed to trigger task",
+    "triggerSuccess": "[to be translated]:Task triggered successfully"
   },
   "selection": {
     "action": {
@@ -5675,6 +5684,7 @@
   },
   "title": {
     "apps": "Aplicații",
+    "channels": "[to be translated]:Channels",
     "code": "Cod",
     "files": "Fișiere",
     "home": "Acasă",

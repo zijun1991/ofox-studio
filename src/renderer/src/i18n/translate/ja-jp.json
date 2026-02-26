@@ -90,7 +90,8 @@
         "duplicate": "このディレクトリは既に含まれています。",
         "empty": "エージェントがアクセスできるディレクトリを少なくとも1つ選択してください。",
         "error": {
-          "at_least_one": "アクセス可能なディレクトリを少なくとも1つ選択してください。"
+          "at_least_one": "アクセス可能なディレクトリを少なくとも1つ選択してください。",
+          "cannot_delete_default": "[to be translated]:The default working directory cannot be deleted."
         },
         "label": "アクセス可能なディレクトリ",
         "select_failed": "ディレクトリの選択に失敗しました。"
@@ -748,6 +749,7 @@
     "add": "チャンネルを追加",
     "add_title": "チャンネルを追加",
     "agent_id": "エージェントID",
+    "agent_not_bound": "[to be translated]:Please bind an Agent first before enabling the channel.",
     "binding": "エージェントバインディング",
     "binding_already_bound": "チャネルは既にエージェントにバインドされています",
     "binding_create_hint": "新しいエージェントを作成し、このチャンネルにバインドします",
@@ -802,6 +804,7 @@
       "allowed_chat_ids_placeholder": "カンマ区切り、すべての場合は空欄のまま",
       "bot_token": "ボットトークン",
       "bot_token_placeholder": "@BotFatherからボットトークンを入力してください",
+      "bot_token_required": "[to be translated]:Please enter a Bot Token before enabling the Telegram channel.",
       "config": "Telegramボット設定",
       "parse_mode": "解析モード",
       "parse_mode_none": "なし",
@@ -1385,6 +1388,7 @@
     "close": "閉じる",
     "collapse": "折りたたむ",
     "completed": "完了",
+    "configure": "[to be translated]:Configure",
     "confirm": "確認",
     "copied": "コピーされました",
     "copy": "コピー",
@@ -3478,6 +3482,8 @@
       "statusTimeout": "タイムアウト",
       "title": "実行ログ"
     },
+    "monthly": "毎月",
+    "monthlyOnDay": "毎月{{day}}日",
     "noNextRun": "次回の実行はありません",
     "presets": {
       "every30Minutes": "30分ごと",
@@ -3497,7 +3503,10 @@
       "schedulers": "タスク"
     },
     "title": "スケジュールされたタスク",
-    "toggleFailed": "タスク状態の切り替えに失敗しました"
+    "toggleFailed": "タスク状態の切り替えに失敗しました",
+    "trigger": "[to be translated]:Run Now",
+    "triggerFailed": "[to be translated]:Failed to trigger task",
+    "triggerSuccess": "[to be translated]:Task triggered successfully"
   },
   "selection": {
     "action": {
@@ -5675,6 +5684,7 @@
   },
   "title": {
     "apps": "アプリ",
+    "channels": "[to be translated]:Channels",
     "code": "Code",
     "files": "ファイル",
     "home": "ホーム",

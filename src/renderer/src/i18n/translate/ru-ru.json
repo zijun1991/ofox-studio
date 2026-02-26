@@ -90,7 +90,8 @@
         "duplicate": "Этот каталог уже включён.",
         "empty": "Выберите хотя бы один каталог, к которому агент имеет доступ.",
         "error": {
-          "at_least_one": "Пожалуйста, выберите хотя бы один доступный каталог."
+          "at_least_one": "Пожалуйста, выберите хотя бы один доступный каталог.",
+          "cannot_delete_default": "[to be translated]:The default working directory cannot be deleted."
         },
         "label": "Доступные директории",
         "select_failed": "Не удалось выбрать каталог."
@@ -748,6 +749,7 @@
     "add": "Добавить канал",
     "add_title": "Добавить канал",
     "agent_id": "Идентификатор агента",
+    "agent_not_bound": "[to be translated]:Please bind an Agent first before enabling the channel.",
     "binding": "Агентское связывание",
     "binding_already_bound": "Канал уже привязан к агенту",
     "binding_create_hint": "Создать нового Агента и привязать к этому каналу",
@@ -802,6 +804,7 @@
       "allowed_chat_ids_placeholder": "Через запятую, оставьте пустым для всех",
       "bot_token": "Токен бота",
       "bot_token_placeholder": "Введите токен вашего бота от @BotFather",
+      "bot_token_required": "[to be translated]:Please enter a Bot Token before enabling the Telegram channel.",
       "config": "Конфигурация Telegram бота",
       "parse_mode": "Режим разбора",
       "parse_mode_none": "Нет",
@@ -1385,6 +1388,7 @@
     "close": "Закрыть",
     "collapse": "Свернуть",
     "completed": "Завершено",
+    "configure": "[to be translated]:Configure",
     "confirm": "Подтверждение",
     "copied": "Скопировано",
     "copy": "Копировать",
@@ -3478,6 +3482,8 @@
       "statusTimeout": "Тайм-аут",
       "title": "Журналы выполнения"
     },
+    "monthly": "Ежемесячно",
+    "monthlyOnDay": "Ежемесячно {{day}}-го числа",
     "noNextRun": "Следующего запуска нет",
     "presets": {
       "every30Minutes": "Каждые 30 минут",
@@ -3497,7 +3503,10 @@
       "schedulers": "Задачи"
     },
     "title": "Планировщик заданий",
-    "toggleFailed": "Не удалось изменить статус задачи"
+    "toggleFailed": "Не удалось изменить статус задачи",
+    "trigger": "[to be translated]:Run Now",
+    "triggerFailed": "[to be translated]:Failed to trigger task",
+    "triggerSuccess": "[to be translated]:Task triggered successfully"
   },
   "selection": {
     "action": {
@@ -5675,6 +5684,7 @@
   },
   "title": {
     "apps": "Приложения",
+    "channels": "[to be translated]:Channels",
     "code": "Code",
     "files": "Файлы",
     "home": "Главная",

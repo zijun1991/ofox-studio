@@ -90,7 +90,8 @@
         "duplicate": "This directory is already included.",
         "empty": "Select at least one directory that the agent can access.",
         "error": {
-          "at_least_one": "Please select at least one accessible directory."
+          "at_least_one": "Please select at least one accessible directory.",
+          "cannot_delete_default": "The default working directory cannot be deleted."
         },
         "label": "Accessible directories",
         "select_failed": "Failed to select directory."
@@ -748,6 +749,7 @@
     "add": "Add Channel",
     "add_title": "Add Channel",
     "agent_id": "Agent ID",
+    "agent_not_bound": "Please bind an Agent first before enabling the channel.",
     "binding": "Agent Binding",
     "binding_already_bound": "Channel is already bound to an agent",
     "binding_create_hint": "Create a new Agent and bind to this channel",
@@ -802,6 +804,7 @@
       "allowed_chat_ids_placeholder": "Comma-separated, leave empty for all",
       "bot_token": "Bot Token",
       "bot_token_placeholder": "Enter your bot token from @BotFather",
+      "bot_token_required": "Please enter a Bot Token before enabling the Telegram channel.",
       "config": "Telegram Bot Configuration",
       "parse_mode": "Parse Mode",
       "parse_mode_none": "None",
@@ -1385,6 +1388,7 @@
     "close": "Close",
     "collapse": "Collapse",
     "completed": "Completed",
+    "configure": "Configure",
     "confirm": "Confirm",
     "copied": "Copied",
     "copy": "Copy",
@@ -3478,6 +3482,8 @@
       "statusTimeout": "Timeout",
       "title": "Execution Logs"
     },
+    "monthly": "Monthly",
+    "monthlyOnDay": "Monthly on day {{day}}",
     "noNextRun": "No next run",
     "presets": {
       "every30Minutes": "Every 30 minutes",
@@ -3497,7 +3503,10 @@
       "schedulers": "Tasks"
     },
     "title": "Scheduled Tasks",
-    "toggleFailed": "Failed to toggle task status"
+    "toggleFailed": "Failed to toggle task status",
+    "trigger": "Run Now",
+    "triggerFailed": "Failed to trigger task",
+    "triggerSuccess": "Task triggered successfully"
   },
   "selection": {
     "action": {
@@ -5675,6 +5684,7 @@
   },
   "title": {
     "apps": "Apps",
+    "channels": "Channels",
     "code": "Code",
     "files": "Files",
     "home": "Home",

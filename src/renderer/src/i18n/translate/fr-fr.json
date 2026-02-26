@@ -90,7 +90,8 @@
         "duplicate": "Ce répertoire est déjà inclus.",
         "empty": "Sélectionnez au moins un répertoire auquel l'agent peut accéder.",
         "error": {
-          "at_least_one": "Veuillez sélectionner au moins un répertoire accessible."
+          "at_least_one": "Veuillez sélectionner au moins un répertoire accessible.",
+          "cannot_delete_default": "[to be translated]:The default working directory cannot be deleted."
         },
         "label": "Répertoires accessibles",
         "select_failed": "Échec de la sélection du répertoire."
@@ -748,6 +749,7 @@
     "add": "Ajouter un canal",
     "add_title": "Ajouter un canal",
     "agent_id": "Identifiant de l'agent",
+    "agent_not_bound": "[to be translated]:Please bind an Agent first before enabling the channel.",
     "binding": "Agent Binding",
     "binding_already_bound": "Le canal est déjà lié à un agent.",
     "binding_create_hint": "Créer un nouvel Agent et le lier à ce canal",
@@ -802,6 +804,7 @@
       "allowed_chat_ids_placeholder": "Séparés par des virgules, laisser vide pour tous",
       "bot_token": "Jeton du Bot",
       "bot_token_placeholder": "Entrez le jeton de votre bot depuis @BotFather",
+      "bot_token_required": "[to be translated]:Please enter a Bot Token before enabling the Telegram channel.",
       "config": "Configuration du Bot Telegram",
       "parse_mode": "Mode d'analyse",
       "parse_mode_none": "Aucun",
@@ -1385,6 +1388,7 @@
     "close": "Fermer",
     "collapse": "Réduire",
     "completed": "Terminé",
+    "configure": "[to be translated]:Configure",
     "confirm": "Confirmer",
     "copied": "Copié",
     "copy": "Copier",
@@ -3478,6 +3482,8 @@
       "statusTimeout": "Délai d'attente",
       "title": "Journaux d'exécution"
     },
+    "monthly": "Mensuel",
+    "monthlyOnDay": "Mensuel le {{day}}",
     "noNextRun": "Pas de prochaine exécution",
     "presets": {
       "every30Minutes": "Toutes les 30 minutes",
@@ -3497,7 +3503,10 @@
       "schedulers": "Tâches"
     },
     "title": "Tâches planifiées",
-    "toggleFailed": "Échec de la bascule de l'état de la tâche"
+    "toggleFailed": "Échec de la bascule de l'état de la tâche",
+    "trigger": "[to be translated]:Run Now",
+    "triggerFailed": "[to be translated]:Failed to trigger task",
+    "triggerSuccess": "[to be translated]:Task triggered successfully"
   },
   "selection": {
     "action": {
@@ -5675,6 +5684,7 @@
   },
   "title": {
     "apps": "Mini-programmes",
+    "channels": "[to be translated]:Channels",
     "code": "Code",
     "files": "Fichiers",
     "home": "Page d'accueil",

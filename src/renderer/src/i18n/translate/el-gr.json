@@ -90,7 +90,8 @@
         "duplicate": "Αυτός ο κατάλογος έχει ήδη συμπεριληφθεί.",
         "empty": "Επιλέξτε τουλάχιστον έναν κατάλογο στον οποίο ο πράκτορας μπορεί να έχει πρόσβαση.",
         "error": {
-          "at_least_one": "Παρακαλώ επιλέξτε τουλάχιστον έναν προσβάσιμο κατάλογο."
+          "at_least_one": "Παρακαλώ επιλέξτε τουλάχιστον έναν προσβάσιμο κατάλογο.",
+          "cannot_delete_default": "[to be translated]:The default working directory cannot be deleted."
         },
         "label": "Προσβάσιμοι κατάλογοι",
         "select_failed": "Αποτυχία επιλογής καταλόγου."
@@ -748,6 +749,7 @@
     "add": "Προσθήκη Καναλιού",
     "add_title": "Προσθήκη Καναλιού",
     "agent_id": "ID Πράκτορα",
+    "agent_not_bound": "[to be translated]:Please bind an Agent first before enabling the channel.",
     "binding": "Σύνδεση Πράκτορα",
     "binding_already_bound": "Το κανάλι είναι ήδη συνδεδεμένο με έναν πράκτορα",
     "binding_create_hint": "Δημιουργήστε έναν νέο Πράκτορα και συνδέστε τον με αυτό το κανάλι",
@@ -802,6 +804,7 @@
       "allowed_chat_ids_placeholder": "Διαχωρισμένα με κόμμα, αφήστε κενό για όλα",
       "bot_token": "Κωδικός Bot",
       "bot_token_placeholder": "Εισαγάγετε το token του bot σας από τον @BotFather",
+      "bot_token_required": "[to be translated]:Please enter a Bot Token before enabling the Telegram channel.",
       "config": "Διαμόρφωση Telegram Bot",
       "parse_mode": "Λειτουργία Ανάλυσης",
       "parse_mode_none": "Καμία",
@@ -1385,6 +1388,7 @@
     "close": "Κλείσιμο",
     "collapse": "Σύμπτυξη",
     "completed": "Ολοκληρώθηκε",
+    "configure": "[to be translated]:Configure",
     "confirm": "Επιβεβαίωση",
     "copied": "Αντιγράφηκε",
     "copy": "Αντιγραφή",
@@ -3478,6 +3482,8 @@
       "statusTimeout": "Χρονικό όριο",
       "title": "Καταγραφές Εκτέλεσης"
     },
+    "monthly": "Μηνιαία",
+    "monthlyOnDay": "Μηνιαία στις {{day}}",
     "noNextRun": "Χωρίς επόμενη εκτέλεση",
     "presets": {
       "every30Minutes": "Κάθε 30 λεπτά",
@@ -3497,7 +3503,10 @@
       "schedulers": "Εργασίες"
     },
     "title": "Προγραμματισμένες Εργασίες",
-    "toggleFailed": "Αποτυχία εναλλαγής κατάστασης εργασίας"
+    "toggleFailed": "Αποτυχία εναλλαγής κατάστασης εργασίας",
+    "trigger": "[to be translated]:Run Now",
+    "triggerFailed": "[to be translated]:Failed to trigger task",
+    "triggerSuccess": "[to be translated]:Task triggered successfully"
   },
   "selection": {
     "action": {
@@ -5675,6 +5684,7 @@
   },
   "title": {
     "apps": "Εφαρμογές",
+    "channels": "[to be translated]:Channels",
     "code": "Κώδικας",
     "files": "Αρχεία",
     "home": "Αρχική Σελίδα",

@@ -90,7 +90,8 @@
         "duplicate": "此目錄已包含在內。",
         "empty": "選擇至少一個代理可以存取的目錄。",
         "error": {
-          "at_least_one": "請至少選取一個可存取的目錄。"
+          "at_least_one": "請至少選取一個可存取的目錄。",
+          "cannot_delete_default": "預設工作目錄無法刪除。"
         },
         "label": "可存取的目錄",
         "select_failed": "無法選擇目錄。"
@@ -748,6 +749,7 @@
     "add": "新增頻道",
     "add_title": "新增頻道",
     "agent_id": "Agent ID",
+    "agent_not_bound": "請先綁定一個 Agent 才能啟用頻道。",
     "binding": "Agent 綁定",
     "binding_already_bound": "該頻道已綁定到 Agent",
     "binding_create_hint": "建立一個新的 Agent 並綁定到此頻道",
@@ -802,6 +804,7 @@
       "allowed_chat_ids_placeholder": "以逗號分隔，留空表示允許所有",
       "bot_token": "Bot Token",
       "bot_token_placeholder": "輸入從 @BotFather 取得的 Bot Token",
+      "bot_token_required": "請先輸入 Bot Token 後再啟用 Telegram 頻道。",
       "config": "Telegram Bot 設定",
       "parse_mode": "解析模式",
       "parse_mode_none": "無",
@@ -1385,6 +1388,7 @@
     "close": "關閉",
     "collapse": "收合",
     "completed": "已完成",
+    "configure": "設定",
     "confirm": "確認",
     "copied": "已複製",
     "copy": "複製",
@@ -3478,6 +3482,8 @@
       "statusTimeout": "超時",
       "title": "執行日誌"
     },
+    "monthly": "每月執行",
+    "monthlyOnDay": "每月{{day}}日執行",
     "noNextRun": "無下次執行",
     "presets": {
       "every30Minutes": "每 30 分鐘",
@@ -3497,7 +3503,10 @@
       "schedulers": "任務"
     },
     "title": "已排程任務",
-    "toggleFailed": "切換任務狀態失敗"
+    "toggleFailed": "切換任務狀態失敗",
+    "trigger": "[to be translated]:Run Now",
+    "triggerFailed": "[to be translated]:Failed to trigger task",
+    "triggerSuccess": "[to be translated]:Task triggered successfully"
   },
   "selection": {
     "action": {
@@ -5675,6 +5684,7 @@
   },
   "title": {
     "apps": "小程式",
+    "channels": "頻道",
     "code": "程式碼",
     "files": "檔案",
     "home": "首頁",
