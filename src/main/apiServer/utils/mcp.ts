@@ -4,6 +4,7 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js'
 import type { ListToolsResult } from '@modelcontextprotocol/sdk/types.js'
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js'
 import type { MCPServer } from '@types'
+import { BuiltinMCPServerNames } from '@types'
 
 import { loggerService } from '../../services/LoggerService'
 import { reduxService } from '../../services/ReduxService'
@@ -17,7 +18,33 @@ const MCP_SERVERS_CACHE_TTL = 5 * 60 * 1000 // 5 minutes
 const cachedServers: Record<string, Server> = {}
 
 // Builtin MCP server configurations (independent of Redux)
-const BUILTIN_MCP_SERVERS: MCPServer[] = []
+// These ensure critical servers are always available even before renderer initializes Redux store
+const BUILTIN_MCP_SERVERS: MCPServer[] = [
+  {
+    id: BuiltinMCPServerNames.scheduler,
+    name: BuiltinMCPServerNames.scheduler,
+    type: 'inMemory',
+    isActive: true,
+    provider: 'OfoxStudio',
+    isTrusted: true
+  },
+  {
+    id: BuiltinMCPServerNames.python,
+    name: BuiltinMCPServerNames.python,
+    type: 'inMemory',
+    isActive: true,
+    provider: 'CherryStudio',
+    isTrusted: true
+  },
+  {
+    id: BuiltinMCPServerNames.fetch,
+    name: BuiltinMCPServerNames.fetch,
+    type: 'inMemory',
+    isActive: true,
+    provider: 'CherryStudio',
+    isTrusted: true
+  }
+]
 
 /**
  * Merge Redux servers with builtin servers (deduplicate by name)

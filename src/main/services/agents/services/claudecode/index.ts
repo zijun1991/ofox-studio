@@ -68,6 +68,7 @@ const getContextPrompt = (agentId: string, sessionId: string): string => {
 ### 基本规则
 1. 如果用户说一段时间之后，除非特别说明，这个一段时间默认要基于当前的实时时间。
 2. schedule 相关接口返回的都是UTC时间戳，返回给用户时，要转为本地时间
+3. 重要！！创建任务的配置规则参数是：秒 分 时 日 月 星期！！
 
 ### Trigger Options
 When creating a scheduled task, you can set these options:
@@ -124,7 +125,7 @@ class ClaudeCodeService implements AgentServiceInterface {
     session: GetAgentSessionResponse,
     abortController: AbortController,
     lastAgentSessionId?: string,
-    isFirstMessage?: boolean
+    _isFirstMessage?: boolean
   ): Promise<AgentStream> {
     const aiStream = new ClaudeCodeStream()
 
@@ -328,11 +329,7 @@ class ClaudeCodeService implements AgentServiceInterface {
       systemPrompt: {
         type: 'preset',
         preset: 'claude_code',
-        append: [
-          isFirstMessage ? getContextPrompt(session.agent_id, session.id) : null,
-          session.instructions,
-          getLanguageInstruction()
-        ]
+        append: [getContextPrompt(session.agent_id, session.id), session.instructions, getLanguageInstruction()]
           .filter(Boolean)
           .join('\n\n')
       },
@@ -369,7 +366,7 @@ class ClaudeCodeService implements AgentServiceInterface {
           if (!server) continue
           mcpList[server.name] = {
             type: 'http',
-            url: `http://${apiConfig.host}:${apiConfig.port}/v1/mcps/${server.id}/mcp`,
+            url: `http://${apiConfig.host}:${apiConfig.port}/v1/mcps/${encodeURIComponent(server.id)}/mcp`,
             headers: {
               Authorization: `Bearer ${apiConfig.apiKey}`
             }
@@ -377,15 +374,18 @@ class ClaudeCodeService implements AgentServiceInterface {
         }
       }
 
-      // Always inject scheduler MCP if not already present
-      if (!mcpList[BuiltinMCPServerNames.scheduler]) {
-        const schedulerServer = allServers.find((s) => s.name === BuiltinMCPServerNames.scheduler)
-        if (schedulerServer) {
-          mcpList[schedulerServer.name] = {
-            type: 'http',
-            url: `http://${apiConfig.host}:${apiConfig.port}/v1/mcps/${schedulerServer.id}/mcp`,
-            headers: {
-              Authorization: `Bearer ${apiConfig.apiKey}`
+      // Always inject default MCPs if not already present
+      const defaultMCPs = [BuiltinMCPServerNames.scheduler, BuiltinMCPServerNames.python, BuiltinMCPServerNames.fetch]
+      for (const mcpName of defaultMCPs) {
+        if (!mcpList[mcpName]) {
+          const server = allServers.find((s) => s.name === mcpName)
+          if (server) {
+            mcpList[server.name] = {
+              type: 'http',
+              url: `http://${apiConfig.host}:${apiConfig.port}/v1/mcps/${encodeURIComponent(server.id)}/mcp`,
+              headers: {
+                Authorization: `Bearer ${apiConfig.apiKey}`
+              }
             }
           }
         }

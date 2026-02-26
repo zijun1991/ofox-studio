@@ -50,14 +50,18 @@ export class AgentService extends BaseService {
     const existing = await this.getAgent(TURBO_AGENT_ID)
 
     if (existing) {
-      // Migration: Add scheduler MCP to existing Turbo Agent if missing
-      if (!existing.mcps || (Array.isArray(existing.mcps) && existing.mcps.length === 0)) {
-        logger.info('Migrating Turbo Agent: Adding scheduler MCP')
+      // Migration: Ensure all default MCPs exist in Turbo Agent
+      const defaultMCPs = [BuiltinMCPServerNames.scheduler, BuiltinMCPServerNames.python, BuiltinMCPServerNames.fetch]
+      const currentMcps: string[] = Array.isArray(existing.mcps) ? existing.mcps : []
+      const missingMcps = defaultMCPs.filter((m) => !currentMcps.includes(m))
+      if (missingMcps.length > 0) {
+        const updatedMcps = [...currentMcps, ...missingMcps]
+        logger.info('Migrating Turbo Agent: Adding missing default MCPs', { missingMcps })
         const database = await this.getDatabase()
         await database
           .update(agentsTable)
           .set({
-            mcps: JSON.stringify([BuiltinMCPServerNames.scheduler]),
+            mcps: JSON.stringify(updatedMcps),
             updated_at: new Date().toISOString()
           })
           .where(eq(agentsTable.id, TURBO_AGENT_ID))
@@ -85,7 +89,11 @@ export class AgentService extends BaseService {
       instructions: 'You are a fast and efficient assistant.',
       model: '', // User will configure
       accessible_paths: JSON.stringify(this.ensurePathsExist([defaultPath])),
-      mcps: JSON.stringify([BuiltinMCPServerNames.scheduler]),
+      mcps: JSON.stringify([
+        BuiltinMCPServerNames.scheduler,
+        BuiltinMCPServerNames.python,
+        BuiltinMCPServerNames.fetch
+      ]),
       is_system: true,
       created_at: now,
       updated_at: now
@@ -106,7 +114,7 @@ export class AgentService extends BaseService {
   private async initializePresetSkills(workdir: string): Promise<void> {
     const presetSkillsPath = app.isPackaged
       ? path.join(getResourcePath(), 'preset-skills')
-      : path.join(app.getAppPath(), 'preset-skills')
+      : path.join(app.getAppPath(), 'resources', 'preset-skills')
 
     // Check if preset-skills directory exists
     try {
@@ -240,12 +248,15 @@ export class AgentService extends BaseService {
       req.accessible_paths = this.ensurePathsExist(req.accessible_paths)
     }
 
-    // Add default MCP Servers (scheduler) for all agents
+    // Add default MCP Servers for all agents
+    const defaultMCPs = [BuiltinMCPServerNames.scheduler, BuiltinMCPServerNames.python, BuiltinMCPServerNames.fetch]
     if (!req.mcps) {
       req.mcps = []
     }
-    if (!req.mcps.includes(BuiltinMCPServerNames.scheduler)) {
-      req.mcps.push(BuiltinMCPServerNames.scheduler)
+    for (const mcp of defaultMCPs) {
+      if (!req.mcps.includes(mcp)) {
+        req.mcps.push(mcp)
+      }
     }
 
     await this.validateAgentModels(req.type, {
@@ -267,6 +278,7 @@ export class AgentService extends BaseService {
       small_model: req.small_model,
       configuration: serializedReq.configuration,
       accessible_paths: serializedReq.accessible_paths,
+      mcps: serializedReq.mcps,
       is_system: req.is_system ?? false,
       created_at: now,
       updated_at: now

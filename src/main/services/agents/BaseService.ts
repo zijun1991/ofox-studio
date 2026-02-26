@@ -274,7 +274,7 @@ export abstract class BaseService {
     }
 
     for (const [field, rawValue] of entries) {
-      if (rawValue === undefined || rawValue === null) {
+      if (rawValue === undefined || rawValue === null || rawValue === '') {
         continue
       }
 
