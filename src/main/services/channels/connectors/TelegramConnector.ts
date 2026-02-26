@@ -111,8 +111,12 @@ export class TelegramConnector extends BaseChannelConnector {
 
     const params: Record<string, unknown> = {
       chat_id: meta.chatId,
-      text: msg.content,
-      reply_to_message_id: meta.messageId
+      text: msg.content
+    }
+
+    // Only set reply_to_message_id when we have a valid message to reply to
+    if (meta.messageId) {
+      params.reply_to_message_id = meta.messageId
     }
 
     if (config.parseMode) {

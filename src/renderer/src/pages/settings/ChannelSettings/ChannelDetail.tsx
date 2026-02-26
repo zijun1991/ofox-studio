@@ -71,63 +71,6 @@ const ChannelDetail: FC = () => {
     window.api.channels.syncConfig(updatedChannels)
   }, [])
 
-  const handleToggleEnabled = useCallback(
-    async (enabled: boolean) => {
-      if (!channel) return
-      dispatch(setChannelEnabled({ id: channel.id, enabled }))
-
-      if (enabled) {
-        await window.api.channels.start(channel.id)
-      } else {
-        await window.api.channels.stop(channel.id)
-      }
-    },
-    [channel, dispatch]
-  )
-
-  const handleDelete = useCallback(async () => {
-    if (!channel) return
-
-    if (channel.enabled) {
-      await window.api.channels.stop(channel.id)
-    }
-
-    // Delete bound agent if exists
-    if (channel.agentId) {
-      try {
-        await agentClient.deleteAgent(channel.agentId)
-      } catch (error) {
-        console.warn('Failed to delete bound agent:', error)
-        // Continue with channel deletion even if agent deletion fails
-      }
-    }
-
-    dispatch(deleteChannel(channel.id))
-    const remaining = window.store.getState().channels.channels
-    window.api.channels.syncConfig(remaining)
-    navigate('/settings/channels')
-    message.success(t('channels.deleted', 'Channel deleted'))
-  }, [channel, dispatch, navigate, t, agentClient])
-
-  const handleTestConnection = useCallback(async () => {
-    if (!channel || isTestingConnection) return
-
-    setIsTestingConnection(true)
-    try {
-      const result = await window.api.channels.testConnection(channel)
-      if (result.success) {
-        message.success(result.message)
-      } else {
-        message.error(result.message)
-      }
-    } catch (error) {
-      console.error('Test connection failed:', error)
-      message.error(t('channels.test_connection_error', 'Connection test failed'))
-    } finally {
-      setIsTestingConnection(false)
-    }
-  }, [channel, isTestingConnection, t])
-
   const handleCreateBoundAgent = useCallback(async () => {
     if (!channel || isBound) {
       message.warning(t('channels.binding_already_bound', 'Channel is already bound to an agent'))
@@ -170,6 +113,79 @@ const ChannelDetail: FC = () => {
       setIsCreatingAgent(false)
     }
   }, [channel, dispatch, t, isBound, syncChannelsToMainProcess])
+
+  const handleToggleEnabled = useCallback(
+    async (enabled: boolean) => {
+      if (!channel) return
+
+      // Check if agent is bound before enabling
+      if (enabled && !isBound) {
+        message.warning(t('channels.agent_not_bound', 'Please bind an Agent first before enabling the channel.'))
+        handleCreateBoundAgent()
+        return
+      }
+
+      // Check if Telegram bot token is configured before enabling
+      if (enabled && channel.type === 'telegram' && !channel.telegramConfig?.botToken?.trim()) {
+        message.warning(
+          t('channels.telegram.bot_token_required', 'Please enter a Bot Token before enabling the Telegram channel.')
+        )
+        return
+      }
+
+      dispatch(setChannelEnabled({ id: channel.id, enabled }))
+
+      if (enabled) {
+        await window.api.channels.start(channel.id)
+      } else {
+        await window.api.channels.stop(channel.id)
+      }
+    },
+    [channel, dispatch, isBound, t, handleCreateBoundAgent]
+  )
+
+  const handleDelete = useCallback(async () => {
+    if (!channel) return
+
+    if (channel.enabled) {
+      await window.api.channels.stop(channel.id)
+    }
+
+    // Delete bound agent if exists
+    if (channel.agentId) {
+      try {
+        await agentClient.deleteAgent(channel.agentId)
+      } catch (error) {
+        console.warn('Failed to delete bound agent:', error)
+        // Continue with channel deletion even if agent deletion fails
+      }
+    }
+
+    dispatch(deleteChannel(channel.id))
+    const remaining = window.store.getState().channels.channels
+    window.api.channels.syncConfig(remaining)
+    navigate('/channels')
+    message.success(t('channels.deleted', 'Channel deleted'))
+  }, [channel, dispatch, navigate, t, agentClient])
+
+  const handleTestConnection = useCallback(async () => {
+    if (!channel || isTestingConnection) return
+
+    setIsTestingConnection(true)
+    try {
+      const result = await window.api.channels.testConnection(channel)
+      if (result.success) {
+        message.success(result.message)
+      } else {
+        message.error(result.message)
+      }
+    } catch (error) {
+      console.error('Test connection failed:', error)
+      message.error(t('channels.test_connection_error', 'Connection test failed'))
+    } finally {
+      setIsTestingConnection(false)
+    }
+  }, [channel, isTestingConnection, t])
 
   const handleEditBoundAgent = useCallback(async () => {
     if (!channel?.agentId) {

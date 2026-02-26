@@ -44,7 +44,7 @@ const AddChannelModal: FC<Props> = ({ open, onClose }) => {
 
       form.resetFields()
       onClose()
-      navigate(`/settings/channels/${id}`)
+      navigate(`/channels/${id}`)
     } catch {
       // Form validation error
     }

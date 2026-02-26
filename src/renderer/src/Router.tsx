@@ -9,6 +9,7 @@ import { ErrorBoundary } from './components/ErrorBoundary'
 import TabsContainer from './components/Tab/TabContainer'
 import NavigationHandler from './handler/NavigationHandler'
 import { useNavbarPosition } from './hooks/useSettings'
+import ChannelsPage from './pages/channels/ChannelsPage'
 import CodeToolsPage from './pages/code/CodeToolsPage'
 import FilesPage from './pages/files/FilesPage'
 import HomePage from './pages/home/HomePage'
@@ -50,6 +51,7 @@ const Router: FC = () => {
           <Route path="/tools/:toolId" element={<ToolWebViewPage />} />
           <Route path="/tools" element={<ToolsPage />} />
           <Route path="/scheduler" element={<SchedulerPage />} />
+          <Route path="/channels/*" element={<ChannelsPage />} />
         </Routes>
       </ErrorBoundary>
     )

@@ -69,7 +69,28 @@ export class ChannelManager {
   async syncChannels(channels: ChannelEntity[]): Promise<void> {
     logger.info('Syncing channel configs', { count: channels.length })
     const previousIds = new Set(this.channels.map((c) => c.id))
+
+    // Preserve runtime metadata from existing channels
+    const metadataMap = new Map<string, { lastMessageMetadata?: Record<string, unknown>; lastMessageAt?: string }>()
+    for (const ch of this.channels) {
+      if (ch.lastMessageMetadata) {
+        metadataMap.set(ch.id, {
+          lastMessageMetadata: ch.lastMessageMetadata,
+          lastMessageAt: ch.lastMessageAt
+        })
+      }
+    }
+
     this.channels = channels
+
+    // Restore preserved metadata onto new channel objects
+    for (const ch of this.channels) {
+      const preserved = metadataMap.get(ch.id)
+      if (preserved && !ch.lastMessageMetadata) {
+        ch.lastMessageMetadata = preserved.lastMessageMetadata
+        ch.lastMessageAt = preserved.lastMessageAt
+      }
+    }
 
     // Stop removed channels
     for (const id of previousIds) {
@@ -142,6 +163,10 @@ export class ChannelManager {
     }
 
     logger.info('Handling inbound message', { channelId: channel.id, type: channel.type })
+
+    // Save metadata for later use (e.g., scheduler-triggered messages)
+    channel.lastMessageMetadata = message.metadata
+    channel.lastMessageAt = message.receivedAt
 
     // Emit inbound event for UI
     this.emitMessageEvent({
@@ -251,7 +276,17 @@ export class ChannelManager {
               // otherwise use accumulated content
               const finalText = (value as any).providerMetadata?.text?.value || currentTextContent
               if (finalText) {
-                currentTurnText += finalText
+                // Defensive check: skip if currentTurnText already contains
+                // this exact text (guards against upstream duplication bugs)
+                if (currentTurnText === finalText || currentTurnText.endsWith(finalText)) {
+                  logger.warn('Skipping duplicate text content in channel', {
+                    channelId: channel.id,
+                    textBlockId: currentTextBlockId,
+                    textLength: finalText.length
+                  })
+                } else {
+                  currentTurnText += finalText
+                }
                 logger.debug('Finalized text block', {
                   channelId: channel.id,
                   textBlockId: currentTextBlockId,
@@ -404,6 +439,35 @@ export class ChannelManager {
     return this.channels.find((c) => c.id === channelId)
   }
 
+  /**
+   * Get channel bound to a specific session
+   */
+  getChannelForSession(sessionId: string): ChannelEntity | undefined {
+    return this.channels.find((c) => c.sessionId === sessionId && c.enabled)
+  }
+
+  /**
+   * Build fallback routing metadata from channel configuration.
+   * Used when lastMessageMetadata is unavailable (e.g., scheduler-triggered messages).
+   */
+  buildFallbackMetadata(channel: ChannelEntity): Record<string, unknown> | null {
+    // 优先使用最近一次入站消息的元数据（包含实际的 chatId）
+    if (channel.lastMessageMetadata) {
+      return {
+        ...channel.lastMessageMetadata,
+        messageId: 0
+      }
+    }
+    // 回退到配置中的 allowedChatIds
+    if (channel.type === 'telegram' && channel.telegramConfig?.allowedChatIds?.length) {
+      return {
+        chatId: channel.telegramConfig.allowedChatIds[0],
+        messageId: 0
+      }
+    }
+    return null
+  }
+
   async stopAll(): Promise<void> {
     logger.info('Stopping all channel connectors', { count: this.connectors.size })
     const ids = [...this.connectors.keys()]
@@ -434,7 +498,7 @@ export class ChannelManager {
   private forwardStreamChunk(sessionId: string, chunk: any): void {
     const mainWindow = BrowserWindow.getAllWindows()[0]
     if (mainWindow && !mainWindow.isDestroyed()) {
-      mainWindow.webContents.send(IpcChannel.Channel_MessageEvent, {
+      mainWindow.webContents.send(IpcChannel.Channel_StreamChunk, {
         type: 'stream-chunk',
         sessionId,
         chunk

@@ -96,6 +96,8 @@ export const ChannelEntitySchema = z.object({
 
   // Metadata
   lastMessageAt: z.string().optional(),
+  /** Last inbound message metadata (chatId, messageId, etc.) for outbound routing */
+  lastMessageMetadata: z.record(z.string(), z.unknown()).optional(),
   errorMessage: z.string().optional(),
   createdAt: z.string(),
   updatedAt: z.string()

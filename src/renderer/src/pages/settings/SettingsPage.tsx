@@ -13,7 +13,6 @@ import {
   MonitorCog,
   Package,
   PictureInPicture2,
-  Radio,
   Search,
   Server,
   Settings2,
@@ -28,7 +27,6 @@ import styled from 'styled-components'
 
 import AboutSettings from './AboutSettings'
 import AccountSettings from './AccountSettings'
-import ChannelSettings from './ChannelSettings'
 import DataSettings from './DataSettings/DataSettings'
 import DisplaySettings from './DisplaySettings/DisplaySettings'
 import DocProcessSettings from './DocProcessSettings'
@@ -118,12 +116,6 @@ const SettingsPage: FC = () => {
               {t('apiServer.title')}
             </MenuItem>
           </MenuItemLink>
-          <MenuItemLink to="/settings/channels">
-            <MenuItem className={isRoute('/settings/channels')}>
-              <Radio size={18} />
-              {t('channels.title', 'Channels')}
-            </MenuItem>
-          </MenuItemLink>
           <MenuItemLink to="/settings/docprocess">
             <MenuItem className={isRoute('/settings/docprocess')}>
               <FileCode size={18} />
@@ -170,7 +162,6 @@ const SettingsPage: FC = () => {
             <Route path="model-employee" element={<ModelEmployeeSettings />} />
             <Route path="websearch/*" element={<WebSearchSettings />} />
             <Route path="api-server" element={<ApiServerSettings />} />
-            <Route path="channels/*" element={<ChannelSettings />} />
             <Route path="docprocess" element={<DocProcessSettings />} />
             <Route path="quickphrase" element={<QuickPhraseSettings />} />
             <Route path="mcp/*" element={<MCPSettings />} />

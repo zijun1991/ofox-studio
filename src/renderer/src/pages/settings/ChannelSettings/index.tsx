@@ -22,7 +22,7 @@ const ChannelSettings: FC = () => {
   const [addModalVisible, setAddModalVisible] = useState(false)
 
   const getActiveChannelId = () => {
-    const match = location.pathname.match(/\/settings\/channels\/(.+)/)
+    const match = location.pathname.match(/\/channels\/(.+)/)
     return match?.[1] || null
   }
 
@@ -62,7 +62,7 @@ const ChannelSettings: FC = () => {
               key={channel.id}
               title={channel.name}
               active={activeChannelId === channel.id}
-              onClick={() => navigate(`/settings/channels/${channel.id}`)}
+              onClick={() => navigate(`/channels/${channel.id}`)}
               icon={getChannelIcon(channel.type)}
               titleStyle={{ fontWeight: 500 }}
               rightContent={<StatusDot style={{ backgroundColor: getStatusColor(channel.id) }} />}
@@ -74,21 +74,23 @@ const ChannelSettings: FC = () => {
           </AddButton>
         </MenuList>
         <RightContainer>
-          <Routes>
-            <Route
-              index
-              element={
-                channels.length > 0 ? (
-                  <Navigate to={channels[0].id} replace />
-                ) : (
-                  <EmptyState>
-                    {t('channels.empty', 'No channels configured. Click "Add Channel" to get started.')}
-                  </EmptyState>
-                )
-              }
-            />
-            <Route path=":channelId" element={<ChannelDetail />} />
-          </Routes>
+          <RoutesWrapper>
+            <Routes>
+              <Route
+                index
+                element={
+                  channels.length > 0 ? (
+                    <Navigate to={channels[0].id} replace />
+                  ) : (
+                    <EmptyState>
+                      {t('channels.empty', 'No channels configured. Click "Add Channel" to get started.')}
+                    </EmptyState>
+                  )
+                }
+              />
+              <Route path=":channelId" element={<ChannelDetail />} />
+            </Routes>
+          </RoutesWrapper>
         </RightContainer>
       </MainContainer>
       <AddChannelModal open={addModalVisible} onClose={() => setAddModalVisible(false)} />
@@ -105,7 +107,7 @@ const MainContainer = styled.div`
   flex: 1;
   flex-direction: row;
   width: 100%;
-  height: calc(100vh - var(--navbar-height) - 6px);
+  height: 100%;
   overflow: hidden;
 `
 
@@ -117,13 +119,20 @@ const MenuList = styled(Scrollbar)`
   padding: 12px;
   padding-bottom: 48px;
   border-right: 0.5px solid var(--color-border);
-  height: calc(100vh - var(--navbar-height));
+  height: 100%;
 `
 
 const RightContainer = styled.div`
   flex: 1;
   position: relative;
   overflow-y: auto;
+  height: 100%;
+`
+
+const RoutesWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 `
 
 const AddButton = styled.div`
