@@ -179,6 +179,21 @@ export class ClaudeStreamState {
     return this.blocksByIndex.get(index)
   }
 
+  /**
+   * Returns true if any open text block has accumulated non-empty content
+   * via streaming deltas. Used to detect if text was already streamed to the
+   * UI even when markTextEmitted() hasn't been called yet (e.g. assistant
+   * message arriving before content_block_stop).
+   */
+  hasTextBlockWithContent(): boolean {
+    for (const block of this.blocksByIndex.values()) {
+      if (block.kind === 'text' && block.text.length > 0) {
+        return true
+      }
+    }
+    return false
+  }
+
   getFirstOpenTextBlock(): TextBlockState | undefined {
     const candidates: TextBlockState[] = []
     for (const block of this.blocksByIndex.values()) {
@@ -307,6 +322,16 @@ export class ClaudeStreamState {
 
   /** Resets the entire step lifecycle after emitting a terminal frame. */
   resetStep(): void {
+    // If any text blocks were opened during this step, proactively mark
+    // textEmitted so the subsequent assistant message won't duplicate content.
+    // This guards against event ordering issues where content_block_stop
+    // arrives after message_stop has already cleared blocksByIndex.
+    for (const block of this.blocksByIndex.values()) {
+      if (block.kind === 'text') {
+        this.textEmitted = true
+        break
+      }
+    }
     this.resetBlocks()
     this.resetPendingUsage()
     this.stepActive = false

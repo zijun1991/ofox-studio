@@ -145,23 +145,24 @@ function handleAssistantMessage(
   const content = message.message.content
   const isStreamingActive = state.hasActiveStep()
   const textAlreadyEmitted = state.hasTextEmitted()
+  // Check if any text block has accumulated content via streaming deltas.
+  // This guards against assistant messages arriving before content_block_stop
+  // when textEmitted hasn't been set yet but text was already streamed to the UI.
+  const hasStreamedTextContent = isStreamingActive && state.hasTextBlockWithContent()
+  const shouldSkipText = textAlreadyEmitted || hasStreamedTextContent
 
-  // If text was already emitted via streaming events, skip generating text blocks
-  // for this aggregated assistant message to avoid duplicates.
-  // This check is needed because message_stop calls resetStep() BEFORE the
-  // assistant message arrives, so hasActiveStep() returns false.
+  // If text was already emitted via streaming events (content_block_start/delta/stop),
+  // skip text processing to avoid duplicates. But tool_use blocks must always be processed.
   if (textAlreadyEmitted) {
     state.resetTextEmitted()
-    return chunks
-  }
-
-  // If streaming is active, the text has already been processed via stream events.
-  // Skip generating text blocks for this aggregated assistant message to avoid duplicates.
-  if (isStreamingActive) {
-    return chunks
   }
 
   if (typeof content === 'string') {
+    // String content is always pure text — skip if already emitted via streaming
+    if (shouldSkipText) {
+      return chunks
+    }
+
     const sanitizedContent = stripLocalCommandTags(content)
     if (!sanitizedContent) {
       return chunks
@@ -203,13 +204,18 @@ function handleAssistantMessage(
   for (const block of content) {
     switch (block.type) {
       case 'text': {
-        const sanitizedText = stripLocalCommandTags(block.text)
-        if (sanitizedText) {
-          textBlocks.push(sanitizedText)
+        // Only collect text if it wasn't already emitted via streaming
+        // and streaming is not still active
+        if (!shouldSkipText) {
+          const sanitizedText = stripLocalCommandTags(block.text)
+          if (sanitizedText) {
+            textBlocks.push(sanitizedText)
+          }
         }
         break
       }
       case 'tool_use':
+        // Always process tool_use regardless of streaming state
         handleAssistantToolUse(block as ToolUseContent, providerMetadata, state, chunks)
         break
       default:
@@ -489,6 +495,9 @@ function handleStreamEvent(
       const block = state.closeBlock(event.index)
       if (!block) {
         logger.warn('Received content_block_stop for unknown index', { index: event.index })
+        // Even if the block is unknown, mark text as emitted to prevent
+        // duplicate text emission from the subsequent assistant message
+        state.markTextEmitted()
         break
       }
 

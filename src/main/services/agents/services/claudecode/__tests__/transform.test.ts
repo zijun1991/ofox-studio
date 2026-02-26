@@ -411,6 +411,183 @@ describe('Claude → AiSDK transform', () => {
     expect(finishStep.usage).toEqual({ inputTokens: 2, outputTokens: 4, totalTokens: 6 })
   })
 
+  it('does not duplicate text when content_block_stop returns unknown block', () => {
+    const state = new ClaudeStreamState({ agentSessionId: baseStreamMetadata.session_id })
+    const parts: ReturnType<typeof transformSDKMessageToStreamParts>[number][] = []
+
+    // Simulate: message_start → content_block_start(text) → text deltas →
+    //   message_delta → message_stop (resets blocks) → content_block_stop (block unknown) →
+    //   assistant message (should NOT re-emit text)
+    const messages: SDKMessage[] = [
+      {
+        ...baseStreamMetadata,
+        type: 'stream_event',
+        uuid: uuid(40),
+        event: {
+          type: 'message_start',
+          message: {
+            id: 'msg-dup-test',
+            type: 'message',
+            role: 'assistant',
+            model: 'claude-test',
+            content: [],
+            stop_reason: null,
+            stop_sequence: null,
+            usage: {}
+          }
+        }
+      } as unknown as SDKMessage,
+      {
+        ...baseStreamMetadata,
+        type: 'stream_event',
+        uuid: uuid(41),
+        event: {
+          type: 'content_block_start',
+          index: 0,
+          content_block: { type: 'text', text: '' }
+        }
+      } as unknown as SDKMessage,
+      {
+        ...baseStreamMetadata,
+        type: 'stream_event',
+        uuid: uuid(42),
+        event: {
+          type: 'content_block_delta',
+          index: 0,
+          delta: { type: 'text_delta', text: 'Hello world' }
+        }
+      } as unknown as SDKMessage,
+      // message_delta + message_stop arrive BEFORE content_block_stop
+      {
+        ...baseStreamMetadata,
+        type: 'stream_event',
+        uuid: uuid(43),
+        event: {
+          type: 'message_delta',
+          delta: { stop_reason: 'end_turn', stop_sequence: null },
+          usage: { input_tokens: 1, output_tokens: 2 }
+        }
+      } as unknown as SDKMessage,
+      {
+        ...baseStreamMetadata,
+        type: 'stream_event',
+        uuid: uuid(44),
+        event: { type: 'message_stop' }
+      } as SDKMessage,
+      // content_block_stop arrives after message_stop has cleared blocks
+      {
+        ...baseStreamMetadata,
+        type: 'stream_event',
+        uuid: uuid(45),
+        event: { type: 'content_block_stop', index: 0 }
+      } as unknown as SDKMessage,
+      // Assistant snapshot with the same text
+      {
+        ...baseStreamMetadata,
+        type: 'assistant',
+        uuid: uuid(46),
+        message: {
+          id: 'msg-dup-assist',
+          type: 'message',
+          role: 'assistant',
+          model: 'claude-test',
+          content: [{ type: 'text', text: 'Hello world' }],
+          stop_reason: 'end_turn',
+          stop_sequence: null,
+          usage: { input_tokens: 1, output_tokens: 2 }
+        }
+      } as unknown as SDKMessage
+    ]
+
+    for (const message of messages) {
+      parts.push(...transformSDKMessageToStreamParts(message, state))
+    }
+
+    // Text should appear only once (from streaming), not duplicated from assistant message
+    const textDeltas = parts.filter((p) => p.type === 'text-delta') as Extract<
+      (typeof parts)[number],
+      { type: 'text-delta' }
+    >[]
+    expect(textDeltas).toHaveLength(1)
+    expect(textDeltas[0].text).toBe('Hello world')
+  })
+
+  it('does not duplicate text when assistant message arrives before content_block_stop', () => {
+    const state = new ClaudeStreamState({ agentSessionId: baseStreamMetadata.session_id })
+    const parts: ReturnType<typeof transformSDKMessageToStreamParts>[number][] = []
+
+    // Simulate: message_start → content_block_start(text) → text deltas →
+    //   assistant message arrives while streaming is still active (before content_block_stop)
+    const messages: SDKMessage[] = [
+      {
+        ...baseStreamMetadata,
+        type: 'stream_event',
+        uuid: uuid(50),
+        event: {
+          type: 'message_start',
+          message: {
+            id: 'msg-early-assist',
+            type: 'message',
+            role: 'assistant',
+            model: 'claude-test',
+            content: [],
+            stop_reason: null,
+            stop_sequence: null,
+            usage: {}
+          }
+        }
+      } as unknown as SDKMessage,
+      {
+        ...baseStreamMetadata,
+        type: 'stream_event',
+        uuid: uuid(51),
+        event: {
+          type: 'content_block_start',
+          index: 0,
+          content_block: { type: 'text', text: '' }
+        }
+      } as unknown as SDKMessage,
+      {
+        ...baseStreamMetadata,
+        type: 'stream_event',
+        uuid: uuid(52),
+        event: {
+          type: 'content_block_delta',
+          index: 0,
+          delta: { type: 'text_delta', text: 'Streamed text' }
+        }
+      } as unknown as SDKMessage,
+      // Assistant snapshot arrives while step is still active (before content_block_stop)
+      {
+        ...baseStreamMetadata,
+        type: 'assistant',
+        uuid: uuid(53),
+        message: {
+          id: 'msg-early-snap',
+          type: 'message',
+          role: 'assistant',
+          model: 'claude-test',
+          content: [{ type: 'text', text: 'Streamed text' }],
+          stop_reason: 'end_turn',
+          stop_sequence: null,
+          usage: { input_tokens: 1, output_tokens: 2 }
+        }
+      } as unknown as SDKMessage
+    ]
+
+    for (const message of messages) {
+      parts.push(...transformSDKMessageToStreamParts(message, state))
+    }
+
+    // Text should appear only once (from streaming deltas), not duplicated from assistant
+    const textDeltas = parts.filter((p) => p.type === 'text-delta') as Extract<
+      (typeof parts)[number],
+      { type: 'text-delta' }
+    >[]
+    expect(textDeltas).toHaveLength(1)
+    expect(textDeltas[0].text).toBe('Streamed text')
+  })
+
   it('emits fallback text when Claude sends a snapshot instead of deltas', () => {
     const state = new ClaudeStreamState({ agentSessionId: '12344' })
     const parts: ReturnType<typeof transformSDKMessageToStreamParts>[number][] = []
