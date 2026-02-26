@@ -55,13 +55,11 @@ const MainTextBlock: React.FC<Props> = ({ block, citationBlockId, role, mentions
   )
 
   // 判断是否使用 PathTextRenderer
-  // 条件：
-  // 1. 用户消息且不使用 Markdown 渲染
-  // 2. 或者内容中包含路径（所有角色）
-  // 3. 不在专家模式下（专家模式禁用路径识别）
+  // 条件：仅用户消息在非专家模式下，且关闭了 Markdown 渲染或包含路径时使用
+  // assistant 消息始终使用 Markdown 渲染器，避免路径检测导致格式丢失
   const { activeAgentId } = runtime.chat
   const isExpertMode = activeAgentId !== TURBO_AGENT_ID && activeAgentId !== null
-  const shouldUsePathRenderer = !isExpertMode && ((role === 'user' && !renderInputMessageAsMarkdown) || hasPaths)
+  const shouldUsePathRenderer = !isExpertMode && role === 'user' && (!renderInputMessageAsMarkdown || hasPaths)
 
   return (
     <>

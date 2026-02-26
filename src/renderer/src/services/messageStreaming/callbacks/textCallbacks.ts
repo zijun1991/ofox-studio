@@ -29,10 +29,12 @@ export const createTextCallbacks = (deps: TextCallbacksDependencies) => {
 
   // 内部维护的状态
   let mainTextBlockId: string | null = null
+  let latestContent: string = ''
 
   return {
     getCurrentMainTextBlockId: () => mainTextBlockId,
     onTextStart: async () => {
+      latestContent = ''
       if (blockManager.hasInitialPlaceholder) {
         const changes = {
           type: MessageBlockType.MAIN_TEXT,
@@ -56,6 +58,7 @@ export const createTextCallbacks = (deps: TextCallbacksDependencies) => {
         ? (getState().messageBlocks.entities[citationBlockId] as CitationMessageBlock).response?.source
         : WEB_SEARCH_SOURCE.WEBSEARCH
       if (text) {
+        latestContent = text
         const blockChanges: Partial<MessageBlock> = {
           content: text,
           status: MessageBlockStatus.STREAMING,
@@ -67,9 +70,11 @@ export const createTextCallbacks = (deps: TextCallbacksDependencies) => {
 
     onTextComplete: async (finalText: string) => {
       if (mainTextBlockId) {
-        // 如果 finalText 为空，保留当前 Redux store 中的内容（处理 accumulate 模式的情况）
+        // 优先使用 finalText；其次使用本地跟踪的 latestContent
+        // （latestContent 始终是最新的，不受节流延迟影响）
+        // 最后回退到 Redux store 内容
         const currentBlock = getState().messageBlocks.entities[mainTextBlockId]
-        const contentToSave = finalText || (currentBlock?.content ?? '')
+        const contentToSave = finalText || latestContent || (currentBlock?.content ?? '')
 
         const changes = {
           content: contentToSave,
@@ -80,6 +85,7 @@ export const createTextCallbacks = (deps: TextCallbacksDependencies) => {
           await handleCompactTextComplete(contentToSave, mainTextBlockId)
         }
         mainTextBlockId = null
+        latestContent = ''
       } else {
         logger.warn(
           `[onTextComplete] Received text.complete but last block was not MAIN_TEXT (was ${blockManager.lastBlockType}) or lastBlockId is null.`
