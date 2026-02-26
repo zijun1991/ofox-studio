@@ -1,4 +1,4 @@
-import { Brain, Code, FileSearch, Folder, Languages, NotepadText, Palette } from 'lucide-react'
+import { Brain, Clock, Code, FileSearch, Folder, Languages, NotepadText, Palette, Radio } from 'lucide-react'
 
 /**
  * 内置工具配置
@@ -73,5 +73,21 @@ export const BUILTIN_TOOLS: BuiltinTool[] = [
     path: '/code',
     icon: Code,
     bgColor: 'linear-gradient(135deg, #1F2937, #374151)' // 高级暗黑色，代表专业和技术
+  },
+  {
+    id: 'scheduler',
+    name: '定时任务',
+    nameKey: 'title.scheduler',
+    path: '/scheduler',
+    icon: Clock,
+    bgColor: 'linear-gradient(135deg, #3B82F6, #1D4ED8)' // 蓝色，代表时间和可靠性
+  },
+  {
+    id: 'channels',
+    name: '频道',
+    nameKey: 'title.channels',
+    path: '/channels',
+    icon: Radio,
+    bgColor: 'linear-gradient(135deg, #8B5CF6, #7C3AED)' // 紫色，代表通信和连接
   }
 ]

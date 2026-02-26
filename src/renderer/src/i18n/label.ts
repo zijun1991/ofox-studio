@@ -137,6 +137,7 @@ const titleKeyMap = {
   expert: 'landing.enterExpertMode',
   store: 'title.store',
   apps: 'title.apps',
+  channels: 'title.channels',
   code: 'title.code',
   files: 'title.files',
   home: 'title.home',

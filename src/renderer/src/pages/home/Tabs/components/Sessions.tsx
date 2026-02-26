@@ -109,14 +109,11 @@ const Sessions: React.FC<SessionsProps> = ({ agentId }) => {
       autoHideScrollbar
       header={
         <div className="mt-[2px]">
-          <AddButton
-            onClick={createDefaultSession}
-            disabled={creatingSession || isBound}
-            className="-mt-[4px] mb-[6px]">
-            {isBound
-              ? t('agent.session.add.channel_bound_disabled', 'Channel-Bound Agent')
-              : t('agent.session.add.title')}
-          </AddButton>
+          {!isBound && (
+            <AddButton onClick={createDefaultSession} disabled={creatingSession} className="-mt-[4px] mb-[6px]">
+              {t('agent.session.add.title')}
+            </AddButton>
+          )}
           {isBound && (
             <DisabledHint>
               {t(
@@ -134,6 +131,7 @@ const Sessions: React.FC<SessionsProps> = ({ agentId }) => {
           agentId={agentId}
           onDelete={() => handleDeleteSession(session.id)}
           onPress={() => setActiveSessionId(agentId, session.id)}
+          hiddenDelete={isBound}
         />
       )}
     </StyledVirtualList>

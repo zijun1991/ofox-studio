@@ -1,4 +1,5 @@
 import { loggerService } from '@logger'
+import NotificationModal from '@renderer/components/NotificationModal'
 import OfoxApiKeyModal from '@renderer/components/OfoxApiKeyModal'
 import { isMac } from '@renderer/config/constant'
 import { isLocalAi } from '@renderer/config/env'
@@ -10,6 +11,7 @@ import MemoryService from '@renderer/services/MemoryService'
 import OfoxProviderService from '@renderer/services/OfoxProviderService'
 import store, { handleSaveData, useAppDispatch, useAppSelector } from '@renderer/store'
 import { setChannelStatus } from '@renderer/store/channels'
+import { initializeMCPServers } from '@renderer/store/mcp'
 import { selectMemoryConfig } from '@renderer/store/memory'
 import { setApiKey, setChecking } from '@renderer/store/ofoxStore'
 import { setAvatar, setFilesPath, setResourcesPath, setUpdateState } from '@renderer/store/runtime'
@@ -67,6 +69,10 @@ export function useAppInit() {
     // This ensures providers exist before any API calls are made
     OfoxProviderService.getInstance().initializeProviders(dispatch)
 
+    // Initialize built-in MCP servers (scheduler, etc.)
+    const existingServers = store.getState().mcp.servers
+    initializeMCPServers(existingServers, dispatch)
+
     // Check OFOX API Key on app startup (临时方案，替代登录检查)
     // TODO: 后续会整体移除，替换为正式登录流程
     // 注意：apiKey 已经在 store 创建时从 localStorage 同步初始化，此处只需要检查是否需要显示输入弹窗
@@ -103,6 +109,32 @@ export function useAppInit() {
     }
 
     checkApiKey()
+
+    // Check for remote notification on app startup
+    const checkNotification = async () => {
+      const NOTIFICATION_URL = 'https://loadren.com/notification'
+      try {
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 5000)
+
+        const response = await fetch(NOTIFICATION_URL, {
+          method: 'GET',
+          signal: controller.signal
+        })
+
+        clearTimeout(timeoutId)
+
+        if (response.status === 200) {
+          logger.info('Notification available, showing modal')
+          await NotificationModal.show(NOTIFICATION_URL)
+        }
+      } catch (error) {
+        // Silently fail - notification is optional
+        logger.debug('Notification check failed:', error as Error)
+      }
+    }
+
+    checkNotification()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -118,8 +150,13 @@ export function useAppInit() {
     )
 
     // Listen for channel message events to trigger message refresh
+    // Note: stream-chunk events are now sent on a separate IPC channel (Channel_StreamChunk),
+    // so only real message events (inbound/outbound) arrive here.
     const removeMessageListener = window.api.channels.onMessageEvent(
       (_event: Electron.IpcRendererEvent, event: ChannelMessageEvent) => {
+        // Guard: ignore any event without a direction (e.g. legacy stream-chunk leaks)
+        if (!event.direction) return
+
         logger.debug('Received channel message event', {
           channelId: event.channelId,
           sessionId: event.sessionId,

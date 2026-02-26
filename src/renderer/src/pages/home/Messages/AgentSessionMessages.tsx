@@ -5,6 +5,8 @@ import { useTopicMessages } from '@renderer/hooks/useMessageOperations'
 import useScrollPosition from '@renderer/hooks/useScrollPosition'
 import { useSettings } from '@renderer/hooks/useSettings'
 import { getGroupedMessages } from '@renderer/services/MessagesService'
+import { useAppDispatch } from '@renderer/store'
+import { loadTopicMessagesThunk } from '@renderer/store/thunk/messageThunk'
 import { type Topic, TopicType } from '@renderer/types'
 import { buildAgentSessionTopicId } from '@renderer/utils/agentSession'
 import { Spin } from 'antd'
@@ -31,6 +33,7 @@ const AgentSessionMessages: React.FC<Props> = ({ agentId, sessionId }) => {
   const messages = useTopicMessages(sessionTopicId)
   const { messageNavigation } = useSettings()
   const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const dispatch = useAppDispatch()
 
   const { handleScroll: handleScrollPosition } = useScrollPosition(`agent-session-${sessionId}`)
 
@@ -84,6 +87,37 @@ const AgentSessionMessages: React.FC<Props> = ({ agentId, sessionId }) => {
       scrollToBottom()
     }
   }, [messages, scrollToBottom])
+
+  // Listen for channel message events to refresh messages (e.g., from scheduler)
+  useEffect(() => {
+    const handleChannelMessage = (
+      event: CustomEvent<{
+        sessionId: string
+        channelId: string
+        direction: string
+        content: string
+        timestamp: string
+      }>
+    ) => {
+      const { sessionId: eventSessionId } = event.detail
+      const builtTopicId = buildAgentSessionTopicId(eventSessionId)
+      // Check if the message is for the current session
+      if (sessionTopicId === builtTopicId) {
+        logger.debug('Refreshing messages for channel/scheduler message', {
+          sessionId: eventSessionId,
+          topicId: sessionTopicId
+        })
+        // Force reload messages from database
+        dispatch(loadTopicMessagesThunk(sessionTopicId, true))
+        scrollToBottom()
+      }
+    }
+
+    window.addEventListener('channel-message-received', handleChannelMessage as EventListener)
+    return () => {
+      window.removeEventListener('channel-message-received', handleChannelMessage as EventListener)
+    }
+  }, [dispatch, sessionTopicId, scrollToBottom])
 
   return (
     <MessagesContainer

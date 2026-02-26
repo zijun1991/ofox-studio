@@ -587,7 +587,7 @@ const ChannelBoundPromptArea = styled.div`
   align-items: flex-start;
   gap: 16px;
   padding: 16px 20px;
-  margin: 8px 0;
+  margin: 8px 16px;
   background-color: var(--color-background-soft);
   border: 1px solid var(--color-border);
   border-radius: 8px;

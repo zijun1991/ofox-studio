@@ -29,9 +29,10 @@ interface SessionItemProps {
   agentId: string
   onDelete: () => void
   onPress: () => void
+  hiddenDelete?: boolean
 }
 
-const SessionItem: FC<SessionItemProps> = ({ session, agentId, onDelete, onPress }) => {
+const SessionItem: FC<SessionItemProps> = ({ session, agentId, onDelete, onPress, hiddenDelete }) => {
   const { t } = useTranslation()
   const { chat } = useRuntime()
   const { updateSession } = useUpdateSession(agentId)
@@ -107,57 +108,58 @@ const SessionItem: FC<SessionItemProps> = ({ session, agentId, onDelete, onPress
   const singlealone = topicPosition === 'right'
 
   const menuItems: MenuProps['items'] = useMemo(
-    () => [
-      {
-        label: t('common.edit'),
-        key: 'edit',
-        icon: <EditIcon size={14} />,
-        onClick: () => {
-          SessionSettingsPopup.show({
-            agentId,
-            sessionId: session.id
-          })
-        }
-      },
-      {
-        label: t('chat.topics.auto_rename'),
-        key: 'auto-rename',
-        icon: <Sparkles size={14} />,
-        onClick: () => {
-          const assistant = {} as Assistant
-          const agentSession = { agentId: agentId, sessionId: targetSession.id }
-          dispatch(loadTopicMessagesThunk(sessionTopicId))
-          renameAgentSessionIfNeeded(agentSession, assistant, sessionTopicId, store.getState)
-        }
-      },
-      {
-        label: t('settings.topic.position.label'),
-        key: 'topic-position',
-        icon: <MenuIcon size={14} />,
-        children: [
-          {
-            label: t('settings.topic.position.left'),
-            key: 'left',
-            onClick: () => setTopicPosition('left')
-          },
-          {
-            label: t('settings.topic.position.right'),
-            key: 'right',
-            onClick: () => setTopicPosition('right')
+    () =>
+      [
+        {
+          label: t('common.edit'),
+          key: 'edit',
+          icon: <EditIcon size={14} />,
+          onClick: () => {
+            SessionSettingsPopup.show({
+              agentId,
+              sessionId: session.id
+            })
           }
-        ]
-      },
-      {
-        label: t('common.delete'),
-        key: 'delete',
-        icon: <DeleteIcon size={14} className="lucide-custom" />,
-        danger: true,
-        onClick: () => {
-          onDelete()
+        },
+        {
+          label: t('chat.topics.auto_rename'),
+          key: 'auto-rename',
+          icon: <Sparkles size={14} />,
+          onClick: () => {
+            const assistant = {} as Assistant
+            const agentSession = { agentId: agentId, sessionId: targetSession.id }
+            dispatch(loadTopicMessagesThunk(sessionTopicId))
+            renameAgentSessionIfNeeded(agentSession, assistant, sessionTopicId, store.getState)
+          }
+        },
+        {
+          label: t('settings.topic.position.label'),
+          key: 'topic-position',
+          icon: <MenuIcon size={14} />,
+          children: [
+            {
+              label: t('settings.topic.position.left'),
+              key: 'left',
+              onClick: () => setTopicPosition('left')
+            },
+            {
+              label: t('settings.topic.position.right'),
+              key: 'right',
+              onClick: () => setTopicPosition('right')
+            }
+          ]
+        },
+        !hiddenDelete && {
+          label: t('common.delete'),
+          key: 'delete',
+          icon: <DeleteIcon size={14} className="lucide-custom" />,
+          danger: true,
+          onClick: () => {
+            onDelete()
+          }
         }
-      }
-    ],
-    [agentId, dispatch, onDelete, session.id, sessionTopicId, setTopicPosition, t, targetSession.id]
+      ].filter(Boolean) as MenuProps['items'],
+    [agentId, dispatch, hiddenDelete, onDelete, session.id, sessionTopicId, setTopicPosition, t, targetSession.id]
   )
 
   return (
@@ -185,7 +187,7 @@ const SessionItem: FC<SessionItemProps> = ({ session, agentId, onDelete, onPress
               <SessionName>
                 <SessionLabel session={session} />
               </SessionName>
-              <DeleteButton />
+              {!hiddenDelete && <DeleteButton />}
             </>
           )}
         </SessionNameContainer>

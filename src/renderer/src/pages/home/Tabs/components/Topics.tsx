@@ -17,7 +17,8 @@ import { fetchMessagesSummary } from '@renderer/services/ApiService'
 import { getDefaultTopic } from '@renderer/services/AssistantService'
 import { EVENT_NAMES, EventEmitter } from '@renderer/services/EventService'
 import type { RootState } from '@renderer/store'
-import store from '@renderer/store'
+import store, { useAppSelector } from '@renderer/store'
+import { isAgentBound } from '@renderer/store/channels'
 import { newMessagesActions } from '@renderer/store/newMessage'
 import { setGenerating } from '@renderer/store/runtime'
 import type { Assistant, Topic } from '@renderer/types'
@@ -75,6 +76,7 @@ export const Topics: React.FC<Props> = ({ assistant: _assistant, activeTopic, se
   const { assistants } = useAssistants()
   const { assistant, addTopic, removeTopic, moveTopic, updateTopic, updateTopics } = useAssistant(_assistant.id)
   const { showTopicTime, pinTopicsToTop, setTopicPosition, topicPosition } = useSettings()
+  const isBound = useAppSelector((state) => isAgentBound(state, assistant.id))
 
   const renamingTopics = useSelector((state: RootState) => state.runtime.chat.renamingTopics)
   const topicLoadingQuery = useSelector((state: RootState) => state.messages.loadingByTopic)
@@ -490,7 +492,7 @@ export const Topics: React.FC<Props> = ({ assistant: _assistant, activeTopic, se
       })
     }
 
-    if (assistant.topics.length > 1 && !topic.pinned) {
+    if (assistant.topics.length > 1 && !topic.pinned && !isBound) {
       menus.push({ type: 'divider' })
       menus.push({
         label: t('common.delete'),
@@ -525,7 +527,8 @@ export const Topics: React.FC<Props> = ({ assistant: _assistant, activeTopic, se
     onClearMessages,
     setTopicPosition,
     onMoveTopic,
-    onDeleteTopic
+    onDeleteTopic,
+    isBound
   ])
 
   // Sort topics based on pinned status if pinTopicsToTop is enabled
@@ -575,9 +578,11 @@ export const Topics: React.FC<Props> = ({ assistant: _assistant, activeTopic, se
         itemContainerStyle={{ paddingBottom: '8px' }}
         header={
           <HeaderRow>
-            <AddButton onClick={() => EventEmitter.emit(EVENT_NAMES.ADD_NEW_TOPIC)}>
-              {t('chat.add.topic.title')}
-            </AddButton>
+            {!isBound && (
+              <AddButton onClick={() => EventEmitter.emit(EVENT_NAMES.ADD_NEW_TOPIC)}>
+                {t('chat.add.topic.title')}
+              </AddButton>
+            )}
             <Tooltip title={t('chat.topics.manage.title')} mouseEnterDelay={0.5}>
               <HeaderIconButton
                 onClick={isManageMode ? exitManageMode : enterManageMode}
@@ -661,7 +666,7 @@ export const Topics: React.FC<Props> = ({ assistant: _assistant, activeTopic, se
                       {topicName}
                     </TopicName>
                   )}
-                  {!topic.pinned && (
+                  {!topic.pinned && !isBound && (
                     <Tooltip
                       placement="bottom"
                       mouseEnterDelay={0.7}

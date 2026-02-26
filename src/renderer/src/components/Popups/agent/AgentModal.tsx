@@ -5,6 +5,7 @@ import { HelpTooltip } from '@renderer/components/TooltipIcons'
 import { TopView } from '@renderer/components/TopView'
 import { permissionModeCards } from '@renderer/config/agent'
 import { isWin } from '@renderer/config/constant'
+import { useAgent } from '@renderer/hooks/agents/useAgent'
 import { useAgentClient } from '@renderer/hooks/agents/useAgentClient'
 import { useAgents } from '@renderer/hooks/agents/useAgents'
 import { useUpdateAgent } from '@renderer/hooks/agents/useUpdateAgent'
@@ -14,7 +15,6 @@ import type {
   AgentEntity,
   ApiModel,
   BaseAgentForm,
-  CreateSessionForm,
   PermissionMode,
   Tool,
   UpdateAgentForm
@@ -34,7 +34,13 @@ const logger = loggerService.withContext('AddAgentPopup')
 
 type AgentWithTools = AgentEntity & { tools?: Tool[] }
 
-const buildAgentForm = (existing?: AgentWithTools, channelBinding?: ChannelBindingContext): BaseAgentForm => {
+const TURBO_AGENT_ID = 'agent_turbo_system'
+
+const buildAgentForm = (
+  existing?: AgentWithTools,
+  channelBinding?: ChannelBindingContext,
+  defaultWorkDir?: string | null
+): BaseAgentForm => {
   // Channel binding mode: use fixed values
   if (channelBinding) {
     return {
@@ -58,7 +64,11 @@ const buildAgentForm = (existing?: AgentWithTools, channelBinding?: ChannelBindi
     description: existing?.description,
     instructions: existing?.instructions,
     model: existing?.model ?? '',
-    accessible_paths: existing?.accessible_paths ? [...existing.accessible_paths] : [],
+    accessible_paths: existing?.accessible_paths
+      ? [...existing.accessible_paths]
+      : defaultWorkDir
+        ? [defaultWorkDir]
+        : [],
     allowed_tools: existing?.allowed_tools ? [...existing.allowed_tools] : [],
     mcps: existing?.mcps ? [...existing.mcps] : [],
     configuration: AgentConfigurationSchema.parse(existing?.configuration ?? {})
@@ -85,14 +95,27 @@ const PopupContainer: React.FC<Props> = ({ agent, afterSubmit, resolve, channelB
   const isEditing = (agent?: AgentWithTools) => agent !== undefined
   const isChannelBindingMode = channelBinding !== undefined
 
+  const { agent: turboAgent } = useAgent(TURBO_AGENT_ID)
+  const defaultWorkDir = turboAgent?.accessible_paths?.[0] ?? null
+
   const [form, setForm] = useState<BaseAgentForm>(() => buildAgentForm(agent, channelBinding))
   const [gitBashPathInfo, setGitBashPathInfo] = useState<GitBashPathInfo>({ path: null, source: null })
 
   useEffect(() => {
     if (open) {
-      setForm(buildAgentForm(agent, channelBinding))
+      setForm(buildAgentForm(agent, channelBinding, defaultWorkDir))
     }
-  }, [agent, channelBinding, open])
+  }, [agent, channelBinding, open, defaultWorkDir])
+
+  // When defaultWorkDir is loaded asynchronously, prefill it for new agents
+  useEffect(() => {
+    if (!agent && defaultWorkDir && form.accessible_paths.length === 0) {
+      setForm((prev) => ({
+        ...prev,
+        accessible_paths: [defaultWorkDir]
+      }))
+    }
+  }, [defaultWorkDir, agent])
 
   const checkGitBash = useCallback(async () => {
     if (!isWin) return
@@ -214,12 +237,19 @@ const PopupContainer: React.FC<Props> = ({ agent, afterSubmit, resolve, channelB
     }
   }, [t])
 
-  const removeAccessiblePath = useCallback((path: string) => {
-    setForm((prev) => ({
-      ...prev,
-      accessible_paths: prev.accessible_paths.filter((item) => item !== path)
-    }))
-  }, [])
+  const removeAccessiblePath = useCallback(
+    (path: string) => {
+      if (path === defaultWorkDir) {
+        window.toast.warning(t('agent.session.accessible_paths.error.cannot_delete_default'))
+        return
+      }
+      setForm((prev) => ({
+        ...prev,
+        accessible_paths: prev.accessible_paths.filter((item) => item !== path)
+      }))
+    },
+    [defaultWorkDir, t]
+  )
 
   // Create a temporary agentBase object for SelectAgentBaseModelButton
   const tempAgentBase: AgentEntity = useMemo(
@@ -328,19 +358,17 @@ const PopupContainer: React.FC<Props> = ({ agent, afterSubmit, resolve, channelB
           throw result.error
         }
 
-        // 频道绑定模式：创建 Session 并返回绑定信息
+        // 频道绑定模式：获取后端已创建的默认 Session 并返回绑定信息
         if (isChannelBindingMode) {
           try {
-            const sessionForm = {
-              ...result.data,
-              id: undefined,
-              name: 'Channel Session'
-            } satisfies CreateSessionForm
-            const session = await agentClient.createSession(result.data.id, sessionForm)
-            resolve({ agentId: result.data.id, sessionId: session.id })
+            const sessionsResponse = await agentClient.listSessions(result.data.id)
+            if (sessionsResponse.data.length > 0) {
+              resolve({ agentId: result.data.id, sessionId: sessionsResponse.data[0].id })
+            } else {
+              resolve({ agentId: result.data.id })
+            }
           } catch (sessionError) {
-            logger.error('Failed to create session for channel-bound agent:', sessionError as Error)
-            // 即使 session 创建失败，agent 已经创建了，仍然返回 agentId（但没有 sessionId）
+            logger.error('Failed to get session for channel-bound agent:', sessionError as Error)
             resolve({ agentId: result.data.id })
           }
         } else {
@@ -512,9 +540,13 @@ const PopupContainer: React.FC<Props> = ({ agent, afterSubmit, resolve, channelB
                   {form.accessible_paths.map((path) => (
                     <PathItem key={path}>
                       <PathText title={path}>{path}</PathText>
-                      <Button size="small" danger onClick={() => removeAccessiblePath(path)}>
-                        {t('common.delete')}
-                      </Button>
+                      {path === defaultWorkDir ? (
+                        <Tag color="blue">{t('common.default')}</Tag>
+                      ) : (
+                        <Button size="small" danger onClick={() => removeAccessiblePath(path)}>
+                          {t('common.delete')}
+                        </Button>
+                      )}
                     </PathItem>
                   ))}
                 </PathList>

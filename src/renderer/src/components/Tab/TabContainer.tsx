@@ -24,11 +24,13 @@ import { Tooltip } from 'antd'
 import type { LRUCache } from 'lru-cache'
 import {
   Brain,
+  Clock,
   FileSearch,
   Folder,
   Home,
   Languages,
   LayoutGrid,
+  MessageSquare,
   Monitor,
   Moon,
   NotepadText,
@@ -123,6 +125,10 @@ const getTabIcon = (
       return <Settings size={14} />
     case 'code':
       return <Terminal size={14} />
+    case 'scheduler':
+      return <Clock size={14} />
+    case 'channels':
+      return <MessageSquare size={14} />
     case 'openclaw':
       return <OpenClawIcon style={{ width: 14, height: 14 }} />
     default:

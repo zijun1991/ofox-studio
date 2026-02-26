@@ -1,6 +1,7 @@
 import { loggerService } from '@logger'
+import { useAgent } from '@renderer/hooks/agents/useAgent'
 import type { AgentBaseWithId, UpdateAgentBaseForm, UpdateAgentFunctionUnion } from '@renderer/types'
-import { Button, Tooltip } from 'antd'
+import { Button, Tag, Tooltip } from 'antd'
 import { Plus } from 'lucide-react'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -14,8 +15,12 @@ export interface AccessibleDirsSettingProps {
 
 const logger = loggerService.withContext('AccessibleDirsSetting')
 
+const TURBO_AGENT_ID = 'agent_turbo_system'
+
 export const AccessibleDirsSetting = ({ base, update }: AccessibleDirsSettingProps) => {
   const { t } = useTranslation()
+  const { agent: turboAgent } = useAgent(TURBO_AGENT_ID)
+  const defaultWorkDir = turboAgent?.accessible_paths?.[0] ?? null
 
   const updateAccessiblePaths = useCallback(
     (accessible_paths: UpdateAgentBaseForm['accessible_paths']) => {
@@ -49,6 +54,10 @@ export const AccessibleDirsSetting = ({ base, update }: AccessibleDirsSettingPro
   const removeAccessiblePath = useCallback(
     (path: string) => {
       if (!base) return
+      if (path === defaultWorkDir) {
+        window.toast.warning(t('agent.session.accessible_paths.error.cannot_delete_default'))
+        return
+      }
       const newPaths = base.accessible_paths.filter((p) => p !== path)
       if (newPaths.length === 0) {
         window.toast.error(t('agent.session.accessible_paths.error.at_least_one'))
@@ -56,7 +65,7 @@ export const AccessibleDirsSetting = ({ base, update }: AccessibleDirsSettingPro
       }
       updateAccessiblePaths(newPaths)
     },
-    [base, t, updateAccessiblePaths]
+    [base, defaultWorkDir, t, updateAccessiblePaths]
   )
 
   if (!base) return null
@@ -79,9 +88,13 @@ export const AccessibleDirsSetting = ({ base, update }: AccessibleDirsSettingPro
               title={path}>
               {path}
             </span>
-            <Button size="small" type="text" danger onClick={() => removeAccessiblePath(path)}>
-              {t('common.delete')}
-            </Button>
+            {path === defaultWorkDir ? (
+              <Tag color="blue">{t('common.default')}</Tag>
+            ) : (
+              <Button size="small" type="text" danger onClick={() => removeAccessiblePath(path)}>
+                {t('common.delete')}
+              </Button>
+            )}
           </li>
         ))}
       </ul>

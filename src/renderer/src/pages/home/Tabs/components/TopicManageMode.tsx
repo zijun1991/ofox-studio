@@ -1,6 +1,8 @@
 import AssistantAvatar from '@renderer/components/Avatar/AssistantAvatar'
 import { modelGenerating } from '@renderer/hooks/useRuntime'
 import { TopicManager } from '@renderer/hooks/useTopic'
+import { useAppSelector } from '@renderer/store'
+import { isAgentBound } from '@renderer/store/channels'
 import type { Assistant, Topic } from '@renderer/types'
 import { cn } from '@renderer/utils'
 import { Dropdown, Tooltip } from 'antd'
@@ -90,6 +92,7 @@ export const TopicManagePanel: React.FC<TopicManagePanelProps> = ({
 }) => {
   const { t } = useTranslation()
   const { isManageMode, selectedIds, searchText, exitManageMode, setSelectedIds, setSearchText } = manageState
+  const isBound = useAppSelector((state) => isAgentBound(state, assistant.id))
   const [isSearchMode, setIsSearchMode] = useState(false)
   const searchInputRef = useRef<HTMLInputElement>(null)
 
@@ -311,11 +314,13 @@ export const TopicManagePanel: React.FC<TopicManagePanelProps> = ({
               </Tooltip>
             </Dropdown>
           )}
-          <Tooltip title={t('common.delete')}>
-            <ManageIconButton danger onClick={handleDeleteSelected} disabled={selectedIds.size === 0}>
-              <Trash2 size={16} />
-            </ManageIconButton>
-          </Tooltip>
+          {!isBound && (
+            <Tooltip title={t('common.delete')}>
+              <ManageIconButton danger onClick={handleDeleteSelected} disabled={selectedIds.size === 0}>
+                <Trash2 size={16} />
+              </ManageIconButton>
+            </Tooltip>
+          )}
           <ManageDivider />
           <Tooltip title={t('common.cancel')}>
             <ManageIconButton onClick={exitManageMode}>
