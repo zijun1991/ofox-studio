@@ -91,7 +91,7 @@
         "empty": "エージェントがアクセスできるディレクトリを少なくとも1つ選択してください。",
         "error": {
           "at_least_one": "アクセス可能なディレクトリを少なくとも1つ選択してください。",
-          "cannot_delete_default": "[to be translated]:The default working directory cannot be deleted."
+          "cannot_delete_default": "デフォルトの作業ディレクトリは削除できません。"
         },
         "label": "アクセス可能なディレクトリ",
         "select_failed": "ディレクトリの選択に失敗しました。"
@@ -749,7 +749,7 @@
     "add": "チャンネルを追加",
     "add_title": "チャンネルを追加",
     "agent_id": "エージェントID",
-    "agent_not_bound": "[to be translated]:Please bind an Agent first before enabling the channel.",
+    "agent_not_bound": "チャネルを有効にする前に、まずエージェントをバインドしてください。",
     "binding": "エージェントバインディング",
     "binding_already_bound": "チャネルは既にエージェントにバインドされています",
     "binding_create_hint": "新しいエージェントを作成し、このチャンネルにバインドします",
@@ -804,7 +804,7 @@
       "allowed_chat_ids_placeholder": "カンマ区切り、すべての場合は空欄のまま",
       "bot_token": "ボットトークン",
       "bot_token_placeholder": "@BotFatherからボットトークンを入力してください",
-      "bot_token_required": "[to be translated]:Please enter a Bot Token before enabling the Telegram channel.",
+      "bot_token_required": "Telegramチャンネルを有効にする前に、Bot Tokenを入力してください。",
       "config": "Telegramボット設定",
       "parse_mode": "解析モード",
       "parse_mode_none": "なし",
@@ -1388,7 +1388,7 @@
     "close": "閉じる",
     "collapse": "折りたたむ",
     "completed": "完了",
-    "configure": "[to be translated]:Configure",
+    "configure": "設定",
     "confirm": "確認",
     "copied": "コピーされました",
     "copy": "コピー",
@@ -2662,6 +2662,13 @@
       }
     }
   },
+  "ofox": {
+    "apiKey": {
+      "description": "[to be translated]:Please enter your OFOX API Key to continue using the service. The key will be cached locally so you won't need to enter it again next time.",
+      "placeholder": "[to be translated]:Enter API Key",
+      "title": "[to be translated]:Enter OFOX API Key"
+    }
+  },
   "ollama": {
     "keep_alive_time": {
       "description": "モデルがメモリに保持される時間（デフォルト：5分）",
@@ -3426,6 +3433,7 @@
       "everyWeek": "毎週",
       "weekdays": "毎日"
     },
+    "custom": "[to be translated]:Custom schedule",
     "daily": "日々",
     "deleteConfirm": {
       "description": "この予定されたタスクを削除してもよろしいですか？",
@@ -3440,6 +3448,11 @@
       "title": "スケジュールされたタスクはありません"
     },
     "enabled": "タスクが有効化されました",
+    "everyDayRange": "[to be translated]:Every {{start}} to {{end}}",
+    "everyHour": "[to be translated]:Every hour",
+    "everyMinute": "[to be translated]:Every minute",
+    "everyMinuteAtSecond": "[to be translated]:Every minute at {{second}}s",
+    "everyWeekday": "[to be translated]:Every {{day}}",
     "form": {
       "agent": "エージェントを選択",
       "agentPlaceholder": "実行するエージェントを選択",
@@ -3466,6 +3479,8 @@
       "target": "実行対象",
       "timezone": "タイムゾーン"
     },
+    "friday": "[to be translated]:Friday",
+    "invalidExpression": "[to be translated]:Invalid cron expression",
     "lastRun": "最終実行",
     "logs": {
       "columns": {
@@ -3482,6 +3497,7 @@
       "statusTimeout": "タイムアウト",
       "title": "実行ログ"
     },
+    "monday": "[to be translated]:Monday",
     "monthly": "毎月",
     "monthlyOnDay": "毎月{{day}}日",
     "noNextRun": "次回の実行はありません",
@@ -3495,18 +3511,26 @@
       "everyWeek": "毎週",
       "everyWeekday": "毎週日"
     },
+    "saturday": "[to be translated]:Saturday",
     "saveSuccess": "タスクが正常に保存されました",
+    "selectedDays": "[to be translated]:Selected days",
     "statusDisabled": "無効",
     "statusEnabled": "有効",
+    "sunday": "[to be translated]:Sunday",
     "tabs": {
       "logs": "実行ログ",
       "schedulers": "タスク"
     },
+    "thursday": "[to be translated]:Thursday",
     "title": "スケジュールされたタスク",
     "toggleFailed": "タスク状態の切り替えに失敗しました",
-    "trigger": "[to be translated]:Run Now",
-    "triggerFailed": "[to be translated]:Failed to trigger task",
-    "triggerSuccess": "[to be translated]:Task triggered successfully"
+    "trigger": "今すぐ実行",
+    "triggerFailed": "タスクのトリガーに失敗しました",
+    "triggerSuccess": "タスクが正常にトリガーされました",
+    "tuesday": "[to be translated]:Tuesday",
+    "wednesday": "[to be translated]:Wednesday",
+    "weekday": "[to be translated]:Weekday",
+    "weekly": "[to be translated]:Weekly"
   },
   "selection": {
     "action": {
@@ -5684,7 +5708,7 @@
   },
   "title": {
     "apps": "アプリ",
-    "channels": "[to be translated]:Channels",
+    "channels": "チャンネル",
     "code": "Code",
     "files": "ファイル",
     "home": "ホーム",

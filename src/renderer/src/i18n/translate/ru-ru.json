@@ -91,7 +91,7 @@
         "empty": "Выберите хотя бы один каталог, к которому агент имеет доступ.",
         "error": {
           "at_least_one": "Пожалуйста, выберите хотя бы один доступный каталог.",
-          "cannot_delete_default": "[to be translated]:The default working directory cannot be deleted."
+          "cannot_delete_default": "Рабочий каталог по умолчанию не может быть удалён."
         },
         "label": "Доступные директории",
         "select_failed": "Не удалось выбрать каталог."
@@ -749,7 +749,7 @@
     "add": "Добавить канал",
     "add_title": "Добавить канал",
     "agent_id": "Идентификатор агента",
-    "agent_not_bound": "[to be translated]:Please bind an Agent first before enabling the channel.",
+    "agent_not_bound": "Пожалуйста, сначала привяжите агента, прежде чем включать канал.",
     "binding": "Агентское связывание",
     "binding_already_bound": "Канал уже привязан к агенту",
     "binding_create_hint": "Создать нового Агента и привязать к этому каналу",
@@ -804,7 +804,7 @@
       "allowed_chat_ids_placeholder": "Через запятую, оставьте пустым для всех",
       "bot_token": "Токен бота",
       "bot_token_placeholder": "Введите токен вашего бота от @BotFather",
-      "bot_token_required": "[to be translated]:Please enter a Bot Token before enabling the Telegram channel.",
+      "bot_token_required": "Пожалуйста, введите токен бота перед активацией канала Telegram.",
       "config": "Конфигурация Telegram бота",
       "parse_mode": "Режим разбора",
       "parse_mode_none": "Нет",
@@ -1388,7 +1388,7 @@
     "close": "Закрыть",
     "collapse": "Свернуть",
     "completed": "Завершено",
-    "configure": "[to be translated]:Configure",
+    "configure": "Настроить",
     "confirm": "Подтверждение",
     "copied": "Скопировано",
     "copy": "Копировать",
@@ -2662,6 +2662,13 @@
       }
     }
   },
+  "ofox": {
+    "apiKey": {
+      "description": "[to be translated]:Please enter your OFOX API Key to continue using the service. The key will be cached locally so you won't need to enter it again next time.",
+      "placeholder": "[to be translated]:Enter API Key",
+      "title": "[to be translated]:Enter OFOX API Key"
+    }
+  },
   "ollama": {
     "keep_alive_time": {
       "description": "Время в минутах, в течение которого модель остается активной, по умолчанию 5 минут.",
@@ -3426,6 +3433,7 @@
       "everyWeek": "Каждую неделю",
       "weekdays": "Каждый будний день"
     },
+    "custom": "[to be translated]:Custom schedule",
     "daily": "Ежедневно",
     "deleteConfirm": {
       "description": "Вы уверены, что хотите удалить это запланированное задание?",
@@ -3440,6 +3448,11 @@
       "title": "Нет запланированных задач"
     },
     "enabled": "Задача включена",
+    "everyDayRange": "[to be translated]:Every {{start}} to {{end}}",
+    "everyHour": "[to be translated]:Every hour",
+    "everyMinute": "[to be translated]:Every minute",
+    "everyMinuteAtSecond": "[to be translated]:Every minute at {{second}}s",
+    "everyWeekday": "[to be translated]:Every {{day}}",
     "form": {
       "agent": "Выбрать агента",
       "agentPlaceholder": "Выберите Агента для выполнения",
@@ -3466,6 +3479,8 @@
       "target": "Цель выполнения",
       "timezone": "Часовой пояс"
     },
+    "friday": "[to be translated]:Friday",
+    "invalidExpression": "[to be translated]:Invalid cron expression",
     "lastRun": "Последний запуск",
     "logs": {
       "columns": {
@@ -3482,6 +3497,7 @@
       "statusTimeout": "Тайм-аут",
       "title": "Журналы выполнения"
     },
+    "monday": "[to be translated]:Monday",
     "monthly": "Ежемесячно",
     "monthlyOnDay": "Ежемесячно {{day}}-го числа",
     "noNextRun": "Следующего запуска нет",
@@ -3495,18 +3511,26 @@
       "everyWeek": "Каждую неделю",
       "everyWeekday": "Каждый будний день"
     },
+    "saturday": "[to be translated]:Saturday",
     "saveSuccess": "Задача успешно сохранена",
+    "selectedDays": "[to be translated]:Selected days",
     "statusDisabled": "Инвалид",
     "statusEnabled": "Включено",
+    "sunday": "[to be translated]:Sunday",
     "tabs": {
       "logs": "Журналы выполнения",
       "schedulers": "Задачи"
     },
+    "thursday": "[to be translated]:Thursday",
     "title": "Планировщик заданий",
     "toggleFailed": "Не удалось изменить статус задачи",
-    "trigger": "[to be translated]:Run Now",
-    "triggerFailed": "[to be translated]:Failed to trigger task",
-    "triggerSuccess": "[to be translated]:Task triggered successfully"
+    "trigger": "Запустить сейчас",
+    "triggerFailed": "Не удалось запустить задачу",
+    "triggerSuccess": "Задача успешно запущена",
+    "tuesday": "[to be translated]:Tuesday",
+    "wednesday": "[to be translated]:Wednesday",
+    "weekday": "[to be translated]:Weekday",
+    "weekly": "[to be translated]:Weekly"
   },
   "selection": {
     "action": {
@@ -5684,7 +5708,7 @@
   },
   "title": {
     "apps": "Приложения",
-    "channels": "[to be translated]:Channels",
+    "channels": "Каналы",
     "code": "Code",
     "files": "Файлы",
     "home": "Главная",

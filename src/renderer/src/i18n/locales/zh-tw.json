@@ -2662,6 +2662,13 @@
       }
     }
   },
+  "ofox": {
+    "apiKey": {
+      "description": "請輸入您的 OFOX API Key 以繼續使用服務。此密鑰將快取在本地，下次啟動時無需重新輸入。",
+      "placeholder": "請輸入 API Key",
+      "title": "請輸入 OFOX API Key"
+    }
+  },
   "ollama": {
     "keep_alive_time": {
       "description": "對話後模型在記憶體中保持的時間（預設為 5 分鐘）",
@@ -3426,6 +3433,7 @@
       "everyWeek": "每週",
       "weekdays": "每個工作日"
     },
+    "custom": "自訂排程",
     "daily": "每天",
     "deleteConfirm": {
       "description": "您確定要刪除這個排程任務嗎？",
@@ -3440,6 +3448,11 @@
       "title": "沒有排程任務"
     },
     "enabled": "任務已啟用",
+    "everyDayRange": "每{{start}}到{{end}}",
+    "everyHour": "每小時",
+    "everyMinute": "每分鐘",
+    "everyMinuteAtSecond": "每分鐘第 {{second}} 秒",
+    "everyWeekday": "每{{day}}",
     "form": {
       "agent": "選擇代理",
       "agentPlaceholder": "選擇要執行的代理",
@@ -3466,6 +3479,8 @@
       "target": "執行目標",
       "timezone": "時區"
     },
+    "friday": "星期五",
+    "invalidExpression": "無效的 Cron 表達式",
     "lastRun": "最後執行",
     "logs": {
       "columns": {
@@ -3482,6 +3497,7 @@
       "statusTimeout": "超時",
       "title": "執行日誌"
     },
+    "monday": "星期一",
     "monthly": "每月執行",
     "monthlyOnDay": "每月{{day}}日執行",
     "noNextRun": "無下次執行",
@@ -3495,18 +3511,26 @@
       "everyWeek": "每週",
       "everyWeekday": "每個工作日"
     },
+    "saturday": "星期六",
     "saveSuccess": "任務已成功儲存",
+    "selectedDays": "選定日期",
     "statusDisabled": "Disabled",
     "statusEnabled": "已啟用",
+    "sunday": "星期日",
     "tabs": {
       "logs": "執行日誌",
       "schedulers": "任務"
     },
+    "thursday": "星期四",
     "title": "已排程任務",
     "toggleFailed": "切換任務狀態失敗",
-    "trigger": "[to be translated]:Run Now",
-    "triggerFailed": "[to be translated]:Failed to trigger task",
-    "triggerSuccess": "[to be translated]:Task triggered successfully"
+    "trigger": "立即執行",
+    "triggerFailed": "未能觸發任務",
+    "triggerSuccess": "任務已成功觸發",
+    "tuesday": "星期二",
+    "wednesday": "星期三",
+    "weekday": "工作日",
+    "weekly": "每週"
   },
   "selection": {
     "action": {

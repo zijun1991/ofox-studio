@@ -91,7 +91,7 @@
         "empty": "Selectează cel puțin un director pe care agentul îl poate accesa.",
         "error": {
           "at_least_one": "Te rugăm să selectezi cel puțin un director accesibil.",
-          "cannot_delete_default": "[to be translated]:The default working directory cannot be deleted."
+          "cannot_delete_default": "Directorul de lucru implicit nu poate fi șters."
         },
         "label": "Directoare accesibile",
         "select_failed": "Nu s-a putut selecta directorul."
@@ -749,7 +749,7 @@
     "add": "Adaugă Canal",
     "add_title": "Adaugă Canal",
     "agent_id": "ID Agent",
-    "agent_not_bound": "[to be translated]:Please bind an Agent first before enabling the channel.",
+    "agent_not_bound": "Vă rugăm să legați mai întâi un Agent înainte de a activa canalul.",
     "binding": "Legarea Agentului",
     "binding_already_bound": "Canalul este deja legat de un agent",
     "binding_create_hint": "Creează un Agent nou și asociază-l la acest canal",
@@ -804,7 +804,7 @@
       "allowed_chat_ids_placeholder": "Separate prin virgulă, lasă liber pentru toate",
       "bot_token": "Token Bot",
       "bot_token_placeholder": "Introduceți tokenul botului dvs. de la @BotFather",
-      "bot_token_required": "[to be translated]:Please enter a Bot Token before enabling the Telegram channel.",
+      "bot_token_required": "Vă rugăm să introduceți un Token de Bot înainte de a activa canalul Telegram.",
       "config": "Configurarea Botului Telegram",
       "parse_mode": "Mod de analiză",
       "parse_mode_none": "Niciuna",
@@ -1388,7 +1388,7 @@
     "close": "Închide",
     "collapse": "Restrânge",
     "completed": "Finalizat",
-    "configure": "[to be translated]:Configure",
+    "configure": "Configurare",
     "confirm": "Confirmă",
     "copied": "Copiat",
     "copy": "Copiază",
@@ -2662,6 +2662,13 @@
       }
     }
   },
+  "ofox": {
+    "apiKey": {
+      "description": "[to be translated]:Please enter your OFOX API Key to continue using the service. The key will be cached locally so you won't need to enter it again next time.",
+      "placeholder": "[to be translated]:Enter API Key",
+      "title": "[to be translated]:Enter OFOX API Key"
+    }
+  },
   "ollama": {
     "keep_alive_time": {
       "description": "Timpul în minute pentru a menține conexiunea activă; implicit este 5 minute.",
@@ -3426,6 +3433,7 @@
       "everyWeek": "În fiecare săptămână",
       "weekdays": "În fiecare zi lucrătoare"
     },
+    "custom": "[to be translated]:Custom schedule",
     "daily": "Zilnic",
     "deleteConfirm": {
       "description": "Sigur doriți să ștergeți această sarcină programată?",
@@ -3440,6 +3448,11 @@
       "title": "Nu există sarcini planificate"
     },
     "enabled": "Sarcina activată",
+    "everyDayRange": "[to be translated]:Every {{start}} to {{end}}",
+    "everyHour": "[to be translated]:Every hour",
+    "everyMinute": "[to be translated]:Every minute",
+    "everyMinuteAtSecond": "[to be translated]:Every minute at {{second}}s",
+    "everyWeekday": "[to be translated]:Every {{day}}",
     "form": {
       "agent": "Selectați Agent",
       "agentPlaceholder": "Selectați Agentul pentru execuție",
@@ -3466,6 +3479,8 @@
       "target": "Țintă de Execuție",
       "timezone": "Fus orar"
     },
+    "friday": "[to be translated]:Friday",
+    "invalidExpression": "[to be translated]:Invalid cron expression",
     "lastRun": "Ultima cursă",
     "logs": {
       "columns": {
@@ -3482,6 +3497,7 @@
       "statusTimeout": "Timeout",
       "title": "Jurnale de execuție"
     },
+    "monday": "[to be translated]:Monday",
     "monthly": "Lunar",
     "monthlyOnDay": "Lunar în ziua {{day}}",
     "noNextRun": "Nu există următoarea rulare",
@@ -3495,18 +3511,26 @@
       "everyWeek": "În fiecare săptămână",
       "everyWeekday": "În fiecare zi lucrătoare"
     },
+    "saturday": "[to be translated]:Saturday",
     "saveSuccess": "Sarcina salvată cu succes",
+    "selectedDays": "[to be translated]:Selected days",
     "statusDisabled": "Dezactivat",
     "statusEnabled": "Activat",
+    "sunday": "[to be translated]:Sunday",
     "tabs": {
       "logs": "Jurnale de execuție",
       "schedulers": "Sarcini"
     },
+    "thursday": "[to be translated]:Thursday",
     "title": "Sarcini Programate",
     "toggleFailed": "Nu s-a putut comuta starea sarcinii",
-    "trigger": "[to be translated]:Run Now",
-    "triggerFailed": "[to be translated]:Failed to trigger task",
-    "triggerSuccess": "[to be translated]:Task triggered successfully"
+    "trigger": "Rulează Acum",
+    "triggerFailed": "Nu s-a reușit declanșarea sarcinii",
+    "triggerSuccess": "Sarcina declanșată cu succes",
+    "tuesday": "[to be translated]:Tuesday",
+    "wednesday": "[to be translated]:Wednesday",
+    "weekday": "[to be translated]:Weekday",
+    "weekly": "[to be translated]:Weekly"
   },
   "selection": {
     "action": {
@@ -5684,7 +5708,7 @@
   },
   "title": {
     "apps": "Aplicații",
-    "channels": "[to be translated]:Channels",
+    "channels": "Canale",
     "code": "Cod",
     "files": "Fișiere",
     "home": "Acasă",

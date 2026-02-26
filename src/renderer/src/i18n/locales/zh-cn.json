@@ -2662,6 +2662,13 @@
       }
     }
   },
+  "ofox": {
+    "apiKey": {
+      "description": "请输入您的 OFOX API Key 以继续使用服务。此密钥将缓存在本地，下次启动时无需重新输入。",
+      "placeholder": "请输入 API Key",
+      "title": "请输入 OFOX API Key"
+    }
+  },
   "ollama": {
     "keep_alive_time": {
       "description": "对话后模型在内存中保持的时间（默认：5 分钟）",
@@ -3426,6 +3433,7 @@
       "everyWeek": "每周执行",
       "weekdays": "每个工作日执行"
     },
+    "custom": "自定义调度",
     "daily": "每天",
     "deleteConfirm": {
       "description": "确定要删除此定时任务吗？",
@@ -3440,6 +3448,11 @@
       "title": "暂无定时任务"
     },
     "enabled": "任务已启用",
+    "everyDayRange": "每{{start}}到{{end}}",
+    "everyHour": "每小时",
+    "everyMinute": "每分钟",
+    "everyMinuteAtSecond": "每分钟第 {{second}} 秒",
+    "everyWeekday": "每{{day}}",
     "form": {
       "agent": "选择 Agent",
       "agentPlaceholder": "选择要执行的 Agent",
@@ -3466,6 +3479,8 @@
       "target": "执行目标",
       "timezone": "时区"
     },
+    "friday": "星期五",
+    "invalidExpression": "无效的 Cron 表达式",
     "lastRun": "上次执行",
     "logs": {
       "columns": {
@@ -3482,6 +3497,7 @@
       "statusTimeout": "超时",
       "title": "执行日志"
     },
+    "monday": "星期一",
     "monthly": "每月执行",
     "monthlyOnDay": "每月{{day}}日执行",
     "noNextRun": "无下次执行",
@@ -3495,18 +3511,26 @@
       "everyWeek": "每周",
       "everyWeekday": "每个工作日"
     },
+    "saturday": "星期六",
     "saveSuccess": "任务保存成功",
+    "selectedDays": "选定日期",
     "statusDisabled": "已禁用",
     "statusEnabled": "已启用",
+    "sunday": "星期日",
     "tabs": {
       "logs": "执行日志",
       "schedulers": "任务列表"
     },
+    "thursday": "星期四",
     "title": "定时任务",
     "toggleFailed": "切换任务状态失败",
     "trigger": "立即执行",
     "triggerFailed": "触发执行失败",
-    "triggerSuccess": "任务已触发执行"
+    "triggerSuccess": "任务已触发执行",
+    "tuesday": "星期二",
+    "wednesday": "星期三",
+    "weekday": "工作日",
+    "weekly": "每周"
   },
   "selection": {
     "action": {

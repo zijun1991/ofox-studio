@@ -91,7 +91,7 @@
         "empty": "Sélectionnez au moins un répertoire auquel l'agent peut accéder.",
         "error": {
           "at_least_one": "Veuillez sélectionner au moins un répertoire accessible.",
-          "cannot_delete_default": "[to be translated]:The default working directory cannot be deleted."
+          "cannot_delete_default": "Le répertoire de travail par défaut ne peut pas être supprimé."
         },
         "label": "Répertoires accessibles",
         "select_failed": "Échec de la sélection du répertoire."
@@ -749,7 +749,7 @@
     "add": "Ajouter un canal",
     "add_title": "Ajouter un canal",
     "agent_id": "Identifiant de l'agent",
-    "agent_not_bound": "[to be translated]:Please bind an Agent first before enabling the channel.",
+    "agent_not_bound": "Veuillez d'abord lier un Agent avant d'activer le canal.",
     "binding": "Agent Binding",
     "binding_already_bound": "Le canal est déjà lié à un agent.",
     "binding_create_hint": "Créer un nouvel Agent et le lier à ce canal",
@@ -804,7 +804,7 @@
       "allowed_chat_ids_placeholder": "Séparés par des virgules, laisser vide pour tous",
       "bot_token": "Jeton du Bot",
       "bot_token_placeholder": "Entrez le jeton de votre bot depuis @BotFather",
-      "bot_token_required": "[to be translated]:Please enter a Bot Token before enabling the Telegram channel.",
+      "bot_token_required": "Veuillez entrer un jeton de bot avant d'activer le canal Telegram.",
       "config": "Configuration du Bot Telegram",
       "parse_mode": "Mode d'analyse",
       "parse_mode_none": "Aucun",
@@ -1388,7 +1388,7 @@
     "close": "Fermer",
     "collapse": "Réduire",
     "completed": "Terminé",
-    "configure": "[to be translated]:Configure",
+    "configure": "Configurer",
     "confirm": "Confirmer",
     "copied": "Copié",
     "copy": "Copier",
@@ -2662,6 +2662,13 @@
       }
     }
   },
+  "ofox": {
+    "apiKey": {
+      "description": "[to be translated]:Please enter your OFOX API Key to continue using the service. The key will be cached locally so you won't need to enter it again next time.",
+      "placeholder": "[to be translated]:Enter API Key",
+      "title": "[to be translated]:Enter OFOX API Key"
+    }
+  },
   "ollama": {
     "keep_alive_time": {
       "description": "Le temps pendant lequel le modèle reste en mémoire après la conversation (par défaut : 5 minutes)",
@@ -3426,6 +3433,7 @@
       "everyWeek": "Chaque semaine",
       "weekdays": "Tous les jours de la semaine"
     },
+    "custom": "[to be translated]:Custom schedule",
     "daily": "Quotidien",
     "deleteConfirm": {
       "description": "Êtes-vous sûr de vouloir supprimer cette tâche planifiée ?",
@@ -3440,6 +3448,11 @@
       "title": "Aucune tâche planifiée"
     },
     "enabled": "Tâche activée",
+    "everyDayRange": "[to be translated]:Every {{start}} to {{end}}",
+    "everyHour": "[to be translated]:Every hour",
+    "everyMinute": "[to be translated]:Every minute",
+    "everyMinuteAtSecond": "[to be translated]:Every minute at {{second}}s",
+    "everyWeekday": "[to be translated]:Every {{day}}",
     "form": {
       "agent": "Sélectionner l'Agent",
       "agentPlaceholder": "Sélectionner l'Agent à exécuter",
@@ -3466,6 +3479,8 @@
       "target": "Cible d'Exécution",
       "timezone": "Fuseau horaire"
     },
+    "friday": "[to be translated]:Friday",
+    "invalidExpression": "[to be translated]:Invalid cron expression",
     "lastRun": "Dernière exécution",
     "logs": {
       "columns": {
@@ -3482,6 +3497,7 @@
       "statusTimeout": "Délai d'attente",
       "title": "Journaux d'exécution"
     },
+    "monday": "[to be translated]:Monday",
     "monthly": "Mensuel",
     "monthlyOnDay": "Mensuel le {{day}}",
     "noNextRun": "Pas de prochaine exécution",
@@ -3495,18 +3511,26 @@
       "everyWeek": "Chaque semaine",
       "everyWeekday": "Chaque jour de la semaine"
     },
+    "saturday": "[to be translated]:Saturday",
     "saveSuccess": "Tâche enregistrée avec succès",
+    "selectedDays": "[to be translated]:Selected days",
     "statusDisabled": "Handicapé",
     "statusEnabled": "Activé",
+    "sunday": "[to be translated]:Sunday",
     "tabs": {
       "logs": "Journaux d'exécution",
       "schedulers": "Tâches"
     },
+    "thursday": "[to be translated]:Thursday",
     "title": "Tâches planifiées",
     "toggleFailed": "Échec de la bascule de l'état de la tâche",
-    "trigger": "[to be translated]:Run Now",
-    "triggerFailed": "[to be translated]:Failed to trigger task",
-    "triggerSuccess": "[to be translated]:Task triggered successfully"
+    "trigger": "Exécuter maintenant",
+    "triggerFailed": "Échec du déclenchement de la tâche",
+    "triggerSuccess": "Tâche déclenchée avec succès",
+    "tuesday": "[to be translated]:Tuesday",
+    "wednesday": "[to be translated]:Wednesday",
+    "weekday": "[to be translated]:Weekday",
+    "weekly": "[to be translated]:Weekly"
   },
   "selection": {
     "action": {
@@ -5684,7 +5708,7 @@
   },
   "title": {
     "apps": "Mini-programmes",
-    "channels": "[to be translated]:Channels",
+    "channels": "Canaux",
     "code": "Code",
     "files": "Fichiers",
     "home": "Page d'accueil",
