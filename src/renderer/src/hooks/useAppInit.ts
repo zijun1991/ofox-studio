@@ -13,7 +13,8 @@ import store, { handleSaveData, useAppDispatch, useAppSelector } from '@renderer
 import { setChannelStatus } from '@renderer/store/channels'
 import { initializeMCPServers } from '@renderer/store/mcp'
 import { selectMemoryConfig } from '@renderer/store/memory'
-import { setApiKey, setChecking } from '@renderer/store/ofoxStore'
+import { importConfig } from '@renderer/store/modelEmployee'
+import { setApiKey, setChecking, setModelsReady } from '@renderer/store/ofoxStore'
 import { setAvatar, setFilesPath, setResourcesPath, setUpdateState } from '@renderer/store/runtime'
 import {
   type ToolPermissionRequestPayload,
@@ -21,7 +22,8 @@ import {
   toolPermissionsActions
 } from '@renderer/store/toolPermissions'
 import type { ChannelMessageEvent, ChannelStatusEvent } from '@renderer/types/channel'
-import { delay, runAsyncFunction } from '@renderer/utils'
+import type { ModelEmployee, ModelEmployeeExportData } from '@renderer/types/modelEmployee'
+import { delay, runAsyncFunction, uuid } from '@renderer/utils'
 import { checkDataLimit } from '@renderer/utils'
 import { defaultLanguage } from '@shared/config/constant'
 import { IpcChannel } from '@shared/IpcChannel'
@@ -56,9 +58,16 @@ export function useAppInit() {
   const avatar = useLiveQuery(() => db.settings.get('image://avatar'))
   const { theme } = useTheme()
   const memoryConfig = useAppSelector(selectMemoryConfig)
+  const isModelsReady = useAppSelector((state) => state.ofox.isModelsReady)
+
+  // 当核心初始化完成后移除 loading 覆盖层
+  useEffect(() => {
+    if (isModelsReady) {
+      document.getElementById('spinner')?.remove()
+    }
+  }, [isModelsReady])
 
   useEffect(() => {
-    document.getElementById('spinner')?.remove()
     // eslint-disable-next-line no-restricted-syntax
     console.timeEnd('init')
 
@@ -101,6 +110,22 @@ export function useAppInit() {
             logger.warn('User cancelled API Key input')
           }
         }
+
+        // API Key 就绪后，同步 Ofox 模型列表到 providers（带超时保护）
+        const currentApiKey = store.getState().ofox.apiKey
+        if (currentApiKey) {
+          const SYNC_TIMEOUT = 15_000
+          try {
+            await Promise.race([
+              OfoxProviderService.getInstance().syncProviders(dispatch),
+              new Promise<void>((_, reject) =>
+                setTimeout(() => reject(new Error('Model sync timed out after 15s')), SYNC_TIMEOUT)
+              )
+            ])
+          } catch (error) {
+            logger.error('Failed to sync Ofox providers:', error as Error)
+          }
+        }
       } catch (error) {
         logger.error('Failed to check API Key:', error as Error)
       } finally {
@@ -108,11 +133,39 @@ export function useAppInit() {
       }
     }
 
-    checkApiKey()
+    // Load default model employee config if none exists
+    const loadDefaultModelEmployees = async () => {
+      const { employees } = store.getState().modelEmployee.config
+      if (employees.length > 0) {
+        return
+      }
+
+      try {
+        const { resourcesPath } = await window.api.getAppInfo()
+        const raw = await window.api.fs.read(`${resourcesPath}/data/model-employee-default-ofox.json`, 'utf-8')
+        const data = JSON.parse(raw) as ModelEmployeeExportData
+        const now = Date.now()
+        const newEmployees: ModelEmployee[] = data.employees.map((e) => ({
+          ...e,
+          id: uuid(),
+          createdAt: now,
+          updatedAt: now
+        }))
+        dispatch(
+          importConfig({
+            employees: newEmployees,
+            educationLevelOrder: data.educationLevelOrder
+          })
+        )
+        logger.info(`Loaded ${newEmployees.length} default model employees`)
+      } catch (error) {
+        logger.error('Failed to load default model employees:', error as Error)
+      }
+    }
 
     // Check for remote notification on app startup
     const checkNotification = async () => {
-      const NOTIFICATION_URL = 'https://loadren.com/notification'
+      const NOTIFICATION_URL = 'https://claw.ofox.app/notification'
       try {
         const controller = new AbortController()
         const timeoutId = setTimeout(() => controller.abort(), 5000)
@@ -134,6 +187,25 @@ export function useAppInit() {
       }
     }
 
+    // 核心初始化流程：串行阻塞执行，确保模型列表和默认员工配置在后续逻辑前就绪
+    const initCore = async () => {
+      try {
+        // 阶段1：检查 API Key 并同步模型列表（阻塞）
+        await checkApiKey()
+
+        // 阶段2：模型就绪后加载默认员工配置（阻塞）
+        await loadDefaultModelEmployees()
+      } catch (error) {
+        logger.error('Core initialization failed:', error as Error)
+      } finally {
+        // 无论成功或失败都标记就绪，防止应用卡死
+        dispatch(setModelsReady(true))
+      }
+    }
+
+    initCore()
+
+    // 通知检查独立执行，不阻塞核心初始化
     checkNotification()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

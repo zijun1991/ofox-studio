@@ -14,19 +14,37 @@
         margin: 0;
       }
 
+      @keyframes flipX {
+        0% { transform: perspective(400px) rotateY(0deg); }
+        50% { transform: perspective(400px) rotateY(180deg); }
+        100% { transform: perspective(400px) rotateY(360deg); }
+      }
+
       #spinner {
         position: fixed;
         width: 100vw;
         height: 100vh;
-        flex-direction: row;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
         display: flex;
+        gap: 24px;
+        background: #ffffff;
+        z-index: 9999;
       }
 
       #spinner img {
         width: 100px;
         border-radius: 50px;
+        animation: flipX 2s ease-in-out infinite;
+      }
+
+      #spinner .app-name {
+        font-size: 28px;
+        font-weight: 700;
+        color: #B07353;
+        letter-spacing: 2px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       }
     </style>
   </head>
@@ -35,6 +53,7 @@
     <div id="root"></div>
     <div id="spinner">
       <img src="/src/assets/images/logo.png" />
+      <div class="app-name">Ofox Claw</div>
     </div>
     <script>
       console.time('init')

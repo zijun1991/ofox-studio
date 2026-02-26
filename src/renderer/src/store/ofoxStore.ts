@@ -20,6 +20,7 @@ export interface OfoxUser {
 export interface OfoxState {
   isLoggedIn: boolean
   isChecking: boolean
+  isModelsReady: boolean
   user: OfoxUser | null
   showLoginModal: boolean
   error: string | null
@@ -39,6 +40,7 @@ const getInitialApiKey = (): string => {
 const initialState: OfoxState = {
   isLoggedIn: false,
   isChecking: true, // 初始时正在检查登录状态
+  isModelsReady: false,
   user: null,
   showLoginModal: false,
   error: null,
@@ -83,10 +85,14 @@ const ofoxSlice = createSlice({
     },
     setApiKey: (state, action: PayloadAction<string>) => {
       state.apiKey = action.payload
+    },
+    setModelsReady: (state, action: PayloadAction<boolean>) => {
+      state.isModelsReady = action.payload
     }
   }
 })
 
-export const { setLoggedIn, setChecking, setUser, setShowLoginModal, setError, logout, setApiKey } = ofoxSlice.actions
+export const { setLoggedIn, setChecking, setUser, setShowLoginModal, setError, logout, setApiKey, setModelsReady } =
+  ofoxSlice.actions
 
 export default ofoxSlice.reducer

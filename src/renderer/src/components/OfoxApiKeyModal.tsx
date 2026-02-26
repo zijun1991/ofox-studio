@@ -62,7 +62,8 @@ const PopupContainer: React.FC<Props> = ({ resolve }) => {
         width={480}
         footer={null}
         closable={false}
-        maskClosable={false}>
+        maskClosable={false}
+        zIndex={10000}>
         <Container>
           <Description>
             {t(
