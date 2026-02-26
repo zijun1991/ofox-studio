@@ -36,6 +36,13 @@
       "when": 1740470400000,
       "tag": "0004_add_schedulers",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1740556800000,
+      "tag": "0005_add_scheduler_trigger_options",
+      "breakpoints": true
     }
   ]
 }

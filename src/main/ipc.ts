@@ -1245,6 +1245,15 @@ export async function registerIpc(mainWindow: BrowserWindow, app: Electron.App) 
     }
   })
 
+  ipcMain.handle(IpcChannel.Scheduler_Trigger, async (_, id: string) => {
+    try {
+      return await schedulerService.triggerScheduler(id)
+    } catch (error) {
+      logger.error('Failed to trigger scheduler', error as Error)
+      throw error
+    }
+  })
+
   // Scheduler Logs
   ipcMain.handle(IpcChannel.SchedulerLog_List, async (_, options?) => {
     try {

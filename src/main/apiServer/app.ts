@@ -10,6 +10,7 @@ import { setupOpenAPIDocumentation } from './middleware/openapi'
 import { agentsRoutes } from './routes/agents'
 import { channelRoutes } from './routes/channels'
 import { chatRoutes } from './routes/chat'
+import { internalRouter } from './routes/internal'
 import { mcpRoutes } from './routes/mcp'
 import { messagesProviderRoutes, messagesRoutes } from './routes/messages'
 import { modelsRoutes } from './routes/models'
@@ -128,6 +129,9 @@ app.get('/', (_req, res) => {
 
 // Setup OpenAPI documentation before protected routes so docs remain public
 setupOpenAPIDocumentation(app)
+
+// Internal API routes (localhost only, no auth required)
+app.use('/internal', internalRouter)
 
 // Provider-specific messages route requires authentication
 app.use('/:provider/v1/messages', authMiddleware, extendMessagesTimeout, messagesProviderRoutes)

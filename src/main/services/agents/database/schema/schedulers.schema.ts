@@ -25,6 +25,10 @@ export const schedulersTable = sqliteTable('schedulers', {
   last_run_at: text('last_run_at'), // Last execution time
   next_run_at: text('next_run_at'), // Next execution time
 
+  // Trigger behavior
+  close_on_trigger: integer('close_on_trigger', { mode: 'boolean' }).default(false), // Disable after execution
+  delete_on_trigger: integer('delete_on_trigger', { mode: 'boolean' }).default(false), // Delete after execution
+
   // Metadata
   created_by: text('created_by').default('ai'), // Creator: 'ai' | 'user'
   created_at: text('created_at').notNull(),

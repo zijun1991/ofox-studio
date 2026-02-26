@@ -81,17 +81,6 @@ const ExecutionLogs: FC<ExecutionLogsProps> = ({ schedulerId }) => {
             )
           },
           {
-            title: t('scheduler.logs.columns.preview'),
-            dataIndex: 'response_preview',
-            key: 'response_preview',
-            width: 200,
-            render: (value: string | null) => (
-              <Typography.Text ellipsis style={{ fontSize: 12 }}>
-                {value || '-'}
-              </Typography.Text>
-            )
-          },
-          {
             title: t('scheduler.logs.columns.error'),
             dataIndex: 'error_message',
             key: 'error_message',

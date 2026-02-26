@@ -24,10 +24,25 @@ const CreateSchedulerSchema = z.object({
   description: z.string().optional().describe('Description of the task'),
   agent_id: z.string().min(1).describe('ID of the target Agent'),
   session_id: z.string().min(1).describe('ID of the target Session'),
-  cron_expression: z.string().min(1).describe('Cron expression (6-field format: second minute hour day month weekday)'),
+  cron_expression: z
+    .string()
+    .min(1)
+    .describe(
+      'Cron expression (6-field: second minute hour day month weekday). IMPORTANT: Time fields use the configured timezone (default: Asia/Shanghai), NOT UTC.'
+    ),
   timezone: z.string().optional().default('Asia/Shanghai').describe('Timezone for the schedule'),
   message_content: z.string().min(1).describe('Message content to send when triggered'),
-  enabled: z.boolean().optional().default(true).describe('Whether the task is enabled')
+  enabled: z.boolean().optional().default(true).describe('Whether the task is enabled'),
+  close_on_trigger: z
+    .boolean()
+    .optional()
+    .default(false)
+    .describe('If true, disable the scheduler after first execution (for one-time tasks)'),
+  delete_on_trigger: z
+    .boolean()
+    .optional()
+    .default(false)
+    .describe('If true, delete the scheduler after first execution')
 })
 
 const ListSchedulersSchema = z.object({
@@ -50,7 +65,9 @@ const UpdateSchedulerSchema = z.object({
   cron_expression: z.string().optional().describe('New cron expression'),
   timezone: z.string().optional().describe('New timezone'),
   message_content: z.string().optional().describe('New message content'),
-  enabled: z.boolean().optional().describe('New enabled status')
+  enabled: z.boolean().optional().describe('New enabled status'),
+  close_on_trigger: z.boolean().optional().describe('New close_on_trigger status'),
+  delete_on_trigger: z.boolean().optional().describe('New delete_on_trigger status')
 })
 
 const DeleteSchedulerSchema = z.object({
@@ -100,7 +117,7 @@ export function setSchedulerServiceHandler(handler: typeof schedulerServiceHandl
 
 const server = new Server(
   {
-    name: 'cherry/scheduler',
+    name: '@ofox/scheduler',
     version: '1.0.0'
   },
   {
@@ -116,7 +133,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       {
         name: 'create_scheduler',
         description:
-          'Create a new scheduled task that will send a message to an Agent Session at specified times. The cron expression uses 6-field format: second minute hour day month weekday. Example: "0 0 9 * * *" runs every day at 9:00 AM.',
+          'Create a new scheduled task that will send a message to an Agent Session at specified times. The cron expression uses 6-field format: second minute hour day month weekday. IMPORTANT: Time fields use the configured timezone (default: Asia/Shanghai), NOT UTC. Example: "0 0 9 * * *" runs every day at 9:00 AM in the configured timezone.',
         inputSchema: {
           type: 'object',
           properties: {
@@ -126,11 +143,20 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             session_id: { type: 'string', description: 'ID of the target Session' },
             cron_expression: {
               type: 'string',
-              description: 'Cron expression (6-field: second minute hour day month weekday)'
+              description:
+                'Cron expression (6-field: second minute hour day month weekday). Time uses the configured timezone, NOT UTC.'
             },
             timezone: { type: 'string', description: 'Timezone (default: Asia/Shanghai)' },
             message_content: { type: 'string', description: 'Message content to send when triggered' },
-            enabled: { type: 'boolean', description: 'Whether the task is enabled (default: true)' }
+            enabled: { type: 'boolean', description: 'Whether the task is enabled (default: true)' },
+            close_on_trigger: {
+              type: 'boolean',
+              description: 'If true, disable after first execution (for one-time tasks, default: false)'
+            },
+            delete_on_trigger: {
+              type: 'boolean',
+              description: 'If true, delete after first execution (default: false)'
+            }
           },
           required: ['name', 'agent_id', 'session_id', 'cron_expression', 'message_content']
         }
@@ -173,7 +199,9 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             cron_expression: { type: 'string', description: 'New cron expression (optional)' },
             timezone: { type: 'string', description: 'New timezone (optional)' },
             message_content: { type: 'string', description: 'New message content (optional)' },
-            enabled: { type: 'boolean', description: 'New enabled status (optional)' }
+            enabled: { type: 'boolean', description: 'New enabled status (optional)' },
+            close_on_trigger: { type: 'boolean', description: 'New close_on_trigger status (optional)' },
+            delete_on_trigger: { type: 'boolean', description: 'New delete_on_trigger status (optional)' }
           },
           required: ['id']
         }
@@ -224,7 +252,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           cron_expression: validatedArgs.cron_expression,
           timezone: validatedArgs.timezone,
           message_content: validatedArgs.message_content,
-          enabled: validatedArgs.enabled ?? true
+          enabled: validatedArgs.enabled ?? true,
+          close_on_trigger: validatedArgs.close_on_trigger ?? false,
+          delete_on_trigger: validatedArgs.delete_on_trigger ?? false
         })
         logger.info(`Created scheduler: ${scheduler.id}`)
         return createJsonResponse({

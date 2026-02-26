@@ -12,6 +12,8 @@ export interface SchedulerEntity {
   timezone: string
   message_content: string
   enabled: boolean
+  close_on_trigger: boolean
+  delete_on_trigger: boolean
   last_run_at?: string
   next_run_at?: string
   created_by: string
@@ -41,6 +43,8 @@ export interface CreateSchedulerRequest {
   timezone?: string
   message_content: string
   enabled?: boolean
+  close_on_trigger?: boolean
+  delete_on_trigger?: boolean
 }
 
 export interface UpdateSchedulerRequest extends Partial<CreateSchedulerRequest> {

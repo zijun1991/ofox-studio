@@ -1,12 +1,11 @@
 import { loggerService } from '@logger'
-import type { GetAgentSessionResponse } from '@types'
+import { config as apiConfigService } from '@main/apiServer/config'
 import { CronJob } from 'cron'
 import { and, count, desc, eq, lte } from 'drizzle-orm'
 
 import { BaseService } from '../BaseService'
 import type { InsertSchedulerLogRow, InsertSchedulerRow, SchedulerRow } from '../database/schema'
 import { schedulerLogsTable, schedulersTable } from '../database/schema'
-import { sessionMessageService } from './SessionMessageService'
 import { SessionService } from './SessionService'
 
 const logger = loggerService.withContext('SchedulerService')
@@ -21,6 +20,8 @@ export interface CreateSchedulerRequest {
   timezone?: string
   message_content: string
   enabled?: boolean
+  close_on_trigger?: boolean
+  delete_on_trigger?: boolean
 }
 
 export interface UpdateSchedulerRequest extends Partial<CreateSchedulerRequest> {
@@ -53,6 +54,8 @@ export interface SchedulerEntity {
   timezone: string
   message_content: string
   enabled: boolean
+  close_on_trigger: boolean
+  delete_on_trigger: boolean
   last_run_at?: string
   next_run_at?: string
   created_by: string
@@ -109,7 +112,10 @@ export class SchedulerService extends BaseService {
       const database = await this.getDatabase()
       const enabledSchedulers = await database.select().from(schedulersTable).where(eq(schedulersTable.enabled, true))
 
-      for (const scheduler of enabledSchedulers) {
+      // Validate schedulers and disable invalid ones
+      const validSchedulers = await this.validateAndCleanupSchedulers(enabledSchedulers)
+
+      for (const scheduler of validSchedulers) {
         await this.startJob(scheduler.id, scheduler.cron_expression, scheduler.timezone || 'Asia/Shanghai')
       }
 
@@ -129,7 +135,11 @@ export class SchedulerService extends BaseService {
       )
 
       this.isInitialized = true
-      logger.info(`SchedulerService initialized with ${enabledSchedulers.length} jobs`)
+      const disabledCount = enabledSchedulers.length - validSchedulers.length
+      logger.info(`SchedulerService initialized with ${validSchedulers.length} jobs`, {
+        total: enabledSchedulers.length,
+        disabled: disabledCount
+      })
     } catch (error) {
       logger.error('Failed to initialize SchedulerService:', error as Error)
       throw error
@@ -162,6 +172,8 @@ export class SchedulerService extends BaseService {
       timezone: data.timezone || 'Asia/Shanghai',
       message_content: data.message_content,
       enabled: data.enabled ?? true,
+      close_on_trigger: data.close_on_trigger ?? false,
+      delete_on_trigger: data.delete_on_trigger ?? false,
       last_run_at: null,
       next_run_at: nextRunAt?.toISOString() || null,
       created_by: 'ai',
@@ -278,6 +290,8 @@ export class SchedulerService extends BaseService {
     if (updates.timezone !== undefined) updateData.timezone = updates.timezone
     if (updates.message_content !== undefined) updateData.message_content = updates.message_content
     if (updates.enabled !== undefined) updateData.enabled = updates.enabled
+    if (updates.close_on_trigger !== undefined) updateData.close_on_trigger = updates.close_on_trigger
+    if (updates.delete_on_trigger !== undefined) updateData.delete_on_trigger = updates.delete_on_trigger
 
     const database = await this.getDatabase()
     await database.update(schedulersTable).set(updateData).where(eq(schedulersTable.id, id))
@@ -322,6 +336,14 @@ export class SchedulerService extends BaseService {
    */
   async toggleScheduler(id: string, enabled: boolean): Promise<SchedulerEntity | null> {
     return await this.updateScheduler(id, { enabled })
+  }
+
+  /**
+   * Manually trigger a scheduler execution
+   */
+  async triggerScheduler(id: string): Promise<void> {
+    logger.info('Manually triggering scheduler', { id })
+    await this.executeJob(id)
   }
 
   /**
@@ -439,7 +461,7 @@ export class SchedulerService extends BaseService {
   }
 
   /**
-   * Execute a scheduled job
+   * Execute a scheduled job via internal HTTP API
    */
   private async executeJob(id: string): Promise<void> {
     const scheduler = await this.getScheduler(id)
@@ -454,46 +476,64 @@ export class SchedulerService extends BaseService {
     try {
       logger.info('Executing scheduled job', { id, name: scheduler.name })
 
-      // Get session
-      const session = await SessionService.getInstance().getSession(scheduler.agent_id, scheduler.session_id)
-      if (!session) {
-        throw new Error('Session not found')
-      }
+      // Get API server config
+      const apiConfig = await apiConfigService.get()
 
-      // Send message with timeout
-      const abortController = new AbortController()
+      // Send message via internal HTTP API with timeout
+      const controller = new AbortController()
       const timeoutId = setTimeout(() => {
-        abortController.abort('Scheduler execution timeout')
+        controller.abort('Scheduler execution timeout')
       }, EXECUTION_TIMEOUT_MS)
 
       try {
-        const { stream, completion } = await sessionMessageService.createSessionMessage(
-          session as GetAgentSessionResponse,
-          { content: scheduler.message_content },
-          abortController
+        const response = await fetch(
+          `http://localhost:${apiConfig.port}/internal/sessions/${scheduler.agent_id}/${scheduler.session_id}/messages`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ content: scheduler.message_content }),
+            signal: controller.signal
+          }
         )
 
-        // Read stream and collect response
-        const reader = stream.getReader()
-        let responseText = ''
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${await response.text()}`)
+        }
 
-        while (true) {
-          const { done, value } = await reader.read()
-          if (done) break
-          if (value && 'text' in value) {
-            responseText += (value as any).text || ''
+        // Read SSE stream and collect response preview
+        let responsePreview = ''
+        const reader = response.body?.getReader()
+        if (reader) {
+          const decoder = new TextDecoder()
+          while (true) {
+            const { done, value } = await reader.read()
+            if (done) break
+            const text = decoder.decode(value)
+            // Parse SSE data lines
+            const lines = text.split('\n')
+            for (const line of lines) {
+              if (line.startsWith('data: ') && !line.includes('[DONE]')) {
+                try {
+                  const data = JSON.parse(line.slice(6))
+                  if (data.type === 'done' && data.response_preview) {
+                    responsePreview = data.response_preview
+                  }
+                } catch {
+                  // Ignore parse errors
+                }
+              }
+            }
           }
         }
 
         clearTimeout(timeoutId)
-        await completion
 
         // Update log as success
         await this.updateLog(logId, {
           status: 'success',
           completed_at: new Date().toISOString(),
           message_sent: true,
-          response_preview: responseText.substring(0, 500),
+          response_preview: responsePreview,
           duration_ms: Date.now() - startTime
         })
 
@@ -508,6 +548,25 @@ export class SchedulerService extends BaseService {
             updated_at: new Date().toISOString()
           })
           .where(eq(schedulersTable.id, id))
+
+        // Handle close_on_trigger: disable the scheduler after execution
+        if (scheduler.close_on_trigger) {
+          await this.stopJob(id)
+          await database
+            .update(schedulersTable)
+            .set({
+              enabled: false,
+              updated_at: new Date().toISOString()
+            })
+            .where(eq(schedulersTable.id, id))
+          logger.info('Scheduler disabled after trigger (close_on_trigger)', { id })
+        }
+
+        // Handle delete_on_trigger: delete the scheduler after execution
+        if (scheduler.delete_on_trigger) {
+          await this.deleteScheduler(id)
+          logger.info('Scheduler deleted after trigger (delete_on_trigger)', { id })
+        }
 
         logger.info('Job executed successfully', { id, durationMs: Date.now() - startTime })
       } finally {
@@ -555,6 +614,73 @@ export class SchedulerService extends BaseService {
   }
 
   /**
+   * Validate enabled schedulers on startup and disable invalid ones
+   */
+  private async validateAndCleanupSchedulers(schedulers: SchedulerRow[]): Promise<SchedulerRow[]> {
+    const database = await this.getDatabase()
+    const now = new Date()
+    const validSchedulers: SchedulerRow[] = []
+
+    for (const scheduler of schedulers) {
+      const reason = await this.getInvalidReason(scheduler, now)
+      if (reason) {
+        const nowIso = new Date().toISOString()
+        await database
+          .update(schedulersTable)
+          .set({ enabled: false, updated_at: nowIso })
+          .where(eq(schedulersTable.id, scheduler.id))
+
+        await database.insert(schedulerLogsTable).values({
+          scheduler_id: scheduler.id,
+          triggered_at: nowIso,
+          completed_at: nowIso,
+          status: 'failed',
+          message_sent: false,
+          error_message: `Auto-disabled on startup: ${reason}`,
+          duration_ms: 0,
+          created_at: nowIso
+        } as InsertSchedulerLogRow)
+
+        logger.warn('Scheduler auto-disabled on startup', { id: scheduler.id, name: scheduler.name, reason })
+      } else {
+        validSchedulers.push(scheduler)
+      }
+    }
+
+    return validSchedulers
+  }
+
+  /**
+   * Check if a scheduler is invalid and return the reason, or null if valid
+   */
+  private async getInvalidReason(scheduler: SchedulerRow, now: Date): Promise<string | null> {
+    // Rule 1: One-time task with expired next_run_at
+    if (scheduler.close_on_trigger && scheduler.next_run_at) {
+      if (new Date(scheduler.next_run_at) < now) {
+        return 'One-time task expired: next_run_at is in the past'
+      }
+    }
+
+    // Rule 2: Cron expression cannot produce future trigger time
+    const nextRun = this.calculateNextRun(scheduler.cron_expression, scheduler.timezone || 'Asia/Shanghai')
+    if (!nextRun) {
+      return 'Invalid cron expression: cannot calculate next run time'
+    }
+
+    // Rule 3: Associated session no longer exists
+    try {
+      const session = await SessionService.getInstance().getSession(scheduler.agent_id, scheduler.session_id)
+      if (!session) {
+        return `Associated session not found: agent_id=${scheduler.agent_id}, session_id=${scheduler.session_id}`
+      }
+    } catch {
+      return `Failed to validate session: agent_id=${scheduler.agent_id}, session_id=${scheduler.session_id}`
+    }
+
+    return null
+  }
+
+  /**
    * Clean up logs older than retention period
    */
   private async cleanupOldLogs(): Promise<void> {
@@ -595,6 +721,8 @@ export class SchedulerService extends BaseService {
       ...data,
       description: data.description || undefined,
       timezone: data.timezone || 'Asia/Shanghai',
+      close_on_trigger: data.close_on_trigger ?? false,
+      delete_on_trigger: data.delete_on_trigger ?? false,
       last_run_at: data.last_run_at || undefined,
       next_run_at: data.next_run_at || undefined
     } as SchedulerEntity

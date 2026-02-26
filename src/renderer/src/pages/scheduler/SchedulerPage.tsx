@@ -14,7 +14,8 @@ import { useSchedulers } from './hooks/useSchedulers'
 
 const SchedulerPage: FC = () => {
   const { t } = useTranslation()
-  const { schedulers, loading, error, fetchSchedulers } = useSchedulers()
+  const { schedulers, loading, error, fetchSchedulers, toggleScheduler, deleteScheduler, triggerScheduler } =
+    useSchedulers()
   const [activeTab, setActiveTab] = useState<'list' | 'logs'>('list')
   const [formVisible, setFormVisible] = useState(false)
   const [editingScheduler, setEditingScheduler] = useState<string | null>(null)
@@ -48,6 +49,27 @@ const SchedulerPage: FC = () => {
   const handleRetry = useCallback(() => {
     fetchSchedulers()
   }, [fetchSchedulers])
+
+  const handleToggle = useCallback(
+    async (id: string, enabled: boolean) => {
+      await toggleScheduler(id, enabled)
+    },
+    [toggleScheduler]
+  )
+
+  const handleDelete = useCallback(
+    async (id: string) => {
+      await deleteScheduler(id)
+    },
+    [deleteScheduler]
+  )
+
+  const handleTrigger = useCallback(
+    async (id: string) => {
+      await triggerScheduler(id)
+    },
+    [triggerScheduler]
+  )
 
   return (
     <Container>
@@ -110,7 +132,13 @@ const SchedulerPage: FC = () => {
             </ErrorContainer>
           ) : activeTab === 'list' ? (
             schedulers.length > 0 ? (
-              <SchedulerList schedulers={schedulers} onEdit={handleEdit} />
+              <SchedulerList
+                schedulers={schedulers}
+                onEdit={handleEdit}
+                onToggle={handleToggle}
+                onDelete={handleDelete}
+                onTrigger={handleTrigger}
+              />
             ) : (
               <EmptyContainer>
                 <Empty

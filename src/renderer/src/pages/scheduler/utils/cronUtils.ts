@@ -4,6 +4,7 @@
 
 export interface CronDescription {
   text: string
+  params?: Record<string, string | number>
   isValid: boolean
 }
 
@@ -46,10 +47,15 @@ export function parseCronExpression(expression: string): CronDescription {
 
   try {
     const description = buildDescription(second, minute, hour, dayOfMonth, month, dayOfWeek, hasSeconds)
-    return { text: description, isValid: true }
+    return { text: description.text, params: description.params, isValid: true }
   } catch {
     return { text: 'scheduler.invalidExpression', isValid: false }
   }
+}
+
+interface DescriptionResult {
+  text: string
+  params?: Record<string, string | number>
 }
 
 function buildDescription(
@@ -60,47 +66,49 @@ function buildDescription(
   month: string,
   dayOfWeek: string,
   hasSeconds: boolean
-): string {
+): DescriptionResult {
   // Simple pattern matching for common cases
-  const patterns: Array<{ test: () => boolean; result: string }> = [
+  const patterns: Array<{ test: () => boolean; result: () => DescriptionResult }> = [
     // Every minute
     {
       test: () => isEvery(minute) && isEvery(hour) && isEvery(dayOfMonth) && isEvery(month) && isEvery(dayOfWeek),
-      result:
-        hasSeconds && second !== '*' && second !== '0'
-          ? `scheduler.everyMinuteAt${parseNumber(second)}s`
-          : 'scheduler.everyMinute'
+      result: () => ({
+        text:
+          hasSeconds && second !== '*' && second !== '0'
+            ? `scheduler.everyMinuteAt${parseNumber(second)}s`
+            : 'scheduler.everyMinute'
+      })
     },
     // Every hour
     {
       test: () => isAtZero(minute) && isEvery(hour) && isEvery(dayOfMonth) && isEvery(month) && isEvery(dayOfWeek),
-      result: 'scheduler.everyHour'
+      result: () => ({ text: 'scheduler.everyHour' })
     },
     // Daily at specific time
     {
       test: () => !isEvery(dayOfMonth) === false && isEvery(month) && isEvery(dayOfWeek) && isAtZero(dayOfMonth),
-      result: buildTimeDescription(minute, hour, 'scheduler.daily')
+      result: () => ({ text: buildTimeDescription(minute, hour, 'scheduler.daily') })
     },
     // Weekly
     {
       test: () => !isEvery(dayOfWeek) && isEvery(dayOfMonth),
-      result: buildWeeklyDescription(minute, hour, dayOfWeek)
+      result: () => ({ text: buildWeeklyDescription(minute, hour, dayOfWeek) })
     },
     // Specific day of month
     {
       test: () => !isEvery(dayOfMonth) && isEvery(dayOfWeek),
-      result: buildMonthlyDescription(minute, hour, dayOfMonth)
+      result: () => buildMonthlyDescription(minute, hour, dayOfMonth)
     }
   ]
 
   for (const pattern of patterns) {
     if (pattern.test()) {
-      return pattern.result
+      return pattern.result()
     }
   }
 
   // Default fallback
-  return 'scheduler.custom'
+  return { text: 'scheduler.custom' }
 }
 
 function isEvery(field: string): boolean {
@@ -152,11 +160,11 @@ function buildWeeklyDescription(_minute: string, _hour: string, dayOfWeek: strin
   return 'scheduler.weekly'
 }
 
-function buildMonthlyDescription(_minute: string, _hour: string, dayOfMonth: string): string {
+function buildMonthlyDescription(_minute: string, _hour: string, dayOfMonth: string): DescriptionResult {
   if (dayOfMonth !== '*' && dayOfMonth !== '?') {
-    return `scheduler.monthlyOn${dayOfMonth}`
+    return { text: 'scheduler.monthlyOnDay', params: { day: dayOfMonth } }
   }
-  return 'scheduler.monthly'
+  return { text: 'scheduler.monthly' }
 }
 
 /**

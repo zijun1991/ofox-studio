@@ -70,6 +70,14 @@ export function useSchedulers() {
     [fetchSchedulers]
   )
 
+  const triggerScheduler = useCallback(
+    async (id: string): Promise<void> => {
+      await window.electron.ipcRenderer.invoke(IpcChannel.Scheduler_Trigger, id)
+      await fetchSchedulers()
+    },
+    [fetchSchedulers]
+  )
+
   return {
     schedulers,
     loading,
@@ -79,7 +87,8 @@ export function useSchedulers() {
     getScheduler,
     updateScheduler,
     deleteScheduler,
-    toggleScheduler
+    toggleScheduler,
+    triggerScheduler
   }
 }
 
@@ -88,7 +97,7 @@ export function useSchedulerLogs() {
   const [loading, setLoading] = useState(false)
   const [total, setTotal] = useState(0)
 
-  const fetchLogs = async (options?: ListSchedulerLogsOptions) => {
+  const fetchLogs = useCallback(async (options?: ListSchedulerLogsOptions) => {
     setLoading(true)
     try {
       const result = await window.electron.ipcRenderer.invoke(IpcChannel.SchedulerLog_List, options)
@@ -101,7 +110,7 @@ export function useSchedulerLogs() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   const clearLogs = async (schedulerId?: string): Promise<number> => {
     const result = await window.electron.ipcRenderer.invoke(IpcChannel.SchedulerLog_Clear, schedulerId)

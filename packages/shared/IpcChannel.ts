@@ -438,6 +438,7 @@ export enum IpcChannel {
   Channel_GetStatuses = 'channel:get-statuses',
   Channel_StatusChanged = 'channel:status-changed',
   Channel_MessageEvent = 'channel:message-event',
+  Channel_StreamChunk = 'channel:stream-chunk',
 
   // Scheduler
   Scheduler_Create = 'scheduler:create',
@@ -446,6 +447,7 @@ export enum IpcChannel {
   Scheduler_Update = 'scheduler:update',
   Scheduler_Delete = 'scheduler:delete',
   Scheduler_Toggle = 'scheduler:toggle',
+  Scheduler_Trigger = 'scheduler:trigger',
 
   // Scheduler Logs
   SchedulerLog_List = 'scheduler-log:list',

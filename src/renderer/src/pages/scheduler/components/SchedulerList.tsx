@@ -1,4 +1,4 @@
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
+import { DeleteOutlined, EditOutlined, PlayCircleOutlined } from '@ant-design/icons'
 import type { SchedulerEntity } from '@types'
 import { Badge, Button, Card, message, Popconfirm, Space, Switch, Tooltip, Typography } from 'antd'
 import dayjs from 'dayjs'
@@ -8,42 +8,56 @@ import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-import { useSchedulers } from '../hooks/useSchedulers'
 import { parseCronExpression } from '../utils/cronUtils'
 
 interface SchedulerListProps {
   schedulers: SchedulerEntity[]
   onEdit: (id: string) => void
+  onToggle: (id: string, enabled: boolean) => Promise<void>
+  onDelete: (id: string) => Promise<void>
+  onTrigger: (id: string) => Promise<void>
 }
 
-const SchedulerList: FC<SchedulerListProps> = ({ schedulers, onEdit }) => {
+const SchedulerList: FC<SchedulerListProps> = ({ schedulers, onEdit, onToggle, onDelete, onTrigger }) => {
   const { t } = useTranslation()
-  const { deleteScheduler, toggleScheduler } = useSchedulers()
 
   const handleToggle = useCallback(
     async (id: string, enabled: boolean) => {
       try {
-        await toggleScheduler(id, enabled)
+        await onToggle(id, enabled)
         message.success(enabled ? t('scheduler.enabled') : t('scheduler.disabled'))
       } catch (error) {
         message.error(t('scheduler.toggleFailed'))
         console.error('Failed to toggle scheduler:', error)
       }
     },
-    [toggleScheduler, t]
+    [onToggle, t]
   )
 
   const handleDelete = useCallback(
     async (id: string) => {
       try {
-        await deleteScheduler(id)
+        await onDelete(id)
         message.success(t('scheduler.deleteSuccess'))
       } catch (error) {
         message.error(t('scheduler.deleteFailed'))
         console.error('Failed to delete scheduler:', error)
       }
     },
-    [deleteScheduler, t]
+    [onDelete, t]
+  )
+
+  const handleTrigger = useCallback(
+    async (id: string) => {
+      try {
+        await onTrigger(id)
+        message.success(t('scheduler.triggerSuccess'))
+      } catch (error) {
+        message.error(t('scheduler.triggerFailed'))
+        console.error('Failed to trigger scheduler:', error)
+      }
+    },
+    [onTrigger, t]
   )
 
   return (
@@ -72,7 +86,12 @@ const SchedulerList: FC<SchedulerListProps> = ({ schedulers, onEdit }) => {
           <CardMeta>
             <MetaItem>
               <Clock size={14} />
-              <span>{t(parseCronExpression(scheduler.cron_expression).text)}</span>
+              <span>
+                {(() => {
+                  const desc = parseCronExpression(scheduler.cron_expression)
+                  return t(desc.text, desc.params)
+                })()}
+              </span>
             </MetaItem>
             <MetaItem>
               <Repeat size={14} />
@@ -94,6 +113,14 @@ const SchedulerList: FC<SchedulerListProps> = ({ schedulers, onEdit }) => {
 
           <CardActions>
             <Space>
+              <Tooltip title={t('scheduler.trigger')}>
+                <Button
+                  type="text"
+                  icon={<PlayCircleOutlined />}
+                  size="small"
+                  onClick={() => handleTrigger(scheduler.id)}
+                />
+              </Tooltip>
               <Tooltip title={t('common.edit')}>
                 <Button type="text" icon={<EditOutlined />} size="small" onClick={() => onEdit(scheduler.id)} />
               </Tooltip>
