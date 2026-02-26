@@ -89,7 +89,15 @@ const SchedulerList: FC<SchedulerListProps> = ({ schedulers, onEdit, onToggle, o
               <span>
                 {(() => {
                   const desc = parseCronExpression(scheduler.cron_expression)
-                  return t(desc.text, desc.params)
+                  const params = desc.translateParams
+                    ? Object.fromEntries(
+                        Object.entries(desc.params || {}).map(([k, v]) => [
+                          k,
+                          desc.translateParams!.includes(k) ? t(String(v)) : v
+                        ])
+                      )
+                    : desc.params
+                  return t(desc.text, params)
                 })()}
               </span>
             </MetaItem>

@@ -5,6 +5,7 @@
 export interface CronDescription {
   text: string
   params?: Record<string, string | number>
+  translateParams?: string[]
   isValid: boolean
 }
 
@@ -47,7 +48,12 @@ export function parseCronExpression(expression: string): CronDescription {
 
   try {
     const description = buildDescription(second, minute, hour, dayOfMonth, month, dayOfWeek, hasSeconds)
-    return { text: description.text, params: description.params, isValid: true }
+    return {
+      text: description.text,
+      params: description.params,
+      translateParams: description.translateParams,
+      isValid: true
+    }
   } catch {
     return { text: 'scheduler.invalidExpression', isValid: false }
   }
@@ -56,6 +62,7 @@ export function parseCronExpression(expression: string): CronDescription {
 interface DescriptionResult {
   text: string
   params?: Record<string, string | number>
+  translateParams?: string[]
 }
 
 function buildDescription(
@@ -72,12 +79,10 @@ function buildDescription(
     // Every minute
     {
       test: () => isEvery(minute) && isEvery(hour) && isEvery(dayOfMonth) && isEvery(month) && isEvery(dayOfWeek),
-      result: () => ({
-        text:
-          hasSeconds && second !== '*' && second !== '0'
-            ? `scheduler.everyMinuteAt${parseNumber(second)}s`
-            : 'scheduler.everyMinute'
-      })
+      result: () =>
+        hasSeconds && second !== '*' && second !== '0'
+          ? { text: 'scheduler.everyMinuteAtSecond', params: { second: parseNumber(second) } }
+          : { text: 'scheduler.everyMinute' }
     },
     // Every hour
     {
@@ -92,7 +97,7 @@ function buildDescription(
     // Weekly
     {
       test: () => !isEvery(dayOfWeek) && isEvery(dayOfMonth),
-      result: () => ({ text: buildWeeklyDescription(minute, hour, dayOfWeek) })
+      result: () => buildWeeklyDescription(minute, hour, dayOfWeek)
     },
     // Specific day of month
     {
@@ -130,8 +135,8 @@ function buildTimeDescription(_minute: string, _hour: string, prefix: string): s
   return prefix
 }
 
-function buildWeeklyDescription(_minute: string, _hour: string, dayOfWeek: string): string {
-  const days = [
+function buildWeeklyDescription(_minute: string, _hour: string, dayOfWeek: string): DescriptionResult {
+  const dayKeys = [
     'scheduler.sunday',
     'scheduler.monday',
     'scheduler.tuesday',
@@ -143,21 +148,26 @@ function buildWeeklyDescription(_minute: string, _hour: string, dayOfWeek: strin
 
   if (dayOfWeek.includes('-')) {
     const [start, end] = dayOfWeek.split('-').map(Number)
-    const startDay = days[start] || 'scheduler.weekday'
-    const endDay = days[end] || 'scheduler.weekday'
-    return `scheduler.every${startDay}To${endDay}`
+    const startKey = dayKeys[start] || 'scheduler.weekday'
+    const endKey = dayKeys[end] || 'scheduler.weekday'
+    return {
+      text: 'scheduler.everyDayRange',
+      params: { start: startKey, end: endKey },
+      translateParams: ['start', 'end']
+    }
   }
 
   if (dayOfWeek.includes(',')) {
-    return 'scheduler.selectedDays'
+    return { text: 'scheduler.selectedDays' }
   }
 
   const dayNum = parseInt(dayOfWeek, 10)
   if (!isNaN(dayNum) && dayNum >= 0 && dayNum <= 6) {
-    return `scheduler.every${days[dayNum].split('.')[1]}`
+    const dayKey = dayKeys[dayNum] || 'scheduler.weekday'
+    return { text: 'scheduler.everyWeekday', params: { day: dayKey }, translateParams: ['day'] }
   }
 
-  return 'scheduler.weekly'
+  return { text: 'scheduler.weekly' }
 }
 
 function buildMonthlyDescription(_minute: string, _hour: string, dayOfMonth: string): DescriptionResult {

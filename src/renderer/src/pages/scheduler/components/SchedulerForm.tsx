@@ -233,7 +233,21 @@ const SchedulerForm: FC<SchedulerFormProps> = ({ visible, schedulerId, onClose, 
           )}
 
           {cronDescription.text && (
-            <Alert type="info" message={t(cronDescription.text, cronDescription.params)} style={{ marginBottom: 16 }} />
+            <Alert
+              type="info"
+              message={t(
+                cronDescription.text,
+                cronDescription.translateParams
+                  ? Object.fromEntries(
+                      Object.entries(cronDescription.params || {}).map(([k, v]) => [
+                        k,
+                        cronDescription.translateParams!.includes(k) ? t(String(v)) : v
+                      ])
+                    )
+                  : cronDescription.params
+              )}
+              style={{ marginBottom: 16 }}
+            />
           )}
 
           <Form.Item name="timezone" label={t('scheduler.form.timezone')} initialValue="Asia/Shanghai">
