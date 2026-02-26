@@ -83,7 +83,7 @@ class MCPApiService extends EventEmitter {
     try {
       logger.debug('getServerById called', { id })
       const servers = await getMCPServersFromRedux()
-      const server = servers.find((s) => s.id === id)
+      const server = servers.find((s) => s.id === id || s.name === id)
       if (!server) {
         logger.warn('Server not found', { id })
         return null
@@ -144,36 +144,44 @@ class MCPApiService extends EventEmitter {
         await mcpServer.connect(transport)
       }
     }
-    const jsonpayload = req.body
-    const messages: JSONRPCMessage[] = []
+    if (req.method === 'POST') {
+      const jsonpayload = req.body
+      const messages: JSONRPCMessage[] = []
 
-    if (Array.isArray(jsonpayload)) {
-      for (const payload of jsonpayload) {
-        const message = JSONRPCMessageSchema.parse(payload)
+      if (Array.isArray(jsonpayload)) {
+        for (const payload of jsonpayload) {
+          const message = JSONRPCMessageSchema.parse(payload)
+          messages.push(message)
+        }
+      } else {
+        const message = JSONRPCMessageSchema.parse(jsonpayload)
         messages.push(message)
       }
-    } else {
-      const message = JSONRPCMessageSchema.parse(jsonpayload)
-      messages.push(message)
-    }
 
-    for (const message of messages) {
-      if (isJSONRPCRequest(message)) {
-        if (!message.params) {
-          message.params = {}
+      for (const message of messages) {
+        if (isJSONRPCRequest(message)) {
+          if (!message.params) {
+            message.params = {}
+          }
+          if (!message.params._meta) {
+            message.params._meta = {}
+          }
+          message.params._meta.serverId = server.id
         }
-        if (!message.params._meta) {
-          message.params._meta = {}
-        }
-        message.params._meta.serverId = server.id
       }
-    }
 
-    logger.debug('Dispatching MCP request', {
-      sessionId: transport.sessionId ?? sessionId,
-      messageCount: messages.length
-    })
-    await transport.handleRequest(req as IncomingMessage, res as ServerResponse, messages)
+      logger.debug('Dispatching MCP request', {
+        sessionId: transport.sessionId ?? sessionId,
+        messageCount: messages.length
+      })
+      await transport.handleRequest(req as IncomingMessage, res as ServerResponse, messages)
+    } else {
+      logger.debug('Dispatching MCP request', {
+        method: req.method,
+        sessionId: transport.sessionId ?? sessionId
+      })
+      await transport.handleRequest(req as IncomingMessage, res as ServerResponse)
+    }
   }
 
   private onMessage(message: JSONRPCMessage, extra?: MessageExtraInfo) {

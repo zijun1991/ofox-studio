@@ -168,7 +168,8 @@ export class SessionMessageService extends BaseService {
     abortController: AbortController
   ): Promise<SessionStreamResult> {
     const agentSessionId = await this.getLastAgentSessionId(session.id)
-    logger.debug('Session Message stream message data:', { message: req, session_id: agentSessionId })
+    const isFirstMessage = agentSessionId === ''
+    logger.debug('Session Message stream message data:', { message: req, session_id: agentSessionId, isFirstMessage })
 
     if (session.agent_type !== 'claude-code') {
       // TODO: Implement support for other agent types
@@ -176,7 +177,7 @@ export class SessionMessageService extends BaseService {
       throw new Error('Unsupported agent type for streaming')
     }
 
-    const claudeStream = await this.cc.invoke(req.content, session, abortController, agentSessionId)
+    const claudeStream = await this.cc.invoke(req.content, session, abortController, agentSessionId, isFirstMessage)
     const accumulator = new TextStreamAccumulator()
 
     let resolveCompletion!: (value: {

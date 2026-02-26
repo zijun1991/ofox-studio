@@ -48,8 +48,27 @@ export class AgentService extends BaseService {
    */
   async ensureTurboAgentExists(): Promise<void> {
     const existing = await this.getAgent(TURBO_AGENT_ID)
+
     if (existing) {
-      logger.debug('Turbo agent already exists')
+      // Migration: Add scheduler MCP to existing Turbo Agent if missing
+      if (!existing.mcps || (Array.isArray(existing.mcps) && existing.mcps.length === 0)) {
+        logger.info('Migrating Turbo Agent: Adding scheduler MCP')
+        const database = await this.getDatabase()
+        await database
+          .update(agentsTable)
+          .set({
+            mcps: JSON.stringify([BuiltinMCPServerNames.scheduler]),
+            updated_at: new Date().toISOString()
+          })
+          .where(eq(agentsTable.id, TURBO_AGENT_ID))
+        logger.info('Turbo Agent migrated successfully')
+      }
+
+      // Initialize preset skills for existing agent (installs new skills if any)
+      const workdir = existing.accessible_paths?.[0]
+      if (workdir) {
+        await this.initializePresetSkills(workdir)
+      }
       return
     }
 
@@ -66,6 +85,7 @@ export class AgentService extends BaseService {
       instructions: 'You are a fast and efficient assistant.',
       model: '', // User will configure
       accessible_paths: JSON.stringify(this.ensurePathsExist([defaultPath])),
+      mcps: JSON.stringify([BuiltinMCPServerNames.scheduler]),
       is_system: true,
       created_at: now,
       updated_at: now

@@ -231,6 +231,15 @@ export const builtinMCPServers: BuiltinMCPServer[] = [
     provider: 'Nowledge',
     installSource: 'builtin',
     isTrusted: true
+  },
+  {
+    id: nanoid(),
+    name: BuiltinMCPServerNames.scheduler,
+    type: 'inMemory',
+    isActive: true,
+    provider: 'OfoxStudio',
+    installSource: 'builtin',
+    isTrusted: true
   }
 ] as const
 

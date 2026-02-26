@@ -26,6 +26,7 @@ export interface AgentServiceInterface {
     prompt: string,
     session: GetAgentSessionResponse,
     abortController: AbortController,
-    lastAgentSessionId?: string
+    lastAgentSessionId?: string,
+    isFirstMessage?: boolean
   ): Promise<AgentStream>
 }

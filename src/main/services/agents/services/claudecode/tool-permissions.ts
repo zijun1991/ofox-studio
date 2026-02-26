@@ -237,6 +237,14 @@ export async function promptForToolApproval(
     return { behavior: 'allow', updatedInput: input }
   }
 
+  if (options.autoApprove) {
+    logger.debug('Auto-approving tool due to autoApprove flag (bypassPermissions mode)', {
+      toolName,
+      toolCallId: options.toolCallId
+    })
+    return { behavior: 'allow', updatedInput: input }
+  }
+
   ensureIpcHandlersRegistered()
 
   if (options?.signal?.aborted) {

@@ -23,6 +23,7 @@ import { autoDiscoverGitBash } from '@main/utils/process'
 import getLoginShellEnvironment from '@main/utils/shell-env'
 import { languageEnglishNameMap } from '@shared/config/languages'
 import { withoutTrailingApiVersion } from '@shared/utils'
+import { BuiltinMCPServerNames } from '@types'
 import { app } from 'electron'
 
 import type { GetAgentSessionResponse } from '../..'
@@ -45,6 +46,50 @@ const getLanguageInstruction = () => {
   (1) text responses, (2) tool call parameters like "description" fields, and (3) any user-facing content.
   ${lang === 'en-US' ? '' : 'Never use English unless the content is code, file paths, or technical identifiers.'}
   `
+}
+
+const getContextPrompt = (agentId: string, sessionId: string): string => {
+  return `
+## 工作指导
+1. 如果能通过简单的shell命令完成工作，优先使用shell命令
+2. 如果工作较复杂，优先使用python
+3. 如果用户表达了基于当前时间的任何意向，除非特别指定，否则你必须通过shell取得实时的本地时间
+4. 来自用户消息内的时间，如果是相对日期时间（如明天、周日、3小时后），都必须转换为精确的本地时间，避免产生歧义
+
+## Session Context
+- Agent ID: ${agentId}
+- Session ID: ${sessionId}
+
+## Scheduled Task
+如果你想给自己设置定时任务或想在特点时间主动向用户发消息，你可以使用scheduler工具来，通过定时任务来触发你自己的回复。
+
+注意！！除非明确指定，否则创建定时任务都是执行后立即销毁的一次性任务，要设置delete_on_trigger!
+
+### 基本规则
+1. 如果用户说一段时间之后，除非特别说明，这个一段时间默认要基于当前的实时时间。
+2. schedule 相关接口返回的都是UTC时间戳，返回给用户时，要转为本地时间
+
+### Trigger Options
+When creating a scheduled task, you can set these options:
+- \`close_on_trigger\` - If true, the task will be automatically disabled after successful execution
+- \`delete_on_trigger\` - If true, the task will be automatically deleted after successful execution
+
+These options are useful for one-time tasks or tasks that should not repeat.
+
+### When to Suggest Creating Scheduled Tasks
+Proactively suggest creating scheduled tasks when the user mentions:
+- Recurring reports or summaries (daily, weekly, monthly)
+- Regular monitoring or health checks
+- Periodic reminders or notifications
+- Automated data processing at specific times
+- Any task that needs to run repeatedly at fixed intervals
+- One-time reminders (use \`delete_on_trigger\` for these)
+
+### How to Create a Scheduled Task
+When creating a task, use the current session's Agent ID and Session ID:
+- agent_id: \`${agentId}\`
+- session_id: \`${sessionId}\`
+`.trim()
 }
 
 type UserInputMessage = {
@@ -78,7 +123,8 @@ class ClaudeCodeService implements AgentServiceInterface {
     prompt: string,
     session: GetAgentSessionResponse,
     abortController: AbortController,
-    lastAgentSessionId?: string
+    lastAgentSessionId?: string,
+    isFirstMessage?: boolean
   ): Promise<AgentStream> {
     const aiStream = new ClaudeCodeStream()
 
@@ -279,17 +325,17 @@ class ClaudeCodeService implements AgentServiceInterface {
         logger.warn('claude stderr', { chunk })
         errorChunks.push(chunk)
       },
-      systemPrompt: session.instructions
-        ? {
-            type: 'preset',
-            preset: 'claude_code',
-            append: `${session.instructions}\n\n${getLanguageInstruction()}`
-          }
-        : {
-            type: 'preset',
-            preset: 'claude_code',
-            append: getLanguageInstruction()
-          },
+      systemPrompt: {
+        type: 'preset',
+        preset: 'claude_code',
+        append: [
+          isFirstMessage ? getContextPrompt(session.agent_id, session.id) : null,
+          session.instructions,
+          getLanguageInstruction()
+        ]
+          .filter(Boolean)
+          .join('\n\n')
+      },
       settingSources: ['project', 'local'],
       includePartialMessages: true,
       permissionMode: session.configuration?.permission_mode,
@@ -310,20 +356,45 @@ class ClaudeCodeService implements AgentServiceInterface {
       options.additionalDirectories = session.accessible_paths.slice(1)
     }
 
-    if (session.mcps && session.mcps.length > 0) {
-      // mcp configs
+    // Always resolve MCP servers, ensuring scheduler is always available
+    {
+      const { getMCPServersFromRedux } = await import('@main/apiServer/utils/mcp')
+      const allServers = await getMCPServersFromRedux()
       const mcpList: Record<string, McpHttpServerConfig> = {}
-      for (const mcpId of session.mcps) {
-        mcpList[mcpId] = {
-          type: 'http',
-          url: `http://${apiConfig.host}:${apiConfig.port}/v1/mcps/${mcpId}/mcp`,
-          headers: {
-            Authorization: `Bearer ${apiConfig.apiKey}`
+
+      // Resolve session-configured MCP servers
+      if (session.mcps && session.mcps.length > 0) {
+        for (const mcpNameOrId of session.mcps) {
+          const server = allServers.find((s) => s.id === mcpNameOrId || s.name === mcpNameOrId)
+          if (!server) continue
+          mcpList[server.name] = {
+            type: 'http',
+            url: `http://${apiConfig.host}:${apiConfig.port}/v1/mcps/${server.id}/mcp`,
+            headers: {
+              Authorization: `Bearer ${apiConfig.apiKey}`
+            }
           }
         }
       }
-      options.mcpServers = mcpList
-      options.strictMcpConfig = true
+
+      // Always inject scheduler MCP if not already present
+      if (!mcpList[BuiltinMCPServerNames.scheduler]) {
+        const schedulerServer = allServers.find((s) => s.name === BuiltinMCPServerNames.scheduler)
+        if (schedulerServer) {
+          mcpList[schedulerServer.name] = {
+            type: 'http',
+            url: `http://${apiConfig.host}:${apiConfig.port}/v1/mcps/${schedulerServer.id}/mcp`,
+            headers: {
+              Authorization: `Bearer ${apiConfig.apiKey}`
+            }
+          }
+        }
+      }
+
+      if (Object.keys(mcpList).length > 0) {
+        options.mcpServers = mcpList
+        options.strictMcpConfig = true
+      }
     }
 
     if (lastAgentSessionId && !NO_RESUME_COMMANDS.some((cmd) => prompt.includes(cmd))) {

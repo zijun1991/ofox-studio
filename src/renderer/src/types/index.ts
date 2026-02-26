@@ -329,6 +329,8 @@ export type Model = {
   endpoint_type?: EndpointType
   supported_endpoint_types?: EndpointType[]
   supported_text_delta?: boolean
+  /** 上下文窗口大小 (tokens) */
+  context_window?: number
 }
 
 export type Suggestion = {
@@ -860,7 +862,7 @@ export const BuiltinMCPServerNames = {
   browser: '@cherry/browser',
   nowledgeMem: '@cherry/nowledge-mem',
   hub: '@cherry/hub',
-  scheduler: '@cherry/scheduler'
+  scheduler: '@ofox/scheduler'
 } as const
 
 export type BuiltinMCPServerName = (typeof BuiltinMCPServerNames)[keyof typeof BuiltinMCPServerNames]
