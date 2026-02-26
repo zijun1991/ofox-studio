@@ -1,6 +1,6 @@
 {
   "name": "OfoxClaw",
-  "version": "2.0.0",
+  "version": "2.1.2",
   "private": true,
   "description": "个人AI助理",
   "desktopName": "OfoxClaw.desktop",
@@ -41,6 +41,7 @@
     "i18n:check": "dotenv -e .env -- tsx scripts/check-i18n.ts",
     "i18n:hardcoded": "tsx scripts/check-hardcoded-strings.ts",
     "i18n:hardcoded:strict": "I18N_STRICT=true tsx scripts/check-hardcoded-strings.ts",
+    "i18n:crud": "tsx scripts/i18n-crud.ts",
     "i18n:sync": "dotenv -e .env -- tsx scripts/sync-i18n.ts",
     "i18n:translate": "dotenv -e .env -- tsx scripts/auto-translate-i18n.ts",
     "i18n:all": "pnpm i18n:sync && pnpm i18n:translate",
@@ -63,6 +64,7 @@
     "lint": "oxlint --fix && eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --cache && pnpm typecheck && pnpm i18n:check && pnpm format:check",
     "format": "biome format --write && biome lint --write",
     "format:check": "biome format && biome lint",
+    "clean:appdata": "bash ~/cmds/clean-ofoxclaw.sh",
     "prepare": "git config blame.ignoreRevsFile .git-blame-ignore-revs && prek install",
     "claude": "dotenv -e .env -- claude",
     "release:aicore:alpha": "pnpm --filter @cherrystudio/ai-core version prerelease --preid alpha && pnpm --filter @cherrystudio/ai-core build && pnpm --filter @cherrystudio/ai-core publish --tag alpha --access public",

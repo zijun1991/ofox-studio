@@ -70,7 +70,6 @@ files:
   - "!**/*.{h,iobj,ipdb,tlog,recipe,vcxproj,vcxproj.filters,Makefile,*.Makefile}" # filter .node build files
 asarUnpack:
   - resources/**
-  - preset-skills/**
   - "**/*.{metal,exp,lib}"
   - "node_modules/@img/sharp-libvips-*/**"
 
