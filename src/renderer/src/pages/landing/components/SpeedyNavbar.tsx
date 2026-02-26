@@ -10,20 +10,15 @@ import { loggerService } from '@logger'
 import { NavbarHeader } from '@renderer/components/app/Navbar'
 import { HStack } from '@renderer/components/Layout'
 import NavbarIcon from '@renderer/components/NavbarIcon'
-import SearchPopup from '@renderer/components/Popups/SearchPopup'
 import { ReasoningTag, ToolsCallingTag, VisionTag, WebSearchTag } from '@renderer/components/Tags/Model'
 import { useAgentClient } from '@renderer/hooks/agents/useAgentClient'
 import { useUpdateSession } from '@renderer/hooks/agents/useUpdateSession'
 import { useModelEmployee } from '@renderer/hooks/useModelEmployee'
-import { modelGenerating } from '@renderer/hooks/useRuntime'
-import { useSettings } from '@renderer/hooks/useSettings'
 import { AgentSettingsTab } from '@renderer/pages/home/components/ChatNavBar/Tools/SettingsTab'
-import { useAppDispatch } from '@renderer/store'
-import { setNarrowMode } from '@renderer/store/settings'
 import type { ModelType } from '@renderer/types/index'
 import type { EducationLevel, ModelEmployee } from '@renderer/types/modelEmployee'
 import { Drawer, Select, Tooltip } from 'antd'
-import { Search, Settings2, UserCog } from 'lucide-react'
+import { Settings2, UserCog } from 'lucide-react'
 import type { FC } from 'react'
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -86,12 +81,10 @@ const renderEmployeeCapabilityTags = (employee: ModelEmployee, size: number = 10
 
 const SpeedyNavbar: FC<SpeedyNavbarProps> = ({ selectedEmployeeId, onEmployeeChange, agentId, activeSessionId }) => {
   const { t } = useTranslation()
-  const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const { employeesByLevel, educationLevelOrder, getEmployeeById } = useModelEmployee()
   const client = useAgentClient()
   const { updateModel } = useUpdateSession(agentId)
-  const { narrowMode } = useSettings()
   const [settingsOpen, setSettingsOpen] = useState(false)
 
   // Navigate to expert mode
@@ -153,11 +146,6 @@ const SpeedyNavbar: FC<SpeedyNavbarProps> = ({ selectedEmployeeId, onEmployeeCha
     )
   }
 
-  const handleNarrowModeToggle = async () => {
-    await modelGenerating()
-    dispatch(setNarrowMode(!narrowMode))
-  }
-
   const handleEmployeeSelectChange = useCallback(
     async (value: unknown) => {
       if (typeof value === 'string') {
@@ -208,16 +196,6 @@ const SpeedyNavbar: FC<SpeedyNavbarProps> = ({ selectedEmployeeId, onEmployeeCha
         <Tooltip title={t('settings.title')} mouseEnterDelay={0.8}>
           <NavbarIcon onClick={() => setSettingsOpen(true)}>
             <Settings2 size={18} />
-          </NavbarIcon>
-        </Tooltip>
-        <Tooltip title={t('navbar.expand')} mouseEnterDelay={0.8}>
-          <NarrowIcon onClick={handleNarrowModeToggle}>
-            <i className="iconfont icon-icon-adaptive-width"></i>
-          </NarrowIcon>
-        </Tooltip>
-        <Tooltip title={t('chat.assistant.search.placeholder')} mouseEnterDelay={0.8}>
-          <NavbarIcon onClick={() => SearchPopup.show()}>
-            <Search size={18} />
           </NavbarIcon>
         </Tooltip>
       </HStack>
@@ -340,12 +318,6 @@ const SelectedEmployeeName = styled.span`
 const TypeIcon = styled.span`
   font-size: 10px;
   filter: grayscale(0.3);
-`
-
-const NarrowIcon = styled(NavbarIcon)`
-  @media (max-width: 1000px) {
-    display: none;
-  }
 `
 
 export default SpeedyNavbar

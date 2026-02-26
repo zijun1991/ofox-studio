@@ -4,12 +4,14 @@ import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import useSWR from 'swr'
 
+import { useApiServer } from '../useApiServer'
 import { useAgentClient } from './useAgentClient'
 
 export const useSessions = (agentId: string | null) => {
   const { t } = useTranslation()
   const client = useAgentClient()
-  const key = agentId ? client.getSessionPaths(agentId).base : null
+  const { apiServerRunning } = useApiServer()
+  const key = agentId && apiServerRunning ? client.getSessionPaths(agentId).base : null
 
   const fetcher = async () => {
     if (!agentId) throw new Error('No active agent.')

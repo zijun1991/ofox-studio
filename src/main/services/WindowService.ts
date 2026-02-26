@@ -81,7 +81,7 @@ export class WindowService {
             // On Linux, allow using system title bar if setting is enabled
             frame: isLinux && configManager.getUseSystemTitleBar() ? true : false
           }),
-      backgroundColor: isMac ? undefined : nativeTheme.shouldUseDarkColors ? '#181818' : '#FFFFFF',
+      backgroundColor: isMac ? undefined : '#FFFFFF',
       darkTheme: nativeTheme.shouldUseDarkColors,
       ...(isLinux ? { icon: linuxIcon } : {}),
       webPreferences: {

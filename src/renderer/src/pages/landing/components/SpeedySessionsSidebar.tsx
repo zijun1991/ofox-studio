@@ -215,7 +215,7 @@ const SpeedySessionsSidebar: FC<SpeedySessionsSidebarProps> = ({ agentId, active
         <ButtonGroup>
           <Tooltip title={t('chat.add.topic.title')}>
             <IconButton onClick={handleCreateSession} disabled={creatingSession}>
-              <Plus size={16} />
+              <Plus size={16} style={{ color: 'var(--color-primary)' }} />
             </IconButton>
           </Tooltip>
           <Tooltip title={t('agent.settings.title', 'Agent Settings')}>

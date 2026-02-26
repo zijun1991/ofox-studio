@@ -33,6 +33,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
+import { useSWRConfig } from 'swr'
 
 import SpeedyNavbar from './components/SpeedyNavbar'
 import SpeedySessionsSidebar from './components/SpeedySessionsSidebar'
@@ -49,6 +50,7 @@ const SpeedyPage: FC = () => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const { isLeftNavbar } = useNavbarPosition()
+  const { mutate } = useSWRConfig()
 
   // Initialize Agent Session (auto-loads session when agent is activated)
   useAgentSessionInitializer()
@@ -146,6 +148,8 @@ const SpeedyPage: FC = () => {
         logger.info(`Initializing Agent model from default employee: ${modelId}`)
         try {
           await client.updateAgent({ id: TURBO_AGENT_ID, model: modelId })
+          // Revalidate SWR cache so agent?.model updates immediately
+          await mutate(client.agentPaths.withId(TURBO_AGENT_ID))
           setModelInitialized(true)
         } catch (error) {
           logger.error('Failed to initialize Agent model:', error as Error)
@@ -157,7 +161,7 @@ const SpeedyPage: FC = () => {
     if (agent && defaultEmployee !== undefined) {
       initAgentModel()
     }
-  }, [agent, defaultEmployee, client])
+  }, [agent, defaultEmployee, client, mutate])
 
   // Auto-create first session if no sessions exist (only after model is initialized)
   useEffect(() => {

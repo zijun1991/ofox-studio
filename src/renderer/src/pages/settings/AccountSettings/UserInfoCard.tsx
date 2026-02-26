@@ -1,5 +1,7 @@
+import OfoxApiKeyModal from '@renderer/components/OfoxApiKeyModal'
 import { OFOX_PROVIDER_CONFIGS, OFOX_SUPPORTED_PROTOCOLS } from '@renderer/config/ofox'
 import { useTheme } from '@renderer/context/ThemeProvider'
+import OfoxProviderService from '@renderer/services/OfoxProviderService'
 import { updateProvider } from '@renderer/store/llm'
 import { setApiKey, setShowLoginModal } from '@renderer/store/ofoxStore'
 import { Avatar, Button, Input, message } from 'antd'
@@ -46,6 +48,21 @@ const UserInfoCard: FC = () => {
       )
     }
     message.success(t('settings.account.api_key_saved'))
+  }
+
+  const handleResetApiKey = async () => {
+    const newApiKey = await OfoxApiKeyModal.show()
+    if (newApiKey) {
+      localStorage.setItem('ofox_api_key', newApiKey)
+      dispatch(setApiKey(newApiKey))
+      for (const protocol of OFOX_SUPPORTED_PROTOCOLS) {
+        const config = OFOX_PROVIDER_CONFIGS[protocol]
+        dispatch(updateProvider({ id: config.id, apiKey: newApiKey }))
+      }
+      setInputApiKey(newApiKey)
+      await OfoxProviderService.getInstance().syncProviders(dispatch)
+      message.success('API Key 已重置')
+    }
   }
 
   const getInitials = () => {
@@ -112,6 +129,9 @@ const UserInfoCard: FC = () => {
           </SaveButton>
         </ApiKeySection>
       )}
+      <ResetApiKeySection>
+        <Button onClick={handleResetApiKey}>重置 API Key</Button>
+      </ResetApiKeySection>
     </Card>
   )
 }
@@ -187,6 +207,14 @@ const StatusDot = styled.div`
   height: 8px;
   border-radius: 50%;
   background: #52c41a;
+`
+
+const ResetApiKeySection = styled.div`
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 0.5px solid var(--color-border);
 `
 
 const ApiKeySection = styled.div`
