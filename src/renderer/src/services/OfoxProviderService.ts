@@ -181,7 +181,8 @@ class OfoxProviderService {
       description: ofoxModel.description,
       endpoint_type: this.mapEndpointType(protocol),
       capabilities: this.mapCapabilities(ofoxModel.capabilities),
-      pricing: this.convertPricing(ofoxModel.pricing)
+      pricing: this.convertPricing(ofoxModel.pricing),
+      context_window: ofoxModel.context_window
     }
   }
 

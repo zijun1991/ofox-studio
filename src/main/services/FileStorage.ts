@@ -580,6 +580,9 @@ class FileStorage {
     detectEncoding: boolean = false
   ): Promise<string> => {
     const filePath = path.join(this.storageDir, id)
+    if (!fs.existsSync(filePath)) {
+      return ''
+    }
     return this.readFileCore(filePath, detectEncoding)
   }
 

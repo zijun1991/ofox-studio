@@ -191,7 +191,7 @@ export class AgentMessageDataSource implements MessageDataSource {
         }
       }
 
-      logger.info(`Loaded ${messages.length} messages for agent session ${sessionId}`)
+      logger.debug(`Loaded ${messages.length} messages for agent session ${sessionId}`)
 
       return { messages, blocks }
     } catch (error) {
