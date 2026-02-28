@@ -5,10 +5,14 @@
  * Only accessible from localhost, no authentication required.
  */
 
+import fs from 'node:fs'
+import path from 'node:path'
+
 import { loggerService } from '@logger'
 import { sessionMessageService, sessionService } from '@main/services/agents'
 import { agentMessageRepository } from '@main/services/agents/database/sessionMessageRepository'
 import { ChannelManager } from '@main/services/channels/ChannelManager'
+import { windowService } from '@main/services/WindowService'
 import { IpcChannel } from '@shared/IpcChannel'
 import type {
   AgentPersistedMessage,
@@ -17,9 +21,9 @@ import type {
   GetAgentSessionResponse
 } from '@types'
 import { AssistantMessageStatus, MessageBlockStatus, MessageBlockType, UserMessageStatus } from '@types'
-import { BrowserWindow } from 'electron'
 import type { Request, Response } from 'express'
 import { Router } from 'express'
+import mime from 'mime'
 import { v4 as uuidv4 } from 'uuid'
 
 const logger = loggerService.withContext('InternalAPI')
@@ -63,7 +67,7 @@ function createInternalMessage(
  * Emit a message event to the renderer process for real-time UI updates
  */
 function emitMessageEvent(event: ChannelMessageEvent): void {
-  const mainWindow = BrowserWindow.getAllWindows()[0]
+  const mainWindow = windowService.getMainWindow()
   if (mainWindow && !mainWindow.isDestroyed()) {
     mainWindow.webContents.send(IpcChannel.Channel_MessageEvent, event)
   }
@@ -155,40 +159,11 @@ internalRouter.post('/sessions/:agentId/:sessionId/messages', async (req: Reques
     // Read stream and send SSE events
     const reader = stream.getReader()
     let responseText = ''
+    let currentTurnText = ''
+    let currentTextBlockId: string | null = null
+    let currentTextContent = ''
+    const processedTextBlockIds = new Set<string>()
     let agentSessionId = ''
-
-    // Chunk types that should be ignored when building the response text
-    const IGNORED_CHUNK_TYPES = new Set([
-      'reasoning-delta',
-      'reasoning-start',
-      'reasoning-complete',
-      'thinking-delta',
-      'thinking-start',
-      'thinking-complete',
-      'tool-input-delta',
-      'tool-input-start',
-      'tool-call',
-      'tool-result',
-      'mcp_tool_created',
-      'mcp_tool_pending',
-      'mcp_tool_in_progress',
-      'mcp_tool_complete',
-      'mcp_tool_streaming',
-      'image-delta',
-      'image-created',
-      'image-complete',
-      'audio-delta',
-      'audio-start',
-      'audio-complete',
-      'error',
-      'block_created',
-      'block_in_progress',
-      'block_complete',
-      'llm_response_created',
-      'llm_response_in_progress',
-      'llm_response_complete',
-      'text-complete'
-    ])
 
     try {
       while (true) {
@@ -204,15 +179,67 @@ internalRouter.post('/sessions/:agentId/:sessionId/messages', async (req: Reques
             agentSessionId = (value as any).agentSessionId
           }
 
-          // Accumulate response text (only text-delta chunks)
-          if (!IGNORED_CHUNK_TYPES.has(value.type) && 'text' in value && (value as any).text) {
-            responseText += (value as any).text
+          // Track text blocks using text-start / text-delta / text-end pairing
+          if (value.type === 'text-start') {
+            currentTextBlockId = (value as any).id
+            currentTextContent = ''
+          }
+
+          if (value.type === 'text-delta' && currentTextBlockId && 'text' in value && (value as any).text) {
+            currentTextContent += (value as any).text
+          }
+
+          if (value.type === 'text-end' && currentTextBlockId) {
+            if (!processedTextBlockIds.has(currentTextBlockId)) {
+              const finalText = (value as any).providerMetadata?.text?.value || currentTextContent
+              if (finalText) {
+                if (currentTurnText === finalText || currentTurnText.endsWith(finalText)) {
+                  logger.warn('Internal API: Skipping duplicate text content', {
+                    sessionId,
+                    textBlockId: currentTextBlockId,
+                    textLength: finalText.length
+                  })
+                } else {
+                  currentTurnText += finalText
+                }
+              }
+              processedTextBlockIds.add(currentTextBlockId)
+            }
+            currentTextBlockId = null
+            currentTextContent = ''
+          }
+
+          // At finish-step, keep only the last turn's text
+          if (value.type === 'finish-step') {
+            if (currentTurnText) {
+              responseText = currentTurnText
+            }
+            currentTurnText = ''
+            processedTextBlockIds.clear()
+          }
+
+          // Extract agent_session_id from providerMetadata
+          const providerMetadata = (value as any).providerMetadata
+          if (providerMetadata?.anthropic?.session_id) {
+            agentSessionId = providerMetadata.anthropic.session_id
           }
         }
       }
 
+      // Fallback: if stream ended without a finish-step event,
+      // use accumulated currentTurnText as the response
+      if (!responseText && currentTurnText) {
+        responseText = currentTurnText
+      }
+
       // Wait for completion
       await completion
+
+      logger.info('Internal API: Stream consumption complete', {
+        sessionId,
+        responseTextLength: responseText.length,
+        isEmpty: responseText.length === 0
+      })
 
       // Persist assistant message
       if (responseText) {
@@ -242,6 +269,14 @@ internalRouter.post('/sessions/:agentId/:sessionId/messages', async (req: Reques
         // Check if session is bound to a channel and send response
         const channelManager = ChannelManager.getInstance()
         const boundChannel = channelManager.getChannelForSession(sessionId)
+
+        logger.info('Internal API: Channel lookup for session', {
+          sessionId,
+          found: !!boundChannel,
+          channelId: boundChannel?.id,
+          channelType: boundChannel?.type,
+          hasLastMessageMetadata: !!boundChannel?.lastMessageMetadata
+        })
 
         if (boundChannel) {
           // Scheduler-triggered messages should not reply to any specific message.
@@ -316,5 +351,50 @@ internalRouter.get('/sessions/:agentId/:sessionId', async (req: Request, res: Re
   } catch (error) {
     logger.error('Internal API: Error getting session', { error, agentId, sessionId })
     res.status(500).json({ error: 'Internal server error' })
+  }
+})
+
+/**
+ * GET /internal/file-reader/*filePath
+ * Read a local file by its absolute path and stream it back with proper Content-Type.
+ *
+ * Example: GET /internal/file-reader/Users/zijun/screenshot.png
+ *          → reads /Users/zijun/screenshot.png
+ */
+internalRouter.get('/file-reader/*filePath', async (req: Request, res: Response) => {
+  const filePath = path.join('/', ...(req.params.filePath as string[]))
+
+  try {
+    await fs.promises.access(filePath, fs.constants.R_OK)
+
+    const stat = await fs.promises.stat(filePath)
+    if (stat.isDirectory()) {
+      res.status(400).json({ error: 'Path is a directory, not a file' })
+      return
+    }
+
+    const contentType = mime.getType(filePath) || 'application/octet-stream'
+    res.setHeader('Content-Type', contentType)
+    res.setHeader('Content-Length', stat.size)
+
+    const stream = fs.createReadStream(filePath)
+    stream.on('error', (err) => {
+      logger.error('Internal API: File stream error', { error: err, filePath })
+      if (!res.headersSent) {
+        res.status(500).json({ error: 'Failed to read file' })
+      } else {
+        res.end()
+      }
+    })
+    stream.pipe(res)
+  } catch (error: any) {
+    if (error.code === 'ENOENT') {
+      res.status(404).json({ error: 'File not found' })
+    } else if (error.code === 'EACCES') {
+      res.status(403).json({ error: 'Permission denied' })
+    } else {
+      logger.error('Internal API: Error reading file', { error, filePath })
+      res.status(500).json({ error: 'Internal server error' })
+    }
   }
 })

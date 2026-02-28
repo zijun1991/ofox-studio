@@ -4601,18 +4601,19 @@
       "builtinServers": "Integrierter Server",
       "builtinServersDescriptions": {
         "brave_search": "MCP-Server-Implementierung mit Brave-Search-API, die sowohl Web- als auch lokale Suchfunktionen bietet. BRAVE_API_KEY-Umgebungsvariable muss konfiguriert werden",
-        "browser": "Steuert ein headless Electron-Fenster über das Chrome DevTools Protocol. Tools: URL öffnen, einzeiligen JS ausführen, Sitzung zurücksetzen.",
         "didi_mcp": "An integrated Didi MCP server implementation that provides ride-hailing services including map search, price estimation, order management, and driver tracking. Only available in mainland China. Requires the DIDI_API_KEY environment variable to be configured.",
         "dify_knowledge": "MCP-Server-Implementierung von Dify, die einen einfachen API-Zugriff auf Dify bietet. Dify Key muss konfiguriert werden",
         "fetch": "MCP-Server zum Abrufen von Webseiteninhalten",
         "filesystem": "MCP-Server für Dateisystemoperationen (Node.js), der den Zugriff auf bestimmte Verzeichnisse ermöglicht",
+        "llm": "[to be translated]:Provides LLM chat capabilities with file reading support. Uses models configured in Ofox Studio.",
         "mcp_auto_install": "MCP-Service automatisch installieren (Beta-Version)",
         "memory": "MCP-Server mit persistenter Erinnerungsbasis auf lokalem Wissensgraphen, der Informationen über verschiedene Dialoge hinweg speichert. MEMORY_FILE_PATH-Umgebungsvariable muss konfiguriert werden",
         "no": "Keine Beschreibung",
         "nowledge_mem": "Erfordert lokal laufende Nowledge Mem App. Speichert KI-Chats, Tools, Notizen, Agenten und Dateien in einem privaten Speicher auf Ihrem Computer. Download unter https://mem.nowledge.co/",
         "python": "Python-Code in einem sicheren Sandbox-Umgebung ausführen. Verwendung von Pyodide für Python, Unterstützung für die meisten Standardbibliotheken und wissenschaftliche Pakete",
         "scheduler": "Geplante Aufgabenverwaltung MCP-Server. Bietet Funktionen zum Erstellen, Auflisten, Aktualisieren, Löschen und Umschalten geplanter Aufgaben. Sendet Nachrichten an angegebene Agentensitzungen bei Auslösung.",
-        "sequentialthinking": "MCP-Server-Implementierung mit strukturiertem Denkprozess, der dynamische und reflektierende Problemlösungen ermöglicht"
+        "sequentialthinking": "MCP-Server-Implementierung mit strukturiertem Denkprozess, der dynamische und reflektierende Problemlösungen ermöglicht",
+        "webview": "[to be translated]:Isolated WebView manager with full CDP access. Create ephemeral browser sessions, navigate pages, execute JavaScript, simulate input, manage cookies, and take screenshots. Supports manual intervention via lock/unlock mechanism."
       },
       "command": "Befehl",
       "config_description": "Model-Context-Protocol-Server konfigurieren",
@@ -5923,6 +5924,22 @@
   },
   "warning": {
     "missing_provider": "Anbieter nicht gefunden, Standardanbieter {{provider}} verwendet. Dies kann zu Problemen führen."
+  },
+  "webview": {
+    "manager": {
+      "active_count": "[to be translated]:{{count}} active",
+      "agent_controlled": "[to be translated]:Agent Controlled",
+      "agent_operating": "[to be translated]:Agent Operating",
+      "create": "[to be translated]:Create",
+      "locked": "[to be translated]:Locked",
+      "manual_mode": "[to be translated]:Manual Mode",
+      "no_active": "[to be translated]:No active webviews",
+      "select_to_preview": "[to be translated]:Select a webview to preview",
+      "title": "[to be translated]:WebView Manager",
+      "unlocked": "[to be translated]:Unlocked",
+      "waiting_screenshot": "[to be translated]:Waiting for screenshot...",
+      "window": "[to be translated]:Window"
+    }
   },
   "words": {
     "knowledgeGraph": "Wissensgraph",

@@ -350,7 +350,7 @@ Mcp_ServerLog          = 'mcp:server-log'            // main → renderer (实�
 
 ---
 
-## 内置 MCP 服务器 (12 个)
+## 内置 MCP 服务器 (13 个)
 
 定义在 `src/renderer/src/store/mcp.ts` 的 `builtinMCPServers` 数组：
 
@@ -367,7 +367,9 @@ Mcp_ServerLog          = 'mcp:server-log'            // main → renderer (实�
 | `@cherry/didi-mcp` | No | 需 DIDI_API_KEY |
 | `@cherry/browser` | No | 浏览器控制 |
 | `@cherry/nowledge-mem` | No | Nowledge 记忆服务 |
-| `@cherry/scheduler` | Yes | 定时任务调度 |
+| `@ofox/scheduler` | Yes | 定时任务调度 |
+| `@ofox/webview` | Yes | 隔离 WebView 管理器（CDP 控制） |
+| `@ofox/llm` | Yes | LLM 调用服务（sub-agent 推理） |
 
 **Hub 服务器** (`@cherry/hub`) 单独定义，auto 模式下程序自动注入，不出现在用户列表中。
 
@@ -549,13 +551,52 @@ switch toggle   → handleToggleMcp() → update({ mcps: next })
 
 **不会修改全局 `isActive` 状态，也不会受权限模式影响。**
 
-### 强制注入的默认 MCP
+### 强制注入的默认 MCP（三层保障）
 
-在 Claude Code Agent 集成中（`src/main/services/agents/services/claudecode/index.ts:382-396`），以下三个 MCP 服务器**始终被强制注入**，即使用户在 Agent 设置中关掉了它们：
+以下 MCP 服务器通过三层机制**始终对所有 Agent 生效**，用户无法完全禁用：
 
-- `scheduler`
-- `python`
-- `fetch`
+**强制注入的服务器：** `scheduler`、`fetch`、`webview`、`llm`
+
+**Layer A — Agent 创建时注入**（`src/main/services/agents/services/AgentService.ts:259-265`）：
+
+所有新建 Agent 的 `mcps` 数组自动包含默认服务器：
+
+```typescript
+const defaultMCPs = [
+  BuiltinMCPServerNames.scheduler,
+  BuiltinMCPServerNames.fetch,
+  BuiltinMCPServerNames.webview,
+  BuiltinMCPServerNames.llm
+]
+```
+
+**Layer B — Turbo Agent 迁移**（`src/main/services/agents/services/AgentService.ts:54-59` 和 `97-103`）：
+
+已有的 Turbo Agent 在 `ensureTurboAgentExists()` 中自动补齐缺失的默认 MCP：
+
+```typescript
+const defaultMCPs = [
+  BuiltinMCPServerNames.scheduler,
+  BuiltinMCPServerNames.fetch,
+  BuiltinMCPServerNames.webview,
+  BuiltinMCPServerNames.llm
+]
+```
+
+**Layer C — SDK 执行时强制注入**（`src/main/services/agents/services/claudecode/index.ts:388-393`）：
+
+Claude Code SDK 运行时，无论 Session 配置如何，始终确保默认 MCP 存在：
+
+```typescript
+const defaultMCPs = [
+  BuiltinMCPServerNames.scheduler,
+  BuiltinMCPServerNames.fetch,
+  BuiltinMCPServerNames.webview,
+  BuiltinMCPServerNames.llm
+]
+```
+
+> **注意**：Layer A 和 Layer B 负责持久化到数据库，Layer C 是运行时兜底。三层同时保障即使用户手动从 Agent 设置中删除了某个 MCP，执行时仍会注入。
 
 ### MCP 工具发现流程
 
@@ -594,7 +635,7 @@ Client 以服务器配置的 hash 值为 key 缓存。配置变更时旧 client 
 ### Agent 集成
 
 - Agent 的 `mcps` 字段（JSON 数组）存储绑定的 MCP 服务器名称
-- Turbo 系统代理默认 MCP：`scheduler`、`python`、`fetch`（且在 SDK 层强制注入）
+- 默认强制注入的 MCP：`scheduler`、`fetch`、`webview`、`llm`（三层保障，见上文"强制注入的默认 MCP"）
 - `McpToolAdapter`（`packages/ofox-agent/src/tools/McpToolAdapter.ts`）将 MCPTool 转为 Agent 系统的 `ToolDefinition`
 - Agent 设置中的 MCP switch 修改的是 `agent.mcps` 数组，不影响全局 `isActive`
 
@@ -612,3 +653,301 @@ Client 以服务器配置的 hash 值为 key 缓存。配置变更时旧 client 
 | Max recursive tool depth | 20 | `McpToolChunkMiddleware` |
 | Tool name max length | 63 chars | `buildFunctionCallToolName()` |
 | Hub server ID | `'hub'` | `store/mcp.ts` |
+
+---
+
+## Cookbook: 添加新的内置 MCP 服务器
+
+添加一个新的内置 MCP 服务器需要完成以下步骤（以 `@ofox/webview` 为例）：
+
+### Step 1: 实现 MCP 服务器
+
+在 `src/main/mcpServers/` 下创建服务器实现（单文件或目录均可），导出 MCP SDK `Server` 实例。
+
+### Step 2: 注册到 Factory
+
+在 `src/main/mcpServers/factory.ts` 的 `createInMemoryMCPServer()` switch 中添加 case：
+
+```typescript
+case BuiltinMCPServerNames.webview: {
+  return new WebviewServer().server
+}
+```
+
+### Step 3: 注册名称常量
+
+在 `src/renderer/src/types/index.ts` 的 `BuiltinMCPServerNames` 对象中添加：
+
+```typescript
+webview: '@ofox/webview'
+```
+
+### Step 4: 添加 i18n 翻译
+
+1. 在 `src/renderer/src/i18n/label.ts` 的 `mcpServerLabels` 映射中添加名称到翻译 key 的映射
+2. 使用 `pnpm i18n:crud add` 添加翻译内容
+
+### Step 5: 添加到前端内置服务器列表
+
+在 `src/renderer/src/store/mcp.ts` 的 `builtinMCPServers` 数组中添加配置项：
+
+```typescript
+{
+  id: nanoid(),
+  name: BuiltinMCPServerNames.webview,
+  type: 'inMemory',
+  isActive: true,           // true = 默认启用
+  provider: 'OfoxStudio',
+  installSource: 'builtin',
+  isTrusted: true
+}
+```
+
+> 这一步决定了该服务器是否出现在 设置 → MCP → 内置服务器列表中。
+
+### Step 6（可选）: 添加到 API Server 默认列表
+
+在 `src/main/apiServer/utils/mcp.ts` 的 `BUILTIN_MCP_SERVERS` 数组中添加配置，使其在 API Server 启动时可用。
+
+> **重要**：如果 server 需要在 API Server 启动前就可用（如被 Agent 强制注入），则**必须**添加到 `BUILTIN_MCP_SERVERS`，否则 `getMCPServersFromRedux()` 在 Redux 尚未初始化时找不到该 server，导致 ClaudeCodeService 注入时静默跳过。
+
+### Step 7（可选）: 强制注入到所有 Agent
+
+如果希望该 MCP 对所有 Agent 强制生效（不可被用户禁用），需要在以下 **三处** `defaultMCPs` 数组中添加：
+
+| 位置 | 文件 | 作用 |
+|------|------|------|
+| Agent 创建 | `src/main/services/agents/services/AgentService.ts` (~L260) | 所有新建 Agent 自动携带 |
+| Turbo 迁移 | 同文件 (~L54) 和 (~L97) | 已有 Turbo Agent 重启时自动补齐 |
+| SDK 执行 | `src/main/services/agents/services/claudecode/index.ts` (~L388) | 运行时兜底注入 |
+
+> **三处必须同时添加**，否则会出现不一致：某些 Agent 有而某些没有。
+
+---
+
+## Cookbook: 为 MCP 服务器添加自定义配置面板
+
+MCP 设置 UI 的核心结构：
+
+```
+MCPSettings/index.tsx          ← 左侧导航 + 右侧路由容器
+  ├── McpServersList.tsx       ← 用户服务器列表
+  ├── McpSettings.tsx          ← 单服务器配置面板（Antd Tabs）
+  │   ├── Tab: General         ← 表单（名称/类型/命令/环境变量等）
+  │   ├── Tab: Description     ← 服务器描述（条件：有 searchKey）
+  │   ├── Tab: Tools           ← 工具列表（条件：isActive）
+  │   ├── Tab: Prompts         ← 提示词列表（条件：isActive）
+  │   └── Tab: Resources       ← 资源列表（条件：isActive）
+  ├── BuiltinMCPServerList.tsx ← 内置服务器网格
+  ├── McpMarketList.tsx        ← 市场浏览
+  └── McpProviderSettings.tsx  ← 服务商配置（Token + 同步）
+```
+
+路由结构（`index.tsx` 中的 `<Routes>`）：
+
+| 路径 | 组件 |
+|------|------|
+| `/settings/mcp/servers` | `McpServersList` |
+| `/settings/mcp/settings/:serverId` | `McpSettings` |
+| `/settings/mcp/builtin` | `BuiltinMCPServerList` |
+| `/settings/mcp/marketplaces` | `McpMarketList` |
+| `/settings/mcp/npx-search` | `NpxSearch` |
+| `/settings/mcp/mcp-install` | `InstallNpxUv` |
+| `/settings/mcp/{providerKey}` | `ProviderDetail` |
+
+### 方式一：在 McpSettings 中为特定服务器新增 Tab
+
+最简单的方式，适合在已有配置面板基础上追加特定服务器的专属配置 UI。
+
+**Step 1**: 创建配置面板组件
+
+```
+src/renderer/src/pages/settings/MCPSettings/MyCustomConfig.tsx
+```
+
+组件接收 `server: MCPServer` prop，内部使用 `window.api.mcp.*` 或自定义 IPC 与 Main 通信。
+
+**Step 2**: 在 `McpSettings.tsx` 中追加 Tab
+
+在 `tabs` 数组构建之后（约第 528 行），按条件追加：
+
+```typescript
+// 按服务器名称或类型条件追加
+if (server.name === '@your/server-name') {
+  tabs.push({
+    key: 'custom-config',
+    label: t('settings.mcp.tabs.customConfig'),
+    children: <MyCustomConfig server={server} />
+  })
+}
+```
+
+**Step 3**: 扩展 TabKey 类型（约第 66 行）
+
+```typescript
+type TabKey = 'settings' | 'description' | 'tools' | 'prompts' | 'resources' | 'custom-config'
+```
+
+### 方式二：添加独立路由页面
+
+适合配置 UI 与标准表单差异较大，需要完整页面布局的场景。
+
+**Step 1**: 创建页面组件
+
+```
+src/renderer/src/pages/settings/MCPSettings/MyCustomConfigPage.tsx
+```
+
+**Step 2**: 在 `index.tsx` 的 `<Routes>` 中注册路由
+
+```tsx
+<Route path="custom-config/:serverId" element={<MyCustomConfigPage />} />
+```
+
+**Step 3**: 添加导航入口
+
+在 `McpServerCard.tsx` 或 `McpSettings.tsx` 中添加按钮/链接跳转到新路由：
+
+```tsx
+navigate(`/settings/mcp/custom-config/${encodeURIComponent(server.id)}`)
+```
+
+**Step 4**: 更新 `isHomePage()` 和 `getActiveView()`（`index.tsx`）
+
+确保返回按钮和左侧菜单高亮逻辑正确。
+
+### 方式三：基于 `shouldConfig` 标志的通用配置入口
+
+已有 `MCPServer.shouldConfig?: boolean` 字段，当前仅在 `BuiltinMCPServerList.tsx` 中展示"需要配置"标签。可扩展为通用机制。
+
+**思路**：
+
+1. 在 `builtinMCPServers` 定义中设置 `shouldConfig: true`
+2. 在 `McpSettings.tsx` 中检测 `server.shouldConfig` 并渲染对应配置组件
+3. 可配合服务器名称做组件映射：
+
+```typescript
+const configPanelMap: Record<string, React.ComponentType<{ server: MCPServer }>> = {
+  '@cherry/brave-search': BraveSearchConfig,
+  '@cherry/dify-knowledge': DifyKnowledgeConfig,
+}
+
+const ConfigPanel = server.shouldConfig ? configPanelMap[server.name] : null
+if (ConfigPanel) {
+  tabs.push({
+    key: 'custom-config',
+    label: t('settings.mcp.tabs.config'),
+    children: <ConfigPanel server={server} />
+  })
+}
+```
+
+### 涉及新增 MCPServer 字段时的完整改动清单
+
+如果自定义配置需要持久化新字段到 `MCPServer` 对象：
+
+| 步骤 | 文件 | 操作 |
+|------|------|------|
+| 1 | `src/renderer/src/types/index.ts` | 在 `MCPServer` 接口添加新字段 |
+| 2 | `src/renderer/src/types/mcp.ts` | 在 `McpServerConfigSchema` (Zod) 添加对应 schema |
+| 3 | `McpSettings.tsx` `MCPFormValues` | 添加表单字段类型 |
+| 4 | `McpSettings.tsx` `useEffect` (初始化) | 在 `form.setFieldsValue()` 中映射新字段 |
+| 5 | `McpSettings.tsx` `onSave()` | 在保存逻辑中读取并赋值新字段 |
+| 6 | `src/main/services/MCPService.ts` | 如需后端处理，添加 IPC handler |
+| 7 | `packages/shared/IpcChannel.ts` | 如需新 IPC 通道，注册枚举值 |
+| 8 | `src/preload/index.ts` | 在 `window.api.mcp` 中暴露新 IPC 方法 |
+
+### 关键接口速查
+
+```typescript
+// McpSettings.tsx 表单值
+interface MCPFormValues {
+  name: string
+  description?: string
+  serverType: MCPServer['type']
+  baseUrl?: string
+  command?: string
+  registryUrl?: string
+  args?: string
+  env?: string
+  isActive: boolean
+  headers?: string
+  longRunning?: boolean
+  timeout?: number
+  provider?: string
+  providerUrl?: string
+  logoUrl?: string
+  tags?: string[]
+}
+
+// Tabs 定义（约第 528 行）
+const tabs: TabsProps['items'] = [...]
+
+// Tab key 类型（约第 66 行）
+type TabKey = 'settings' | 'description' | 'tools' | 'prompts' | 'resources'
+```
+
+### Hooks 速查
+
+```typescript
+// 获取所有服务器 + CRUD 操作
+const { mcpServers, addMCPServer, updateMCPServer, deleteMCPServer } = useMCPServers()
+
+// 获取单个服务器 + 操作
+const { server, updateMCPServer, deleteMCPServer } = useMCPServer(serverId)
+
+// 服务器信任管理
+const { ensureServerTrusted } = useMCPServerTrust()
+```
+
+## Troubleshooting: 常见问题
+
+### 问题：强制注入的 MCP Server 不生效（Agent 找不到目标工具）
+
+**典型表现**：Agent 执行时应该调用 `@ofox/llm` 的 `chat` 工具，却走了其他 MCP（如 `@cherry/python`），或工具列表中完全没有目标 server 的工具。
+
+**根因分析**：强制注入一个 MCP server 涉及 **四个独立的配置点**，任一遗漏都会导致静默失败：
+
+| # | 配置点 | 文件 | 失败表现 |
+|---|--------|------|----------|
+| 1 | `builtinMCPServers` 中 `isActive: true` | `src/renderer/src/store/mcp.ts` | MCP 设置页 switch 为关闭状态，全局不可用 |
+| 2 | `BUILTIN_MCP_SERVERS` 数组包含该 server | `src/main/apiServer/utils/mcp.ts` | Redux 未初始化时 API Server 找不到 server，ClaudeCodeService 注入时 `allServers.find()` 返回 undefined 静默跳过 |
+| 3 | `defaultMCPs` 数组（三处）包含该 server | `AgentService.ts` + `claudecode/index.ts` | 新建/迁移的 Agent mcps 列表不含该 server |
+| 4 | Cookbook Step 5 的 `isActive` 值 | `src/renderer/src/store/mcp.ts` | 即使加了 server 但 `isActive: false` 则 Layer 2 绑定无效 |
+
+**排查检查清单**：
+
+1. 确认 `builtinMCPServers`（store/mcp.ts）中 `isActive: true`
+2. 确认 `BUILTIN_MCP_SERVERS`（apiServer/utils/mcp.ts）中有该 server 条目
+3. 确认 `AgentService.ts` 三处 `defaultMCPs` 都包含该 server
+4. 确认 `claudecode/index.ts` 的 `defaultMCPs` 包含该 server
+5. 重启应用后在 MCP 设置页确认 server 显示为已启用
+6. 创建新 Agent，检查其 mcps JSON 包含该 server name
+7. 通过 Agent 发送任务，在日志中确认工具发现流程包含目标 server 的工具
+
+**关键洞察**：`BUILTIN_MCP_SERVERS` 是 Redux 的回退层——在 Renderer 初始化 Redux store 之前，API Server 已经在运行并需要解析 MCP server 配置。如果目标 server 不在此硬编码列表中，`getMCPServersFromRedux()` 的 `mergeWithBuiltinServers()` 不会补充它，导致 ClaudeCodeService 的 `allServers.find(s => s.name === mcpName)` 返回 undefined 并静默跳过注入。
+
+### 问题：@ofox/llm 调用报 "Missing credentials"
+
+**典型表现**：Agent 调用 `@ofox/llm` 的 `chat` 工具时返回 `Missing credentials. Please pass an apiKey, or set the OPENAI_API_KEY environment variable.`
+
+**根因**：`@langchain/openai@1.0.0` 的 `BaseChatOpenAI` 构造函数只识别 `apiKey` 参数，不再识别旧版的 `openAIApiKey`。如果代码中使用了 `openAIApiKey`，API Key 不会被传递给底层 OpenAI SDK，导致 `apiKey === undefined`。
+
+**排查要点**：
+
+| # | 检查点 | 文件 |
+|---|--------|------|
+| 1 | `ChatOpenAI` 构造参数使用 `apiKey` 而非 `openAIApiKey` | `src/main/mcpServers/llm/model-resolver.ts` |
+| 2 | Ofox API Key 已设置（`state.ofox.apiKey` 有值） | 设置页 → 关于 → Ofox API Key |
+| 3 | Provider 已注册且 `enabled: true` | `state.llm.providers` 中 `ofox-openai` 等 |
+| 4 | `getAvailableProviders()` 能返回含 apiKey 的 provider | Main 日志搜索 `Providers filtered` |
+
+**关键文件**：
+
+| 文件 | 作用 |
+|------|------|
+| `src/main/mcpServers/llm/model-resolver.ts` | LLM 模型路由 + ChatOpenAI 实例化 |
+| `node_modules/@langchain/openai/dist/chat_models/base.js:180` | apiKey 解析逻辑 |
+| `src/main/apiServer/utils/index.ts` | `getAvailableProviders()` / Ofox apiKey 动态替换 |
+
+**教训**：升级 LangChain 版本后，构造参数名可能发生 breaking change。`openAIApiKey` → `apiKey` 是 `@langchain/openai` 0.x → 1.0 的典型变更。

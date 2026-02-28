@@ -4601,18 +4601,19 @@
       "builtinServers": "組み込みサーバー",
       "builtinServersDescriptions": {
         "brave_search": "Brave検索APIを統合したMCPサーバーの実装で、ウェブ検索とローカル検索の両機能を提供します。BRAVE_API_KEY環境変数の設定が必要です",
-        "browser": "Chrome DevTools Protocolを介してheadless Electronウィンドウを制御します。ツール：URLを開く、単一行JSを実行、セッションをリセット。",
         "didi_mcp": "DiDi MCPサーバーは、地図検索、料金見積もり、注文管理、ドライバー追跡を含むライドシェアサービスを提供します。中国本土でのみ利用可能です。DIDI_API_KEY環境変数の設定が必要です",
         "dify_knowledge": "DifyのMCPサーバー実装は、Difyと対話するためのシンプルなAPIを提供します。Dify Keyの設定が必要です。",
         "fetch": "URLのウェブページコンテンツを取得するためのMCPサーバー",
         "filesystem": "Node.jsサーバーによるファイルシステム操作を実現するモデルコンテキストプロトコル（MCP）。アクセスを許可するディレクトリの設定が必要です",
+        "llm": "[to be translated]:Provides LLM chat capabilities with file reading support. Uses models configured in Ofox Studio.",
         "mcp_auto_install": "MCPサービスの自動インストール（ベータ版）",
         "memory": "ローカルのナレッジグラフに基づく永続的なメモリの基本的な実装です。これにより、モデルは異なる会話間でユーザーの関連情報を記憶できるようになります。MEMORY_FILE_PATH 環境変数の設定が必要です。",
         "no": "説明なし",
         "nowledge_mem": "Nowledge Mem アプリをローカルで実行する必要があります。AI チャット、ツール、ノート、エージェント、ファイルをコンピューター上のプライベートメモリに保存します。https://mem.nowledge.co/ からダウンロードしてください",
         "python": "安全なサンドボックス環境でPythonコードを実行します。Pyodideを使用してPythonを実行し、ほとんどの標準ライブラリと科学計算パッケージをサポートしています。",
         "scheduler": "スケジュールタスク管理MCPサーバー。指定されたエージェントセッションがトリガーされたときにメッセージを送信する、スケジュールタスクの作成、一覧表示、更新、削除、および切り替え機能を提供します。",
-        "sequentialthinking": "構造化された思考プロセスを通じて動的かつ反省的な問題解決を行うためのツールを提供するMCPサーバーの実装"
+        "sequentialthinking": "構造化された思考プロセスを通じて動的かつ反省的な問題解決を行うためのツールを提供するMCPサーバーの実装",
+        "webview": "[to be translated]:Isolated WebView manager with full CDP access. Create ephemeral browser sessions, navigate pages, execute JavaScript, simulate input, manage cookies, and take screenshots. Supports manual intervention via lock/unlock mechanism."
       },
       "command": "コマンド",
       "config_description": "モデルコンテキストプロトコルサーバーの設定",
@@ -5923,6 +5924,22 @@
   },
   "warning": {
     "missing_provider": "サプライヤーが存在しないため、デフォルトのサプライヤー {{provider}} にロールバックされました。これにより問題が発生する可能性があります。"
+  },
+  "webview": {
+    "manager": {
+      "active_count": "[to be translated]:{{count}} active",
+      "agent_controlled": "[to be translated]:Agent Controlled",
+      "agent_operating": "[to be translated]:Agent Operating",
+      "create": "[to be translated]:Create",
+      "locked": "[to be translated]:Locked",
+      "manual_mode": "[to be translated]:Manual Mode",
+      "no_active": "[to be translated]:No active webviews",
+      "select_to_preview": "[to be translated]:Select a webview to preview",
+      "title": "[to be translated]:WebView Manager",
+      "unlocked": "[to be translated]:Unlocked",
+      "waiting_screenshot": "[to be translated]:Waiting for screenshot...",
+      "window": "[to be translated]:Window"
+    }
   },
   "words": {
     "knowledgeGraph": "ナレッジグラフ",

@@ -29,19 +29,27 @@ const BUILTIN_MCP_SERVERS: MCPServer[] = [
     isTrusted: true
   },
   {
-    id: BuiltinMCPServerNames.python,
-    name: BuiltinMCPServerNames.python,
+    id: BuiltinMCPServerNames.fetch,
+    name: BuiltinMCPServerNames.fetch,
     type: 'inMemory',
     isActive: true,
     provider: 'CherryStudio',
     isTrusted: true
   },
   {
-    id: BuiltinMCPServerNames.fetch,
-    name: BuiltinMCPServerNames.fetch,
+    id: BuiltinMCPServerNames.webview,
+    name: BuiltinMCPServerNames.webview,
     type: 'inMemory',
     isActive: true,
-    provider: 'CherryStudio',
+    provider: 'OfoxStudio',
+    isTrusted: true
+  },
+  {
+    id: BuiltinMCPServerNames.llm,
+    name: BuiltinMCPServerNames.llm,
+    type: 'inMemory',
+    isActive: true,
+    provider: 'OfoxStudio',
     isTrusted: true
   }
 ]

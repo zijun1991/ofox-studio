@@ -4601,18 +4601,19 @@
       "builtinServers": "Servidores integrados",
       "builtinServersDescriptions": {
         "brave_search": "uma implementação de servidor MCP integrada com a API de pesquisa Brave, fornecendo funcionalidades de pesquisa web e local. Requer a configuração da variável de ambiente BRAVE_API_KEY",
-        "browser": "Controla uma janela Electron headless via Chrome DevTools Protocol. Ferramentas: abrir URL, executar JS de linha única, reiniciar sessão.",
         "didi_mcp": "Servidor DiDi MCP que fornece serviços de transporte incluindo pesquisa de mapas, estimativa de preços, gestão de pedidos e rastreamento de motoristas. Disponível apenas na China Continental. Requer configuração da variável de ambiente DIDI_API_KEY",
         "dify_knowledge": "Implementação do servidor MCP do Dify, que fornece uma API simples para interagir com o Dify. Requer a configuração da chave Dify",
         "fetch": "servidor MCP para obter o conteúdo da página web do URL",
         "filesystem": "Servidor Node.js do protocolo de contexto de modelo (MCP) para implementar operações de sistema de ficheiros. Requer configuração do diretório permitido para acesso",
+        "llm": "[to be translated]:Provides LLM chat capabilities with file reading support. Uses models configured in Ofox Studio.",
         "mcp_auto_install": "Instalação automática do serviço MCP (beta)",
         "memory": "Implementação base de memória persistente baseada em grafos de conhecimento locais. Isso permite que o modelo lembre informações relevantes do utilizador entre diferentes conversas. É necessário configurar a variável de ambiente MEMORY_FILE_PATH.",
         "no": "sem descrição",
         "nowledge_mem": "Requer a aplicação Nowledge Mem em execução localmente. Mantém conversas de IA, ferramentas, notas, agentes e ficheiros numa memória privada no seu computador. Transfira de https://mem.nowledge.co/",
         "python": "Executar código Python num ambiente sandbox seguro. Utilizar Pyodide para executar Python, suportando a maioria das bibliotecas padrão e pacotes de computação científica",
         "scheduler": "Gerenciamento de Tarefas Agendadas MCP Server. Fornece funcionalidade para criar, listar, atualizar, excluir e alternar tarefas agendadas. Envia mensagens para Sessões de Agente especificadas quando acionado.",
-        "sequentialthinking": "Uma implementação de servidor MCP que fornece ferramentas para resolução dinâmica e reflexiva de problemas através de um processo de pensamento estruturado"
+        "sequentialthinking": "Uma implementação de servidor MCP que fornece ferramentas para resolução dinâmica e reflexiva de problemas através de um processo de pensamento estruturado",
+        "webview": "[to be translated]:Isolated WebView manager with full CDP access. Create ephemeral browser sessions, navigate pages, execute JavaScript, simulate input, manage cookies, and take screenshots. Supports manual intervention via lock/unlock mechanism."
       },
       "command": "Comando",
       "config_description": "Configurar modelo de protocolo de contexto do servidor",
@@ -5923,6 +5924,22 @@
   },
   "warning": {
     "missing_provider": "O fornecedor não existe; foi revertido para o fornecedor predefinido {{provider}}. Isto pode causar problemas."
+  },
+  "webview": {
+    "manager": {
+      "active_count": "[to be translated]:{{count}} active",
+      "agent_controlled": "[to be translated]:Agent Controlled",
+      "agent_operating": "[to be translated]:Agent Operating",
+      "create": "[to be translated]:Create",
+      "locked": "[to be translated]:Locked",
+      "manual_mode": "[to be translated]:Manual Mode",
+      "no_active": "[to be translated]:No active webviews",
+      "select_to_preview": "[to be translated]:Select a webview to preview",
+      "title": "[to be translated]:WebView Manager",
+      "unlocked": "[to be translated]:Unlocked",
+      "waiting_screenshot": "[to be translated]:Waiting for screenshot...",
+      "window": "[to be translated]:Window"
+    }
   },
   "words": {
     "knowledgeGraph": "Gráfico de Conhecimento",

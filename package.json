@@ -1,6 +1,6 @@
 {
   "name": "OfoxClaw",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "private": true,
   "description": "个人AI助理",
   "desktopName": "OfoxClaw.desktop",
@@ -75,6 +75,7 @@
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "0.1.76",
     "@expo/sudo-prompt": "^9.3.2",
+    "@langchain/langgraph": "^1.2.0",
     "@libsql/client": "0.14.0",
     "@napi-rs/system-ocr": "1.0.2",
     "@paymoapp/electron-shutdown-handler": "1.1.2",

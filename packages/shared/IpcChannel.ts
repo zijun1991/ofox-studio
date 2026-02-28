@@ -451,5 +451,14 @@ export enum IpcChannel {
 
   // Scheduler Logs
   SchedulerLog_List = 'scheduler-log:list',
-  SchedulerLog_Clear = 'scheduler-log:clear'
+  SchedulerLog_Clear = 'scheduler-log:clear',
+
+  // WebView Manager
+  WebviewManager_Open = 'webview-manager:open',
+  WebviewManager_List = 'webview-manager:list',
+  WebviewManager_Create = 'webview-manager:create',
+  WebviewManager_Close = 'webview-manager:close',
+  WebviewManager_Show = 'webview-manager:show',
+  WebviewManager_OnChange = 'webview-manager:on-change',
+  WebviewManager_Screenshot = 'webview-manager:screenshot'
 }

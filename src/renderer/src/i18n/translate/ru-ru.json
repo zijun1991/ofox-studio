@@ -4601,18 +4601,19 @@
       "builtinServers": "Встроенные серверы",
       "builtinServersDescriptions": {
         "brave_search": "реализация сервера MCP с интеграцией API поиска Brave, обеспечивающая функции веб-поиска и локального поиска. Требуется настройка переменной среды BRAVE_API_KEY",
-        "browser": "Управление headless-окном Electron через Chrome DevTools Protocol. Инструменты: открытие URL, выполнение однострочного JS, сброс сессии.",
         "didi_mcp": "Сервер DiDi MCP, предоставляющий услуги такси, включая поиск на карте, оценку стоимости, управление заказами и отслеживание водителей. Доступен только в материковом Китае. Требует настройки переменной окружения DIDI_API_KEY",
         "dify_knowledge": "Реализация сервера MCP Dify, предоставляющая простой API для взаимодействия с Dify. Требуется настройка ключа Dify",
         "fetch": "MCP-сервер для получения содержимого веб-страниц по URL",
         "filesystem": "Node.js-сервер протокола контекста модели (MCP) для реализации операций файловой системы. Требуется настройка каталогов, к которым разрешён доступ",
+        "llm": "[to be translated]:Provides LLM chat capabilities with file reading support. Uses models configured in Ofox Studio.",
         "mcp_auto_install": "Автоматическая установка службы MCP (бета-версия)",
         "memory": "реализация постоянной памяти на основе локального графа знаний. Это позволяет модели запоминать информацию о пользователе между различными диалогами. Требуется настроить переменную среды MEMORY_FILE_PATH.",
         "no": "без описания",
         "nowledge_mem": "Требуется запущенное локально приложение Nowledge Mem. Хранит чаты ИИ, инструменты, заметки, агентов и файлы в приватной памяти на вашем компьютере. Скачать можно на https://mem.nowledge.co/",
         "python": "Выполняйте код Python в безопасной песочнице. Запускайте Python с помощью Pyodide, поддерживается большинство стандартных библиотек и пакетов для научных вычислений",
         "scheduler": "Сервер MCP для управления запланированными задачами. Обеспечивает функциональность создания, просмотра, обновления, удаления и переключения запланированных задач. Отправляет сообщения указанным сессиям агента при срабатывании.",
-        "sequentialthinking": "MCP серверная реализация, предоставляющая инструменты для динамического и рефлексивного решения проблем посредством структурированного мыслительного процесса"
+        "sequentialthinking": "MCP серверная реализация, предоставляющая инструменты для динамического и рефлексивного решения проблем посредством структурированного мыслительного процесса",
+        "webview": "[to be translated]:Isolated WebView manager with full CDP access. Create ephemeral browser sessions, navigate pages, execute JavaScript, simulate input, manage cookies, and take screenshots. Supports manual intervention via lock/unlock mechanism."
       },
       "command": "Команда",
       "config_description": "Настройка серверов протокола контекста модели",
@@ -5923,6 +5924,22 @@
   },
   "warning": {
     "missing_provider": "Поставщик не существует, возвращение к поставщику по умолчанию {{provider}}. Это может привести к проблемам."
+  },
+  "webview": {
+    "manager": {
+      "active_count": "[to be translated]:{{count}} active",
+      "agent_controlled": "[to be translated]:Agent Controlled",
+      "agent_operating": "[to be translated]:Agent Operating",
+      "create": "[to be translated]:Create",
+      "locked": "[to be translated]:Locked",
+      "manual_mode": "[to be translated]:Manual Mode",
+      "no_active": "[to be translated]:No active webviews",
+      "select_to_preview": "[to be translated]:Select a webview to preview",
+      "title": "[to be translated]:WebView Manager",
+      "unlocked": "[to be translated]:Unlocked",
+      "waiting_screenshot": "[to be translated]:Waiting for screenshot...",
+      "window": "[to be translated]:Window"
+    }
   },
   "words": {
     "knowledgeGraph": "Граф знаний",

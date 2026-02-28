@@ -12,6 +12,7 @@ This file provides guidance to AI coding assistants when working with code in th
 - **Always propose before executing**: Before making any changes, clearly explain your planned approach and wait for explicit user approval to ensure alignment and prevent unwanted modifications.
 - **Lint, test, and format before completion**: Coding tasks are only complete after running `pnpm lint`, `pnpm test`, and `pnpm format` successfully.
 - **Write conventional commits**: Commit small, focused changes using Conventional Commit messages (e.g., `feat:`, `fix:`, `refactor:`, `docs:`).
+- **i18n via CRUD tool**: NEVER directly read or write locale JSON files. Always use `pnpm i18n:crud` commands (`add`, `set`, `get`, `delete`, `list`, `search`) to operate on translation resources.
 
 ## Pull Request Workflow (CRITICAL)
 
@@ -26,6 +27,7 @@ If the skill is unavailable, directly read `.agents/skills/gh-create-pr/SKILL.md
 - **Build Check**: `pnpm build:check` - **REQUIRED** before commits (lint + test + typecheck)
   - If having i18n sort issues, run `pnpm i18n:sync` first to sync template
   - If having formatting issues, run `pnpm format` first
+- **i18n CRUD**: `pnpm i18n:crud <command>` - **MUST use this for all i18n operations** instead of directly reading/writing locale JSON files. See `i18n-workflow` skill for details.
 - **Test**: `pnpm test` - Run all tests (Vitest) across main and renderer processes
 - **Single Test**:
   - `pnpm test:main` - Run tests for main process only

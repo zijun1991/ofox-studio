@@ -7,6 +7,7 @@ import { BaseChannelConnector, type ConnectorStatus } from './BaseChannelConnect
 const logger = loggerService.withContext('TelegramConnector')
 
 const TELEGRAM_API = 'https://api.telegram.org'
+const TELEGRAM_MAX_MESSAGE_LENGTH = 4096
 
 interface TelegramMetadata {
   chatId: number
@@ -109,33 +110,95 @@ export class TelegramConnector extends BaseChannelConnector {
       return
     }
 
-    const params: Record<string, unknown> = {
-      chat_id: meta.chatId,
-      text: msg.content
-    }
+    logger.info('Preparing to send Telegram response', {
+      channelId: msg.channelId,
+      chatId: meta.chatId,
+      contentLength: msg.content.length
+    })
 
-    // Only set reply_to_message_id when we have a valid message to reply to
-    if (meta.messageId) {
-      params.reply_to_message_id = meta.messageId
-    }
+    // Split long messages into chunks (Telegram limit: 4096 chars)
+    const chunks = this.splitMessage(msg.content)
 
-    if (config.parseMode) {
-      params.parse_mode = config.parseMode
-    }
+    for (let i = 0; i < chunks.length; i++) {
+      const params: Record<string, unknown> = {
+        chat_id: meta.chatId,
+        text: chunks[i]
+      }
 
-    try {
-      await this.apiCall('sendMessage', params)
-      logger.info('Telegram response sent', { channelId: msg.channelId, chatId: meta.chatId })
-    } catch (error) {
-      // If parse_mode fails (e.g. bad markdown), retry without it
-      if (config.parseMode && error instanceof Error && error.message.includes("can't parse")) {
-        logger.warn('Retrying sendMessage without parse_mode', { channelId: msg.channelId })
-        delete params.parse_mode
+      // Only set reply_to_message_id on the first chunk
+      if (i === 0 && meta.messageId) {
+        params.reply_to_message_id = meta.messageId
+      }
+
+      if (config.parseMode) {
+        params.parse_mode = config.parseMode
+      }
+
+      try {
         await this.apiCall('sendMessage', params)
-      } else {
-        throw error
+      } catch (error) {
+        // If parse_mode fails (e.g. bad markdown), retry without it
+        if (config.parseMode && error instanceof Error && error.message.includes("can't parse")) {
+          logger.warn('Retrying sendMessage without parse_mode', { channelId: msg.channelId, chunk: i + 1 })
+          delete params.parse_mode
+          await this.apiCall('sendMessage', params)
+        } else {
+          throw error
+        }
       }
     }
+
+    logger.info('Telegram response sent', {
+      channelId: msg.channelId,
+      chatId: meta.chatId,
+      chunks: chunks.length
+    })
+  }
+
+  /**
+   * Split a message into chunks that fit within Telegram's max message length.
+   * Tries to split at paragraph boundaries first, then falls back to hard split.
+   */
+  private splitMessage(text: string): string[] {
+    if (text.length <= TELEGRAM_MAX_MESSAGE_LENGTH) {
+      return [text]
+    }
+
+    const chunks: string[] = []
+    let remaining = text
+
+    while (remaining.length > TELEGRAM_MAX_MESSAGE_LENGTH) {
+      let splitIdx = -1
+
+      // Try to split at a paragraph boundary (double newline)
+      const searchRange = remaining.slice(0, TELEGRAM_MAX_MESSAGE_LENGTH)
+      const lastParagraph = searchRange.lastIndexOf('\n\n')
+      if (lastParagraph > TELEGRAM_MAX_MESSAGE_LENGTH * 0.3) {
+        splitIdx = lastParagraph
+      }
+
+      // Fall back to single newline
+      if (splitIdx === -1) {
+        const lastNewline = searchRange.lastIndexOf('\n')
+        if (lastNewline > TELEGRAM_MAX_MESSAGE_LENGTH * 0.3) {
+          splitIdx = lastNewline
+        }
+      }
+
+      // Hard split as last resort
+      if (splitIdx === -1) {
+        splitIdx = TELEGRAM_MAX_MESSAGE_LENGTH
+      }
+
+      chunks.push(remaining.slice(0, splitIdx).trimEnd())
+      remaining = remaining.slice(splitIdx).trimStart()
+    }
+
+    if (remaining) {
+      chunks.push(remaining)
+    }
+
+    return chunks
   }
 
   async testConnection(): Promise<{ success: boolean; message: string }> {

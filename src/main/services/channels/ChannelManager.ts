@@ -1,4 +1,5 @@
 import { loggerService } from '@logger'
+import { withRetry } from '@main/utils/retry'
 import { IpcChannel } from '@shared/IpcChannel'
 import type {
   AgentPersistedMessage,
@@ -10,11 +11,11 @@ import type {
   ChannelStatusEvent
 } from '@types'
 import { AssistantMessageStatus, MessageBlockStatus, MessageBlockType, UserMessageStatus } from '@types'
-import { BrowserWindow } from 'electron'
 import { v4 as uuidv4 } from 'uuid'
 
 import { agentMessageRepository } from '../agents/database/sessionMessageRepository'
 import { sessionMessageService, sessionService } from '../agents/services'
+import { windowService } from '../WindowService'
 import type { BaseChannelConnector } from './connectors/BaseChannelConnector'
 
 const logger = loggerService.withContext('ChannelManager')
@@ -121,6 +122,9 @@ export class ChannelManager {
       return
     }
 
+    // Ensure enabled state is consistent with connector running state
+    channel.enabled = true
+
     // Stop existing connector if any
     if (this.connectors.has(channelId)) {
       await this.stopChannel(channelId)
@@ -145,6 +149,12 @@ export class ChannelManager {
     const connector = this.connectors.get(channelId)
     if (!connector) return
 
+    // Ensure enabled state is consistent with connector running state
+    const channel = this.channels.find((c) => c.id === channelId)
+    if (channel) {
+      channel.enabled = false
+    }
+
     try {
       await connector.stop()
       this.connectors.delete(channelId)
@@ -168,13 +178,14 @@ export class ChannelManager {
     channel.lastMessageMetadata = message.metadata
     channel.lastMessageAt = message.receivedAt
 
-    // Emit inbound event for UI
+    // Emit inbound event for UI (includes metadata so Renderer can persist it)
     this.emitMessageEvent({
       channelId: channel.id,
       sessionId: channel.sessionId,
       direction: 'inbound',
       content: message.content,
-      timestamp: message.receivedAt
+      timestamp: message.receivedAt,
+      metadata: message.metadata
     })
 
     try {
@@ -342,6 +353,12 @@ export class ChannelManager {
         logger.error('Error reading stream', { channelId: channel.id, error: streamError })
       }
 
+      // Fallback: if stream ended without a finish-step event,
+      // use accumulated currentTurnText as the response
+      if (!responseText && currentTurnText) {
+        responseText = currentTurnText
+      }
+
       // Wait for completion
       await completion
 
@@ -393,17 +410,62 @@ export class ChannelManager {
   }
 
   async handleOutbound(message: ChannelOutboundMessage): Promise<void> {
-    const connector = this.connectors.get(message.channelId)
+    let connector = this.connectors.get(message.channelId)
+
+    // If connector is temporarily unavailable (e.g. during syncChannels), wait briefly and retry once
     if (!connector) {
-      logger.warn('No connector found for outbound message', { channelId: message.channelId })
+      logger.info('Connector not found, waiting 500ms for syncChannels to settle', {
+        channelId: message.channelId,
+        channelType: message.channelType
+      })
+      await new Promise((resolve) => setTimeout(resolve, 500))
+      connector = this.connectors.get(message.channelId)
+    }
+
+    if (!connector) {
+      logger.warn('No connector found for outbound message after retry', {
+        channelId: message.channelId,
+        channelType: message.channelType,
+        contentLength: message.content.length
+      })
+      this.emitStatusChange({
+        channelId: message.channelId,
+        status: 'error',
+        error: 'Connector unavailable for outbound message'
+      })
       return
     }
 
     try {
-      await connector.sendResponse(message)
-      logger.info('Outbound message sent', { channelId: message.channelId })
+      await withRetry(() => connector.sendResponse(message), {
+        maxAttempts: 3,
+        baseDelayMs: 2000,
+        onRetry: (attempt, error) => {
+          logger.warn('Retrying outbound message send', {
+            channelId: message.channelId,
+            channelType: message.channelType,
+            attempt,
+            error: error instanceof Error ? error.message : String(error)
+          })
+        }
+      })
+      logger.info('Outbound message sent', {
+        channelId: message.channelId,
+        channelType: message.channelType,
+        contentLength: message.content.length
+      })
     } catch (error) {
-      logger.error('Failed to send outbound message', { channelId: message.channelId, error })
+      logger.error('Failed to send outbound message after all retries', {
+        channelId: message.channelId,
+        channelType: message.channelType,
+        contentLength: message.content.length,
+        error
+      })
+      this.emitStatusChange({
+        channelId: message.channelId,
+        status: 'error',
+        error: error instanceof Error ? error.message : 'Outbound message delivery failed'
+      })
     }
   }
 
@@ -453,6 +515,10 @@ export class ChannelManager {
   buildFallbackMetadata(channel: ChannelEntity): Record<string, unknown> | null {
     // 优先使用最近一次入站消息的元数据（包含实际的 chatId）
     if (channel.lastMessageMetadata) {
+      logger.debug('Using lastMessageMetadata for outbound routing', {
+        channelId: channel.id,
+        metadataKeys: Object.keys(channel.lastMessageMetadata)
+      })
       return {
         ...channel.lastMessageMetadata,
         messageId: 0
@@ -460,11 +526,21 @@ export class ChannelManager {
     }
     // 回退到配置中的 allowedChatIds
     if (channel.type === 'telegram' && channel.telegramConfig?.allowedChatIds?.length) {
+      logger.debug('Using allowedChatIds fallback for outbound routing', {
+        channelId: channel.id,
+        chatId: channel.telegramConfig.allowedChatIds[0]
+      })
       return {
         chatId: channel.telegramConfig.allowedChatIds[0],
         messageId: 0
       }
     }
+    logger.warn('No routing metadata available for outbound message', {
+      channelId: channel.id,
+      channelType: channel.type,
+      hasLastMessageMetadata: false,
+      hasAllowedChatIds: !!(channel.type === 'telegram' && channel.telegramConfig?.allowedChatIds?.length)
+    })
     return null
   }
 
@@ -496,7 +572,7 @@ export class ChannelManager {
   }
 
   private forwardStreamChunk(sessionId: string, chunk: any): void {
-    const mainWindow = BrowserWindow.getAllWindows()[0]
+    const mainWindow = windowService.getMainWindow()
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send(IpcChannel.Channel_StreamChunk, {
         type: 'stream-chunk',
@@ -507,14 +583,14 @@ export class ChannelManager {
   }
 
   private emitStatusChange(event: ChannelStatusEvent): void {
-    const mainWindow = BrowserWindow.getAllWindows()[0]
+    const mainWindow = windowService.getMainWindow()
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send(IpcChannel.Channel_StatusChanged, event)
     }
   }
 
   private emitMessageEvent(event: ChannelMessageEvent): void {
-    const mainWindow = BrowserWindow.getAllWindows()[0]
+    const mainWindow = windowService.getMainWindow()
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send(IpcChannel.Channel_MessageEvent, event)
     }

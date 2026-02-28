@@ -5,6 +5,9 @@ description: Reference guide for the internationalization (i18n) workflow. Use w
 
 # i18n Workflow Reference
 
+> **CRITICAL RULE: NEVER directly read or write locale JSON files (en-us.json, zh-cn.json, etc.).**
+> Always use `pnpm i18n:crud` commands for all i18n resource operations. The locale files are ~220KB each; direct editing is error-prone and wasteful. The CRUD tool handles sorting, structure sync, and validation automatically.
+
 ## Overview
 
 The project uses **i18next** + **react-i18next** for internationalization. Translation files are JSON-based, with a base locale as the source of truth. Auto-translation uses an OpenAI-compatible API (Qwen Plus via Aliyun DashScope) to translate strings marked with `[to be translated]`.
@@ -70,25 +73,41 @@ scripts/
 
 ---
 
-## Standard Workflow
+## Standard Workflow (CRUD-First)
 
 ### Adding new translation keys
 
-```
-1. Add key to en-us.json (base locale)
-2. Add key to zh-cn.json and zh-tw.json (manual translations)
-3. Run: pnpm i18n:sync
-   → Adds [to be translated]:original text to all other locale files
-4. Run: pnpm i18n:translate
-   → Auto-translates marked strings via API
-5. Run: pnpm i18n:check
-   → Validates structure consistency
+```bash
+# 1. Add key to en-us (base locale) — auto-syncs [to be translated] to all other locales
+pnpm i18n:crud add "feature.title" "My Feature"
+
+# 2. Set manual translations for zh-cn and zh-tw
+pnpm i18n:crud set "feature.title" "我的功能" --locale zh-cn
+pnpm i18n:crud set "feature.title" "我的功能" --locale zh-tw
+
+# 3. (Optional) Auto-translate remaining locales
+pnpm i18n:translate
 ```
 
-Or use the combined command after step 2:
+### Updating existing keys
 
 ```bash
-pnpm i18n:all    # sync + translate
+pnpm i18n:crud set "feature.title" "Updated Title"                    # Update en-us
+pnpm i18n:crud set "feature.title" "更新后的标题" --locale zh-cn        # Update zh-cn
+```
+
+### Deleting keys
+
+```bash
+pnpm i18n:crud delete "feature.old_key"    # Removes from ALL locales
+```
+
+### Checking / searching keys
+
+```bash
+pnpm i18n:crud get "feature.title" --all          # Read value across all locales
+pnpm i18n:crud list "feature" --depth 2            # Browse key structure
+pnpm i18n:crud search "cancel" --in-values         # Search in values
 ```
 
 ### Before committing
@@ -194,10 +213,15 @@ getThemeModeLabel('dark')       // Returns translated theme mode
 
 ### Add a new translation key
 
-1. Add the key to `src/renderer/src/i18n/locales/en-us.json`
-2. Add corresponding translations to `zh-cn.json` and `zh-tw.json`
-3. Run `pnpm i18n:all` to sync and auto-translate other locales
-4. Verify with `pnpm i18n:check`
+```bash
+pnpm i18n:crud add "my.new.key" "English value"
+pnpm i18n:crud set "my.new.key" "中文值" --locale zh-cn
+pnpm i18n:crud set "my.new.key" "中文值" --locale zh-tw
+# Optional: auto-translate remaining locales
+pnpm i18n:translate
+```
+
+> **DO NOT** manually edit `en-us.json`, `zh-cn.json`, or `zh-tw.json`. Use `i18n:crud` commands above.
 
 ### Fix i18n lint errors
 
@@ -220,8 +244,9 @@ Common causes: unsorted keys, missing keys in non-base locales, extra keys not i
 
 ### Remove a translation key
 
-1. Remove the key from `en-us.json`
-2. Run `pnpm i18n:sync` — this removes the key from all other locale files automatically
+```bash
+pnpm i18n:crud delete "my.old.key"    # Removes from ALL locales automatically
+```
 
 ### Check for hardcoded strings
 
@@ -258,9 +283,11 @@ Default fallback language: `en-US`
 
 ---
 
-## CRUD Tool (Single-Key Operations)
+## CRUD Tool (Single-Key Operations) — PRIMARY INTERFACE
 
-The `pnpm i18n:crud` CLI provides precise, single-key CRUD operations on locale JSON files. **Prefer this tool over directly editing locale JSON files** — it avoids reading/writing entire 220KB files and ensures correct sorting and structure.
+> **This is the PRIMARY tool for all i18n resource operations. NEVER use Read/Write/Edit tools on locale JSON files.**
+
+The `pnpm i18n:crud` CLI provides precise, single-key CRUD operations on locale JSON files. It avoids reading/writing entire 220KB files and ensures correct sorting and structure.
 
 All output is structured JSON for easy AI parsing.
 

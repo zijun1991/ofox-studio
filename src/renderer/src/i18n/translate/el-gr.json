@@ -4601,18 +4601,19 @@
       "builtinServers": "Ενσωματωμένοι Διακομιστές",
       "builtinServersDescriptions": {
         "brave_search": "μια εφαρμογή διακομιστή MCP που ενσωματώνει το Brave Search API, παρέχοντας δυνατότητες αναζήτησης στον ιστό και τοπικής αναζήτησης. Απαιτείται η ρύθμιση της μεταβλητής περιβάλλοντος BRAVE_API_KEY",
-        "browser": "Ελέγχει ένα headless παράθυρο Electron μέσω του Chrome DevTools Protocol. Εργαλεία: άνοιγμα URL, εκτέλεση JS μίας γραμμής, επαναφορά συνεδρίας.",
         "didi_mcp": "Διακομιστής DiDi MCP που παρέχει υπηρεσίες μεταφοράς συμπεριλαμβανομένης της αναζήτησης χαρτών, εκτίμησης τιμών, διαχείρισης παραγγελιών και παρακολούθησης οδηγών. Διαθέσιμο μόνο στην ηπειρωτική Κίνα. Απαιτεί διαμόρφωση της μεταβλητής περιβάλλοντος DIDI_API_KEY",
         "dify_knowledge": "Η υλοποίηση του Dify για τον διακομιστή MCP, παρέχει μια απλή API για να αλληλεπιδρά με το Dify. Απαιτείται η ρύθμιση του κλειδιού Dify",
         "fetch": "Εξυπηρετητής MCP για λήψη περιεχομένου ιστοσελίδας URL",
         "filesystem": "Εξυπηρετητής Node.js για το πρωτόκολλο περιβάλλοντος μοντέλου (MCP) που εφαρμόζει λειτουργίες συστήματος αρχείων. Απαιτείται διαμόρφωση για την επιτροπή πρόσβασης σε καταλόγους",
+        "llm": "[to be translated]:Provides LLM chat capabilities with file reading support. Uses models configured in Ofox Studio.",
         "mcp_auto_install": "Αυτόματη εγκατάσταση υπηρεσίας MCP (προβολή)",
         "memory": "Βασική υλοποίηση μόνιμης μνήμης με βάση τοπικό γράφημα γνώσης. Αυτό επιτρέπει στο μοντέλο να θυμάται πληροφορίες σχετικές με τον χρήστη ανάμεσα σε διαφορετικές συνομιλίες. Απαιτείται η ρύθμιση της μεταβλητής περιβάλλοντος MEMORY_FILE_PATH.",
         "no": "Χωρίς περιγραφή",
         "nowledge_mem": "Απαιτεί την εφαρμογή Nowledge Mem να εκτελείται τοπικά. Διατηρεί συνομιλίες με AI, εργαλεία, σημειώσεις, πράκτορες και αρχεία σε ιδιωτική μνήμη στον υπολογιστή σας. Κάντε λήψη από https://mem.nowledge.co/",
         "python": "Εκτελέστε κώδικα Python σε ένα ασφαλές περιβάλλον sandbox. Χρησιμοποιήστε το Pyodide για να εκτελέσετε Python, υποστηρίζοντας την πλειονότητα των βιβλιοθηκών της τυπικής βιβλιοθήκης και των πακέτων επιστημονικού υπολογισμού",
         "scheduler": "Διαχείριση Προγραμματισμένων Εργασιών MCP Διακομιστής. Παρέχει λειτουργικότητα για δημιουργία, κατάλογο, ενημέρωση, διαγραφή και εναλλαγή προγραμματισμένων εργασιών. Αποστέλλει μηνύματα σε καθορισμένες Συνεδρίες Πρακτόρων όταν ενεργοποιηθεί.",
-        "sequentialthinking": "ένας εξυπηρετητής MCP που υλοποιείται, παρέχοντας εργαλεία για δυναμική και αναστοχαστική επίλυση προβλημάτων μέσω δομημένων διαδικασιών σκέψης"
+        "sequentialthinking": "ένας εξυπηρετητής MCP που υλοποιείται, παρέχοντας εργαλεία για δυναμική και αναστοχαστική επίλυση προβλημάτων μέσω δομημένων διαδικασιών σκέψης",
+        "webview": "[to be translated]:Isolated WebView manager with full CDP access. Create ephemeral browser sessions, navigate pages, execute JavaScript, simulate input, manage cookies, and take screenshots. Supports manual intervention via lock/unlock mechanism."
       },
       "command": "Εντολή",
       "config_description": "Ρυθμίζει το πλαίσιο συντονισμού πρωτοκόλλων διακομιστή",
@@ -5923,6 +5924,22 @@
   },
   "warning": {
     "missing_provider": "Ο προμηθευτής δεν υπάρχει, έγινε επαναφορά στον προεπιλεγμένο προμηθευτή {{provider}}. Αυτό μπορεί να προκαλέσει προβλήματα."
+  },
+  "webview": {
+    "manager": {
+      "active_count": "[to be translated]:{{count}} active",
+      "agent_controlled": "[to be translated]:Agent Controlled",
+      "agent_operating": "[to be translated]:Agent Operating",
+      "create": "[to be translated]:Create",
+      "locked": "[to be translated]:Locked",
+      "manual_mode": "[to be translated]:Manual Mode",
+      "no_active": "[to be translated]:No active webviews",
+      "select_to_preview": "[to be translated]:Select a webview to preview",
+      "title": "[to be translated]:WebView Manager",
+      "unlocked": "[to be translated]:Unlocked",
+      "waiting_screenshot": "[to be translated]:Waiting for screenshot...",
+      "window": "[to be translated]:Window"
+    }
   },
   "words": {
     "knowledgeGraph": "γνώσεις Γράφου",

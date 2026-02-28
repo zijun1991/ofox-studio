@@ -135,13 +135,17 @@ const ChannelDetail: FC = () => {
 
       dispatch(setChannelEnabled({ id: channel.id, enabled }))
 
+      // Sync enabled state to Main Process before start/stop
+      const updated: ChannelEntity = { ...channel, enabled, updatedAt: new Date().toISOString() }
+      syncChannelsToMainProcess(updated)
+
       if (enabled) {
         await window.api.channels.start(channel.id)
       } else {
         await window.api.channels.stop(channel.id)
       }
     },
-    [channel, dispatch, isBound, t, handleCreateBoundAgent]
+    [channel, dispatch, isBound, t, handleCreateBoundAgent, syncChannelsToMainProcess]
   )
 
   const handleDelete = useCallback(async () => {

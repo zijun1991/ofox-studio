@@ -46,7 +46,7 @@ export const useCyclePermissionMode = () => {
       if (isSpeedyPage && turboAgentId && turboSession) {
         // 极速模式
         session = turboSession
-        currentMode = (turboSession.configuration?.permission_mode as PermissionMode) || 'default'
+        currentMode = (turboSession.configuration?.permission_mode as PermissionMode) || 'bypassPermissions'
         updateSessionFn = updateTurboSession
       } else if (!isSpeedyPage && activeAgentId && expertSession) {
         // 专家模式

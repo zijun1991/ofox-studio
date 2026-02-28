@@ -215,15 +215,6 @@ export const builtinMCPServers: BuiltinMCPServer[] = [
   },
   {
     id: nanoid(),
-    name: BuiltinMCPServerNames.browser,
-    type: 'inMemory',
-    isActive: false,
-    provider: 'OfoxStudio',
-    installSource: 'builtin',
-    isTrusted: true
-  },
-  {
-    id: nanoid(),
     name: BuiltinMCPServerNames.nowledgeMem,
     reference: 'https://mem.nowledge.co/',
     type: 'inMemory',
@@ -235,6 +226,24 @@ export const builtinMCPServers: BuiltinMCPServer[] = [
   {
     id: nanoid(),
     name: BuiltinMCPServerNames.scheduler,
+    type: 'inMemory',
+    isActive: true,
+    provider: 'OfoxStudio',
+    installSource: 'builtin',
+    isTrusted: true
+  },
+  {
+    id: nanoid(),
+    name: BuiltinMCPServerNames.webview,
+    type: 'inMemory',
+    isActive: true,
+    provider: 'OfoxStudio',
+    installSource: 'builtin',
+    isTrusted: true
+  },
+  {
+    id: nanoid(),
+    name: BuiltinMCPServerNames.llm,
     type: 'inMemory',
     isActive: true,
     provider: 'OfoxStudio',

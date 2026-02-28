@@ -11,7 +11,12 @@ import i18n from '@renderer/i18n'
 import store from '@renderer/store'
 import { hubMCPServer } from '@renderer/store/mcp'
 import type { Assistant, MCPServer, MCPTool, Model, Provider } from '@renderer/types'
-import { type FetchChatCompletionParams, getEffectiveMcpMode, isSystemProvider } from '@renderer/types'
+import {
+  BuiltinMCPServerNames,
+  type FetchChatCompletionParams,
+  getEffectiveMcpMode,
+  isSystemProvider
+} from '@renderer/types'
 import type { StreamTextParams } from '@renderer/types/aiCoreTypes'
 import { type Chunk, ChunkType } from '@renderer/types/chunk'
 import type { Message, ResponseError } from '@renderer/types/newMessage'
@@ -63,18 +68,31 @@ export function getMcpServersForAssistant(assistant: Assistant): MCPServer[] {
   const allMcpServers = store.getState().mcp.servers || []
   const activedMcpServers = allMcpServers.filter((s) => s.isActive)
 
+  let servers: MCPServer[]
+
   switch (mode) {
     case 'disabled':
-      return []
+      servers = []
+      break
     case 'auto':
-      return [hubMCPServer]
+      servers = [hubMCPServer]
+      break
     case 'manual': {
       const assistantMcpServers = assistant.mcpServers || []
-      return activedMcpServers.filter((server) => assistantMcpServers.some((s) => s.id === server.id))
+      servers = activedMcpServers.filter((server) => assistantMcpServers.some((s) => s.id === server.id))
+      break
     }
     default:
-      return []
+      servers = []
   }
+
+  // Always inject @ofox/llm server if not already present
+  const llmServer = allMcpServers.find((s) => s.name === BuiltinMCPServerNames.llm)
+  if (llmServer && !servers.some((s) => s.name === BuiltinMCPServerNames.llm)) {
+    servers.push(llmServer)
+  }
+
+  return servers
 }
 
 export async function fetchAllActiveServerTools(): Promise<MCPTool[]> {

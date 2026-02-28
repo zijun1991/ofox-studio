@@ -859,10 +859,11 @@ export const BuiltinMCPServerNames = {
   difyKnowledge: '@cherry/dify-knowledge',
   python: '@cherry/python',
   didiMCP: '@cherry/didi-mcp',
-  browser: '@cherry/browser',
   nowledgeMem: '@cherry/nowledge-mem',
   hub: '@cherry/hub',
-  scheduler: '@ofox/scheduler'
+  scheduler: '@ofox/scheduler',
+  webview: '@ofox/webview',
+  llm: '@ofox/llm'
 } as const
 
 export type BuiltinMCPServerName = (typeof BuiltinMCPServerNames)[keyof typeof BuiltinMCPServerNames]

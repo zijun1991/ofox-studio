@@ -10,12 +10,13 @@ import KnowledgeQueue from '@renderer/queue/KnowledgeQueue'
 import MemoryService from '@renderer/services/MemoryService'
 import OfoxProviderService from '@renderer/services/OfoxProviderService'
 import store, { handleSaveData, useAppDispatch, useAppSelector } from '@renderer/store'
-import { setChannelStatus } from '@renderer/store/channels'
+import { setChannelStatus, updateChannelMetadata } from '@renderer/store/channels'
 import { initializeMCPServers } from '@renderer/store/mcp'
 import { selectMemoryConfig } from '@renderer/store/memory'
 import { importConfig } from '@renderer/store/modelEmployee'
 import { setApiKey, setChecking, setModelsReady } from '@renderer/store/ofoxStore'
 import { setAvatar, setFilesPath, setResourcesPath, setUpdateState } from '@renderer/store/runtime'
+import { loadTopicMessagesThunk } from '@renderer/store/thunk/messageThunk'
 import {
   type ToolPermissionRequestPayload,
   type ToolPermissionResultPayload,
@@ -25,6 +26,7 @@ import type { ChannelMessageEvent, ChannelStatusEvent } from '@renderer/types/ch
 import type { ModelEmployee, ModelEmployeeExportData } from '@renderer/types/modelEmployee'
 import { delay, runAsyncFunction, uuid } from '@renderer/utils'
 import { checkDataLimit } from '@renderer/utils'
+import { buildAgentSessionTopicId } from '@renderer/utils/agentSession'
 import { defaultLanguage } from '@shared/config/constant'
 import { IpcChannel } from '@shared/IpcChannel'
 import { useLiveQuery } from 'dexie-react-hooks'
@@ -234,8 +236,19 @@ export function useAppInit() {
           sessionId: event.sessionId,
           direction: event.direction
         })
-        // Emit a custom event that the message list can listen to
-        // The sessionId is used directly as topicId for agent sessions
+
+        // Persist inbound metadata to Redux so it survives app restarts
+        if (event.direction === 'inbound' && event.metadata) {
+          dispatch(
+            updateChannelMetadata({
+              channelId: event.channelId,
+              metadata: event.metadata,
+              timestamp: event.timestamp
+            })
+          )
+        }
+
+        // Emit a custom event that the message list can listen to (for scrollToBottom etc.)
         window.dispatchEvent(
           new CustomEvent('channel-message-received', {
             detail: {
@@ -247,6 +260,13 @@ export function useAppInit() {
             }
           })
         )
+
+        // Directly dispatch message reload into Redux store so the UI refreshes
+        // regardless of whether the session's message component is currently mounted
+        if (event.sessionId) {
+          const topicId = buildAgentSessionTopicId(event.sessionId)
+          dispatch(loadTopicMessagesThunk(topicId, true))
+        }
       }
     )
 

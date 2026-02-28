@@ -7,11 +7,13 @@ import { powerMonitor } from 'electron'
 const logger = loggerService.withContext('PowerMonitorService')
 
 type ShutdownHandler = () => void | Promise<void>
+type ResumeHandler = () => void | Promise<void>
 
 export class PowerMonitorService {
   private static instance: PowerMonitorService
   private initialized = false
   private shutdownHandlers: ShutdownHandler[] = []
+  private resumeHandlers: ResumeHandler[] = []
 
   private constructor() {
     // Private constructor to prevent direct instantiation
@@ -31,6 +33,14 @@ export class PowerMonitorService {
   public registerShutdownHandler(handler: ShutdownHandler): void {
     this.shutdownHandlers.push(handler)
     logger.info('Shutdown handler registered', { totalHandlers: this.shutdownHandlers.length })
+  }
+
+  /**
+   * Register a resume handler to be called when system resumes from sleep
+   */
+  public registerResumeHandler(handler: ResumeHandler): void {
+    this.resumeHandlers.push(handler)
+    logger.info('Resume handler registered', { totalHandlers: this.resumeHandlers.length })
   }
 
   /**
@@ -67,6 +77,20 @@ export class PowerMonitorService {
   }
 
   /**
+   * Execute all registered resume handlers
+   */
+  private async executeResumeHandlers(): Promise<void> {
+    logger.info('Executing resume handlers', { count: this.resumeHandlers.length })
+    for (const handler of this.resumeHandlers) {
+      try {
+        await handler()
+      } catch (error) {
+        logger.error('Error executing resume handler', error as Error)
+      }
+    }
+  }
+
+  /**
    * Initialize shutdown handler for Windows using @paymoapp/electron-shutdown-handler
    */
   private initWindowsShutdownHandler(): void {
@@ -84,6 +108,12 @@ export class PowerMonitorService {
         ElectronShutdownHandler.releaseShutdown()
       })
 
+      // Listen for system resume event (Electron's powerMonitor is cross-platform)
+      powerMonitor.on('resume', async () => {
+        logger.info('System resume event detected (Windows)')
+        await this.executeResumeHandlers()
+      })
+
       logger.info('Windows shutdown handler registered')
     } catch (error) {
       logger.error('Failed to initialize Windows shutdown handler', error as Error)
@@ -97,11 +127,15 @@ export class PowerMonitorService {
     try {
       powerMonitor.on('shutdown', async () => {
         logger.info('System shutdown event detected', { platform: process.platform })
-        // Execute all registered shutdown handlers
         await this.executeShutdownHandlers()
       })
 
-      logger.info('Electron powerMonitor shutdown listener registered')
+      powerMonitor.on('resume', async () => {
+        logger.info('System resume event detected', { platform: process.platform })
+        await this.executeResumeHandlers()
+      })
+
+      logger.info('Electron powerMonitor shutdown/resume listener registered')
     } catch (error) {
       logger.error('Failed to initialize Electron powerMonitor', error as Error)
     }

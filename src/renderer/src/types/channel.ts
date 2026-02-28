@@ -137,6 +137,8 @@ export interface ChannelMessageEvent {
   direction: 'inbound' | 'outbound'
   content: string
   timestamp: string
+  /** Inbound message metadata (e.g. chatId) – present only on direction=inbound */
+  metadata?: Record<string, unknown>
 }
 
 // ---- Utility functions ----

@@ -1,7 +1,9 @@
 import { loggerService } from '@logger'
 import { config as apiConfigService } from '@main/apiServer/config'
+import powerMonitorService from '@main/services/PowerMonitorService'
+import { isTransientNetworkError, withRetry } from '@main/utils/retry'
 import { CronJob } from 'cron'
-import { and, count, desc, eq, lte } from 'drizzle-orm'
+import { and, count, desc, eq, isNull, lte, or } from 'drizzle-orm'
 
 import { BaseService } from '../BaseService'
 import type { InsertSchedulerLogRow, InsertSchedulerRow, SchedulerRow } from '../database/schema'
@@ -89,11 +91,19 @@ const LOG_RETENTION_DAYS = 30
 // Execution timeout in milliseconds (2 minutes)
 const EXECUTION_TIMEOUT_MS = 120000
 
+// Watchdog interval in milliseconds (60 seconds)
+const WATCHDOG_INTERVAL_MS = 60000
+
+// Grace period before considering a job as missed (30 seconds)
+const MISSED_EXECUTION_GRACE_MS = 30000
+
 export class SchedulerService extends BaseService {
   private static instance: SchedulerService | null = null
   private jobs: Map<string, ScheduledJob> = new Map()
   private isInitialized = false
   private cleanupJob: CronJob | null = null
+  private executingJobs: Set<string> = new Set()
+  private watchdogTimer: ReturnType<typeof setInterval> | null = null
 
   static getInstance(): SchedulerService {
     if (!SchedulerService.instance) {
@@ -135,6 +145,13 @@ export class SchedulerService extends BaseService {
       )
 
       this.isInitialized = true
+
+      // Start watchdog to detect missed executions and unhealthy jobs
+      this.startWatchdog()
+
+      // Register system resume handler to recover after sleep
+      powerMonitorService.registerResumeHandler(() => this.handleSystemResume())
+
       const disabledCount = enabledSchedulers.length - validSchedulers.length
       logger.info(`SchedulerService initialized with ${validSchedulers.length} jobs`, {
         total: enabledSchedulers.length,
@@ -432,13 +449,15 @@ export class SchedulerService extends BaseService {
     }
 
     try {
-      const job = new CronJob(
-        cronExpression,
-        async () => await this.executeJob(id),
-        null,
-        true, // start
-        timezone
-      )
+      const job = CronJob.from({
+        cronTime: cronExpression,
+        onTick: async () => await this.executeJob(id),
+        start: true,
+        timeZone: timezone,
+        errorHandler: (error: unknown) => {
+          logger.error('CronJob error', { id, error: error instanceof Error ? error.message : String(error) })
+        }
+      })
 
       this.jobs.set(id, { id, job, cronExpression, timezone })
       logger.info('Job started', { id, cronExpression, timezone })
@@ -464,6 +483,21 @@ export class SchedulerService extends BaseService {
    * Execute a scheduled job via internal HTTP API
    */
   private async executeJob(id: string): Promise<void> {
+    // Concurrent execution guard
+    if (this.executingJobs.has(id)) {
+      logger.warn('Job already executing, skipping', { id })
+      return
+    }
+
+    this.executingJobs.add(id)
+    try {
+      await this.executeJobInternal(id)
+    } finally {
+      this.executingJobs.delete(id)
+    }
+  }
+
+  private async executeJobInternal(id: string): Promise<void> {
     const scheduler = await this.getScheduler(id)
     if (!scheduler || !scheduler.enabled) {
       logger.warn('Scheduler not found or disabled, skipping', { id })
@@ -479,26 +513,50 @@ export class SchedulerService extends BaseService {
       // Get API server config
       const apiConfig = await apiConfigService.get()
 
-      // Send message via internal HTTP API with timeout
+      // Send message via internal HTTP API with timeout and retry
       const controller = new AbortController()
       const timeoutId = setTimeout(() => {
         controller.abort('Scheduler execution timeout')
       }, EXECUTION_TIMEOUT_MS)
 
       try {
-        const response = await fetch(
-          `http://localhost:${apiConfig.port}/internal/sessions/${scheduler.agent_id}/${scheduler.session_id}/messages`,
+        const response = await withRetry(
+          async () => {
+            const res = await fetch(
+              `http://localhost:${apiConfig.port}/internal/sessions/${scheduler.agent_id}/${scheduler.session_id}/messages`,
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: scheduler.message_content }),
+                signal: controller.signal
+              }
+            )
+
+            if (!res.ok) {
+              const body = await res.text()
+              const error = new Error(`HTTP ${res.status}: ${body}`)
+              // Only retry on 5xx; 4xx should fail immediately
+              if (res.status >= 500) {
+                ;(error as any).retryable = true
+              }
+              throw error
+            }
+
+            return res
+          },
           {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ content: scheduler.message_content }),
-            signal: controller.signal
+            maxAttempts: 3,
+            baseDelayMs: 2000,
+            maxDelayMs: 10000,
+            retryableCheck: (error: unknown) => {
+              if (isTransientNetworkError(error)) return true
+              if (error && typeof error === 'object' && 'retryable' in error) {
+                return !!(error as any).retryable
+              }
+              return false
+            }
           }
         )
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${await response.text()}`)
-        }
 
         // Read SSE stream and collect response preview
         let responsePreview = ''
@@ -582,6 +640,26 @@ export class SchedulerService extends BaseService {
         error_message: errorMessage,
         duration_ms: Date.now() - startTime
       })
+
+      // Always advance next_run_at even on failure, so the watchdog doesn't
+      // continuously re-trigger the same missed window.
+      try {
+        const database = await this.getDatabase()
+        const nextRunAt = this.calculateNextRun(scheduler.cron_expression, scheduler.timezone)
+        await database
+          .update(schedulersTable)
+          .set({
+            last_run_at: new Date().toISOString(),
+            next_run_at: nextRunAt?.toISOString() || null,
+            updated_at: new Date().toISOString()
+          })
+          .where(eq(schedulersTable.id, id))
+      } catch (dbError) {
+        logger.error('Failed to update next_run_at after job failure', {
+          id,
+          error: dbError instanceof Error ? dbError.message : String(dbError)
+        })
+      }
 
       logger.error('Job execution failed', { id, error: errorMessage })
     }
@@ -729,9 +807,105 @@ export class SchedulerService extends BaseService {
   }
 
   /**
+   * Start watchdog timer that periodically checks job health and missed executions
+   */
+  private startWatchdog(): void {
+    this.watchdogTimer = setInterval(async () => {
+      try {
+        await this.checkJobHealth()
+        await this.checkMissedExecutions()
+      } catch (error) {
+        logger.error('Watchdog error', { error: error instanceof Error ? error.message : String(error) })
+      }
+    }, WATCHDOG_INTERVAL_MS)
+    logger.info('Watchdog started', { intervalMs: WATCHDOG_INTERVAL_MS })
+  }
+
+  /**
+   * Check that all enabled schedulers have active CronJobs; restart any that are missing or inactive
+   */
+  private async checkJobHealth(): Promise<void> {
+    const database = await this.getDatabase()
+    const enabledSchedulers = await database.select().from(schedulersTable).where(eq(schedulersTable.enabled, true))
+
+    for (const scheduler of enabledSchedulers) {
+      const scheduledJob = this.jobs.get(scheduler.id)
+      if (!scheduledJob || !scheduledJob.job.isActive) {
+        logger.warn('Watchdog: restarting unhealthy job', {
+          id: scheduler.id,
+          name: scheduler.name,
+          hadJob: !!scheduledJob,
+          wasActive: scheduledJob?.job.isActive ?? false
+        })
+        await this.startJob(scheduler.id, scheduler.cron_expression, scheduler.timezone || 'Asia/Shanghai')
+      }
+    }
+  }
+
+  /**
+   * Check for schedulers whose next_run_at has passed beyond the grace period and trigger them
+   */
+  private async checkMissedExecutions(): Promise<void> {
+    const database = await this.getDatabase()
+    const cutoff = new Date(Date.now() - MISSED_EXECUTION_GRACE_MS).toISOString()
+
+    // Match schedulers whose next_run_at is overdue OR is NULL (orphaned state)
+    const missedSchedulers = await database
+      .select()
+      .from(schedulersTable)
+      .where(
+        and(
+          eq(schedulersTable.enabled, true),
+          or(lte(schedulersTable.next_run_at, cutoff), isNull(schedulersTable.next_run_at))
+        )
+      )
+
+    for (const scheduler of missedSchedulers) {
+      if (this.executingJobs.has(scheduler.id)) {
+        continue
+      }
+
+      logger.warn('Watchdog: detected missed execution, triggering now', {
+        id: scheduler.id,
+        name: scheduler.name,
+        missedAt: scheduler.next_run_at
+      })
+
+      // Fire and forget — executeJob has its own error handling
+      this.executeJob(scheduler.id).catch((error) => {
+        logger.error('Watchdog: missed execution recovery failed', {
+          id: scheduler.id,
+          error: error instanceof Error ? error.message : String(error)
+        })
+      })
+    }
+  }
+
+  /**
+   * Handle system resume from sleep — restart inactive jobs and catch up missed executions
+   */
+  private async handleSystemResume(): Promise<void> {
+    logger.info('System resumed from sleep, checking scheduler health')
+
+    try {
+      await this.checkJobHealth()
+      await this.checkMissedExecutions()
+      logger.info('System resume recovery completed')
+    } catch (error) {
+      logger.error('System resume recovery failed', {
+        error: error instanceof Error ? error.message : String(error)
+      })
+    }
+  }
+
+  /**
    * Cleanup all jobs (called on app shutdown)
    */
   async shutdown(): Promise<void> {
+    if (this.watchdogTimer) {
+      clearInterval(this.watchdogTimer)
+      this.watchdogTimer = null
+    }
     for (const [id] of this.jobs) {
       await this.stopJob(id)
     }

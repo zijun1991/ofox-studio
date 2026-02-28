@@ -27,6 +27,7 @@ import {
   Clock,
   FileSearch,
   Folder,
+  Globe,
   Home,
   Languages,
   LayoutGrid,
@@ -311,6 +312,11 @@ const TabsContainer: React.FC<TabsContainerProps> = ({ children }) => {
         </HorizontalScrollContainer>
         <RightButtonsContainer style={{ paddingRight: isLinux && useSystemTitleBar ? '12px' : undefined }}>
           <UpdateAppButton />
+          <Tooltip title={t('webview.manager.title')} mouseEnterDelay={0.8} placement="bottom">
+            <ThemeButton onClick={() => window.api.webviewManager.open()}>
+              <Globe size={16} />
+            </ThemeButton>
+          </Tooltip>
           <Tooltip
             title={t('settings.theme.title') + ': ' + getThemeModeLabel(settedTheme)}
             mouseEnterDelay={0.8}

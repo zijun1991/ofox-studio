@@ -4601,18 +4601,19 @@
       "builtinServers": "Servere integrate",
       "builtinServersDescriptions": {
         "brave_search": "O implementare de server MCP care integrează API-ul Brave Search, oferind funcționalități de căutare web și locală. Necesită configurarea variabilei de mediu BRAVE_API_KEY",
-        "browser": "Controlează o fereastră Electron headless prin Protocolul Chrome DevTools. Instrumente: deschide URL, execută JS pe o singură linie, resetează sesiunea.",
         "didi_mcp": "Server DiDi MCP care oferă servicii de ride-hailing, inclusiv căutare pe hartă, estimare preț, gestionare comenzi și urmărire șofer. Disponibil doar în China continentală. Necesită configurarea variabilei de mediu DIDI_API_KEY",
         "dify_knowledge": "Implementarea serverului MCP Dify oferă un API simplu pentru a interacționa cu Dify. Necesită configurarea cheii Dify",
         "fetch": "Server MCP pentru preluarea conținutului web de la URL",
         "filesystem": "Un server Node.js care implementează Protocolul de Context Model (MCP) pentru operațiuni în sistemul de fișiere. Necesită configurarea directoarelor permise pentru acces.",
+        "llm": "[to be translated]:Provides LLM chat capabilities with file reading support. Uses models configured in Ofox Studio.",
         "mcp_auto_install": "Instalează automat serviciul MCP (beta)",
         "memory": "Implementare de memorie persistentă bazată pe un graf de cunoștințe local. Aceasta permite modelului să rețină informații legate de utilizator între conversații diferite. Necesită configurarea variabilei de mediu MEMORY_FILE_PATH.",
         "no": "Fără descriere",
         "nowledge_mem": "Necesită aplicația Nowledge Mem rulând local. Păstrează chat-urile AI, instrumentele, notițele, agenții și fișierele în memoria privată de pe computerul tău. Descarcă de la https://mem.nowledge.co/",
         "python": "Execută cod Python într-un mediu sandbox securizat. Rulează Python cu Pyodide, suportând majoritatea bibliotecilor standard și pachetelor de calcul științific",
         "scheduler": "Managementul Sarcinilor Programate Server MCP. Oferă funcționalități pentru crearea, listarea, actualizarea, ștergerea și comutarea sarcinilor programate. Trimite mesaje către Sesiunile Agentului specificate atunci când sunt declanșate.",
-        "sequentialthinking": "O implementare de server MCP care oferă instrumente pentru rezolvarea dinamică și reflexivă a problemelor prin procese de gândire structurată"
+        "sequentialthinking": "O implementare de server MCP care oferă instrumente pentru rezolvarea dinamică și reflexivă a problemelor prin procese de gândire structurată",
+        "webview": "[to be translated]:Isolated WebView manager with full CDP access. Create ephemeral browser sessions, navigate pages, execute JavaScript, simulate input, manage cookies, and take screenshots. Supports manual intervention via lock/unlock mechanism."
       },
       "command": "Comandă",
       "config_description": "Configurează serverele Protocolului de Context Model",
@@ -5923,6 +5924,22 @@
   },
   "warning": {
     "missing_provider": "Furnizorul nu există; s-a revenit la furnizorul implicit {{provider}}. Acest lucru poate cauza probleme."
+  },
+  "webview": {
+    "manager": {
+      "active_count": "[to be translated]:{{count}} active",
+      "agent_controlled": "[to be translated]:Agent Controlled",
+      "agent_operating": "[to be translated]:Agent Operating",
+      "create": "[to be translated]:Create",
+      "locked": "[to be translated]:Locked",
+      "manual_mode": "[to be translated]:Manual Mode",
+      "no_active": "[to be translated]:No active webviews",
+      "select_to_preview": "[to be translated]:Select a webview to preview",
+      "title": "[to be translated]:WebView Manager",
+      "unlocked": "[to be translated]:Unlocked",
+      "waiting_screenshot": "[to be translated]:Waiting for screenshot...",
+      "window": "[to be translated]:Window"
+    }
   },
   "words": {
     "knowledgeGraph": "Grafic de cunoștințe",

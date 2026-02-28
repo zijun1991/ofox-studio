@@ -3,22 +3,32 @@ import { Server as MCServer } from '@modelcontextprotocol/sdk/server/index.js'
 import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js'
 import { app } from 'electron'
 
-import { CdpBrowserController } from './controller'
+import { WebviewController } from './controller'
 import { toolDefinitions, toolHandlers } from './tools'
 
-export class BrowserServer {
+let sharedController: WebviewController | null = null
+
+export function getWebviewController(): WebviewController {
+  if (!sharedController) {
+    sharedController = new WebviewController()
+  }
+  return sharedController
+}
+
+export class WebviewServer {
   public server: Server
-  private controller = new CdpBrowserController()
+  public controller: WebviewController
 
   constructor() {
+    this.controller = getWebviewController()
+
     const server = new MCServer(
       {
-        name: '@cherry/browser',
-        version: '0.1.0'
+        name: '@ofox/webview',
+        version: '1.0.0'
       },
       {
         capabilities: {
-          resources: {},
           tools: {}
         }
       }
@@ -34,17 +44,17 @@ export class BrowserServer {
       const { name, arguments: args } = request.params
       const handler = toolHandlers[name]
       if (!handler) {
-        throw new Error('Tool not found')
+        throw new Error(`Tool not found: ${name}`)
       }
       return handler(this.controller, args)
     })
 
     app.on('before-quit', () => {
-      void this.controller.reset()
+      this.controller.destroyAll()
     })
 
     this.server = server
   }
 }
 
-export default BrowserServer
+export default WebviewServer

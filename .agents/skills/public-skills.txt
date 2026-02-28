@@ -6,4 +6,5 @@ gh-create-pr
 i18n-workflow
 mcp-architecture
 plan-inbox
+preset-skill-guide
 turbo-architecture

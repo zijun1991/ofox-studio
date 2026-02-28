@@ -91,7 +91,7 @@ const WorkspacePanel: FC<WorkspacePanelProps> = ({ paths, onAddPath, onRemovePat
   const loadDirectoryChildren = useCallback(async (dirPath: string): Promise<WorkspaceNode[]> => {
     try {
       // listDirectory returns string[] (array of file paths)
-      const entryPaths = await window.api.file.listDirectory(dirPath, { recursive: false })
+      const entryPaths = await window.api.file.listDirectory(dirPath, { recursive: false, includeHidden: true })
       if (!entryPaths || entryPaths.length === 0) {
         return []
       }

@@ -694,6 +694,28 @@ const api = {
     logout: () => ipcRenderer.invoke(IpcChannel.Ofox_Logout),
     getModels: () => ipcRenderer.invoke(IpcChannel.Ofox_GetModels)
   },
+  webviewManager: {
+    open: () => ipcRenderer.invoke(IpcChannel.WebviewManager_Open),
+    list: () => ipcRenderer.invoke(IpcChannel.WebviewManager_List),
+    create: (options: { name?: string; url?: string }) => ipcRenderer.invoke(IpcChannel.WebviewManager_Create, options),
+    close: (webviewId: string) => ipcRenderer.invoke(IpcChannel.WebviewManager_Close, webviewId),
+    show: (webviewId: string) => ipcRenderer.invoke(IpcChannel.WebviewManager_Show, webviewId),
+    onChange: (callback: (data: any) => void) => {
+      const listener = (_event: Electron.IpcRendererEvent, data: any) => callback(data)
+      ipcRenderer.on(IpcChannel.WebviewManager_OnChange, listener)
+      return () => {
+        ipcRenderer.removeListener(IpcChannel.WebviewManager_OnChange, listener)
+      }
+    },
+    onScreenshot: (callback: (data: { webviewId: string; base64: string }) => void) => {
+      const listener = (_event: Electron.IpcRendererEvent, data: { webviewId: string; base64: string }) =>
+        callback(data)
+      ipcRenderer.on(IpcChannel.WebviewManager_Screenshot, listener)
+      return () => {
+        ipcRenderer.removeListener(IpcChannel.WebviewManager_Screenshot, listener)
+      }
+    }
+  },
   channels: {
     syncConfig: (channels: any[]) => ipcRenderer.invoke(IpcChannel.Channel_SyncConfig, channels),
     start: (channelId: string) => ipcRenderer.invoke(IpcChannel.Channel_Start, channelId),

@@ -51,7 +51,12 @@ export class AgentService extends BaseService {
 
     if (existing) {
       // Migration: Ensure all default MCPs exist in Turbo Agent
-      const defaultMCPs = [BuiltinMCPServerNames.scheduler, BuiltinMCPServerNames.python, BuiltinMCPServerNames.fetch]
+      const defaultMCPs = [
+        BuiltinMCPServerNames.scheduler,
+        BuiltinMCPServerNames.fetch,
+        BuiltinMCPServerNames.webview,
+        BuiltinMCPServerNames.llm
+      ]
       const currentMcps: string[] = Array.isArray(existing.mcps) ? existing.mcps : []
       const missingMcps = defaultMCPs.filter((m) => !currentMcps.includes(m))
       if (missingMcps.length > 0) {
@@ -66,6 +71,21 @@ export class AgentService extends BaseService {
           })
           .where(eq(agentsTable.id, TURBO_AGENT_ID))
         logger.info('Turbo Agent migrated successfully')
+      }
+
+      // Migration: Ensure Turbo Agent has default permission_mode
+      const currentConfig = (existing.configuration as Record<string, unknown>) || {}
+      if (!currentConfig.permission_mode) {
+        const updatedConfig = { ...currentConfig, permission_mode: 'bypassPermissions' }
+        logger.info('Migrating Turbo Agent: Setting default permission_mode to bypassPermissions')
+        const db = await this.getDatabase()
+        await db
+          .update(agentsTable)
+          .set({
+            configuration: JSON.stringify(updatedConfig),
+            updated_at: new Date().toISOString()
+          })
+          .where(eq(agentsTable.id, TURBO_AGENT_ID))
       }
 
       // Initialize preset skills for existing agent (installs new skills if any)
@@ -91,9 +111,11 @@ export class AgentService extends BaseService {
       accessible_paths: JSON.stringify(this.ensurePathsExist([defaultPath])),
       mcps: JSON.stringify([
         BuiltinMCPServerNames.scheduler,
-        BuiltinMCPServerNames.python,
-        BuiltinMCPServerNames.fetch
+        BuiltinMCPServerNames.fetch,
+        BuiltinMCPServerNames.webview,
+        BuiltinMCPServerNames.llm
       ]),
+      configuration: JSON.stringify({ permission_mode: 'bypassPermissions' }),
       is_system: true,
       created_at: now,
       updated_at: now
@@ -249,7 +271,12 @@ export class AgentService extends BaseService {
     }
 
     // Add default MCP Servers for all agents
-    const defaultMCPs = [BuiltinMCPServerNames.scheduler, BuiltinMCPServerNames.python, BuiltinMCPServerNames.fetch]
+    const defaultMCPs = [
+      BuiltinMCPServerNames.scheduler,
+      BuiltinMCPServerNames.fetch,
+      BuiltinMCPServerNames.webview,
+      BuiltinMCPServerNames.llm
+    ]
     if (!req.mcps) {
       req.mcps = []
     }

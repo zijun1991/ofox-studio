@@ -47,6 +47,16 @@ const channelsSlice = createSlice({
     },
     setAllStatuses: (state, action: PayloadAction<Record<string, ChannelStatus>>) => {
       state.statuses = action.payload
+    },
+    updateChannelMetadata: (
+      state,
+      action: PayloadAction<{ channelId: string; metadata: Record<string, unknown>; timestamp: string }>
+    ) => {
+      const ch = state.channels.find((c) => c.id === action.payload.channelId)
+      if (ch) {
+        ch.lastMessageMetadata = action.payload.metadata
+        ch.lastMessageAt = action.payload.timestamp
+      }
     }
   },
   selectors: {
@@ -71,7 +81,8 @@ export const {
   deleteChannel,
   setChannelEnabled,
   setChannelStatus,
-  setAllStatuses
+  setAllStatuses,
+  updateChannelMetadata
 } = channelsSlice.actions
 
 export const {

@@ -4,16 +4,17 @@ import type { BuiltinMCPServerName } from '@types'
 import { BuiltinMCPServerNames } from '@types'
 
 import BraveSearchServer from './brave-search'
-import BrowserServer from './browser'
 import DiDiMcpServer from './didi-mcp'
 import DifyKnowledgeServer from './dify-knowledge'
 import FetchServer from './fetch'
 import FileSystemServer from './filesystem'
 import HubServer from './hub'
+import LlmServer from './llm'
 import MemoryServer from './memory'
 import PythonServer from './python'
 import SchedulerServer from './scheduler'
 import ThinkingServer from './sequentialthinking'
+import WebviewServer from './webview'
 
 const logger = loggerService.withContext('MCPFactory')
 
@@ -51,14 +52,17 @@ export function createInMemoryMCPServer(
       const apiKey = envs.DIDI_API_KEY
       return new DiDiMcpServer(apiKey).server
     }
-    case BuiltinMCPServerNames.browser: {
-      return new BrowserServer().server
-    }
     case BuiltinMCPServerNames.hub: {
       return new HubServer().server
     }
     case BuiltinMCPServerNames.scheduler: {
       return new SchedulerServer().server
+    }
+    case BuiltinMCPServerNames.webview: {
+      return new WebviewServer().server
+    }
+    case BuiltinMCPServerNames.llm: {
+      return new LlmServer().server
     }
     default:
       throw new Error(`Unknown in-memory MCP server: ${name}`)

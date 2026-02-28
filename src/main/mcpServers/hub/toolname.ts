@@ -30,7 +30,7 @@ function capitalizeFirstLetter(str: string): string {
  *
  * Examples:
  * - serverName: "GitHub", toolName: "search_repos" -> "githubSearchRepos"
- * - serverName: "@cherry/browser", toolName: "execute" -> "cherryBrowserExecute"
+ * - serverName: "@cherry/memory", toolName: "search" -> "cherryMemorySearch"
  */
 export function buildHubJsToolName(serverName: string | undefined, toolName: string): string {
   const serverPart = serverName ? toCamelCase(serverName) : ''

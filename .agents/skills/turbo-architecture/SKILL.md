@@ -246,11 +246,54 @@ Indexes: `idx_session_messages_session_id`, `idx_session_messages_created_at`, `
 
 ---
 
+## Turbo Agent Default Configuration
+
+### Default Working Directory
+
+- **Default path**: `~/Documents/Ofox Claw` (via `path.join(os.homedir(), 'Documents', 'Ofox Claw')`)
+- **Defined in**: `src/main/services/agents/services/AgentService.ts:79-81`
+- **Storage field**: `agents.accessible_paths` (JSON array, first element is the primary working directory)
+- **Auto-created**: The directory is ensured to exist via `this.ensurePathsExist([defaultPath])`
+
+### Agent Defaults
+
+| Property | Value |
+|----------|-------|
+| **id** | `agent_turbo_system` |
+| **type** | `claude-code` |
+| **name** | `极速模式` |
+| **description** | `快速响应的极速助手，适用于简单任务` |
+| **instructions** | `You are a fast and efficient assistant.` |
+| **model** | `''` (user configures) |
+| **is_system** | `true` (cannot be deleted) |
+| **default MCPs** | `scheduler`, `python`, `fetch` |
+
+### Preset Skills
+
+- **Source**: `resources/preset-skills` (dev) / `app/resources/preset-skills` (packaged)
+- **Target**: `{accessible_paths[0]}/.claude/skills/`
+- **Plugin cache**: `{accessible_paths[0]}/.claude/plugins.json`
+- **Initialization**: Uses `accessible_paths[0]` as the working directory for skill installation
+- **Logic in**: `AgentService.initializePresetSkills()` (`AgentService.ts:114-191`)
+
+### Working Directory Sync
+
+The working directory (`accessible_paths`) follows a bidirectional sync pattern managed by `useTurboWorkspaceSync` hook:
+
+- **Session inherits from agent**: When a session is created, it copies the agent's `accessible_paths`
+- **Agent → Session sync**: When agent's `accessible_paths` changes, it auto-syncs to the active session
+- **UI → Both sync**: When user modifies paths via WorkspacePanel (drag-and-drop or remove), both session and agent are updated via `Promise.all()`
+- **Loop prevention**: Uses `isSyncingRef` to prevent infinite update loops
+- **Path resolution**: `const accessiblePaths = session?.accessible_paths || agent?.accessible_paths || []`
+
+---
+
 ## Constants
 
 | Constant | Value | Locations |
 |----------|-------|-----------|
 | `TURBO_AGENT_ID` | `'agent_turbo_system'` | `AgentService.ts`, `SpeedyPage.tsx`, `useTurboWorkspaceSync.ts` |
+| Default working dir | `~/Documents/Ofox Claw` | `AgentService.ts:79` |
 | API server port | `8889` | Config default |
 | API version prefix | `/v1` | `agent.ts` |
 
@@ -258,9 +301,11 @@ Indexes: `idx_session_messages_session_id`, `idx_session_messages_created_at`, `
 
 ## Initialization Sequence
 
-1. **Main process startup**
+1. **Main process startup** (`src/main/index.ts:227-233`)
    - `DatabaseManager.getInstance()` → init LibSQL + Drizzle, run migrations
    - `AgentService.ensureTurboAgentExists()` → create/migrate system agent, init preset skills
+     - If agent **does not exist**: creates with default path `~/Documents/Ofox Claw`, default MCPs (`scheduler`, `python`, `fetch`), and installs preset skills
+     - If agent **exists**: ensures default MCPs are present (migration), initializes preset skills from `existing.accessible_paths[0]`
    - `ApiServer.start()` → Express on port 8889
 
 2. **Renderer init** (`useAppInit`)

@@ -48,20 +48,26 @@ const getLanguageInstruction = () => {
   `
 }
 
-const getContextPrompt = (agentId: string, sessionId: string): string => {
+const getContextPrompt = (agentId: string, sessionId: string, apiBaseUrl: string): string => {
   return `
 ## 工作指导
-1. 如果能通过简单的shell命令完成工作，优先使用shell命令
-2. 如果工作较复杂，优先使用python
+1. 优先使用提供给你的tools完成工作
+2. 如果工作较复杂，查找符合需求的skill，如果找不到，可以通过find-skill去发现可用的skills，通过各种skill的搭配来解决问题。安装好的skill，你要软链接到你的skill存放目录下，如果无法创建软链接，就直接复制。
 3. 如果用户表达了基于当前时间的任何意向，除非特别指定，否则你必须通过shell取得实时的本地时间
 4. 来自用户消息内的时间，如果是相对日期时间（如明天、周日、3小时后），都必须转换为精确的本地时间，避免产生歧义
+5. 如果没有特殊的说明，你的工作默认都是在默认工作目录下执行
+6. 如果你要写文件，你需要对文件进行分类管理，禁止平铺在工作区内
+7. 用户在electron中和你对话，你的消息如果是markdown，会被格式化为精美的富文本。
+
+## 重要！本地资源渲染
+本地多媒体资源如果可以通过web渲染的，应该使用 ${apiBaseUrl}/internal/file-reader/your/file/path 来引用，如 <img src="${apiBaseUrl}/internal/file-reader/your/file/path">，就会正确的返回本地文件 /your/file/path 的内容
 
 ## Session Context
 - Agent ID: ${agentId}
 - Session ID: ${sessionId}
 
 ## Scheduled Task
-如果你想给自己设置定时任务或想在特点时间主动向用户发消息，你可以使用scheduler工具来，通过定时任务来触发你自己的回复。
+如果你想给自己设置定时任务或想在特点时间主动向用户发消息，你可以使用scheduler工具，通过定时任务来触发你自己的回复。
 
 注意！！除非明确指定，否则创建定时任务都是执行后立即销毁的一次性任务，要设置delete_on_trigger!
 
@@ -329,7 +335,11 @@ class ClaudeCodeService implements AgentServiceInterface {
       systemPrompt: {
         type: 'preset',
         preset: 'claude_code',
-        append: [getContextPrompt(session.agent_id, session.id), session.instructions, getLanguageInstruction()]
+        append: [
+          getContextPrompt(session.agent_id, session.id, `http://${apiConfig.host}:${apiConfig.port}`),
+          session.instructions,
+          getLanguageInstruction()
+        ]
           .filter(Boolean)
           .join('\n\n')
       },
@@ -375,7 +385,12 @@ class ClaudeCodeService implements AgentServiceInterface {
       }
 
       // Always inject default MCPs if not already present
-      const defaultMCPs = [BuiltinMCPServerNames.scheduler, BuiltinMCPServerNames.python, BuiltinMCPServerNames.fetch]
+      const defaultMCPs = [
+        BuiltinMCPServerNames.scheduler,
+        BuiltinMCPServerNames.fetch,
+        BuiltinMCPServerNames.webview,
+        BuiltinMCPServerNames.llm
+      ]
       for (const mcpName of defaultMCPs) {
         if (!mcpList[mcpName]) {
           const server = allServers.find((s) => s.name === mcpName)

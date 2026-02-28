@@ -4601,18 +4601,19 @@
       "builtinServers": "內建伺服器",
       "builtinServersDescriptions": {
         "brave_search": "一個整合了 Brave 搜尋 API 的 MCP 伺服器實做，提供網頁與本機搜尋雙重功能。需要設定 BRAVE_API_KEY 環境變數",
-        "browser": "透過 Chrome DevTools Protocol 控制 headless Electron 視窗。工具：開啟 URL、執行單行 JS、重設工作階段。",
         "didi_mcp": "一個整合了滴滴 MCP 伺服器實做，提供網約車服務包括地圖搜尋、價格預估、訂單管理和司機追蹤。僅支援中國大陸地區。需要設定 DIDI_API_KEY 環境變數",
         "dify_knowledge": "Dify 的 MCP 伺服器實做，提供了一個簡單的 API 來與 Dify 進行互動。需要設定 Dify Key",
         "fetch": "用於取得 URL 網頁內容的 MCP 伺服器",
         "filesystem": "實做文件系統操作的模型上下文協議（MCP）的 Node.js 伺服器。需要設定允許存取的目錄",
+        "llm": "[to be translated]:Provides LLM chat capabilities with file reading support. Uses models configured in Ofox Studio.",
         "mcp_auto_install": "自動安裝 MCP 服務（測試版）",
         "memory": "基於本機知識圖譜的持久性記憶基礎實做。這使得模型能夠在不同對話間記住使用者的相關資訊。需要設定 MEMORY_FILE_PATH 環境變數。",
         "no": "無描述",
         "nowledge_mem": "需要本機執行 Nowledge Mem 應用程式。將 AI 對話、工具、筆記、代理和檔案保存在電腦上的私人記憶體中。請從 https://mem.nowledge.co/ 下載",
         "python": "在安全的沙盒環境中執行 Python 程式碼。使用 Pyodide 執行 Python，支援大多數標準函式庫和科學計算套件",
         "scheduler": "排程任務管理 MCP 伺服器。提供建立、列出、更新、刪除及切換排程任務功能。觸發時會向指定代理工作階段發送訊息。",
-        "sequentialthinking": "一個 MCP 伺服器實做，提供了透過結構化思維過程進行動態和反思性問題解決的工具"
+        "sequentialthinking": "一個 MCP 伺服器實做，提供了透過結構化思維過程進行動態和反思性問題解決的工具",
+        "webview": "隔離的 WebView 管理器，提供完整的 CDP 存取。建立臨時瀏覽器會話、導覽頁面、執行 JavaScript、模擬輸入、管理 Cookie 和截圖。支援透過鎖定/解鎖機制進行人工介入。"
       },
       "command": "指令",
       "config_description": "設定模型上下文協議伺服器",
@@ -5923,6 +5924,22 @@
   },
   "warning": {
     "missing_provider": "供應商不存在，已改用預設供應商 {{provider}}。這可能導致問題。"
+  },
+  "webview": {
+    "manager": {
+      "active_count": "{{count}} 個活躍",
+      "agent_controlled": "Agent 控制中",
+      "agent_operating": "Agent 操作中",
+      "create": "建立",
+      "locked": "已鎖定",
+      "manual_mode": "手動模式",
+      "no_active": "暫無活躍的 WebView",
+      "select_to_preview": "選擇一個 WebView 進行預覽",
+      "title": "WebView 管理器",
+      "unlocked": "未鎖定",
+      "waiting_screenshot": "等待截圖中...",
+      "window": "視窗"
+    }
   },
   "words": {
     "knowledgeGraph": "知識圖譜",

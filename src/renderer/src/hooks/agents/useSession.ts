@@ -24,13 +24,11 @@ export const useSession = (agentId: string | null, sessionId: string | null) => 
   }
   const { data, error, isLoading, mutate } = useSWR(key, fetcher)
 
-  // Use loadTopicMessagesThunk to load messages (with caching mechanism)
-  // This ensures messages are preserved when switching between sessions/tabs
+  // Always force-reload messages from DB when switching sessions to ensure
+  // the UI reflects the latest state (e.g., messages added by Scheduler)
   useEffect(() => {
     if (sessionTopicId) {
-      // loadTopicMessagesThunk will check if messages already exist in Redux
-      // and skip loading if they do (unless forceReload is true)
-      dispatch(loadTopicMessagesThunk(sessionTopicId))
+      dispatch(loadTopicMessagesThunk(sessionTopicId, true))
     }
   }, [dispatch, sessionId, sessionTopicId])
 

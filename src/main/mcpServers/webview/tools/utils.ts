@@ -12,3 +12,14 @@ export function errorResponse(error: Error | string) {
     isError: true
   }
 }
+
+export function jsonResponse(data: unknown) {
+  return successResponse(JSON.stringify(data, null, 2))
+}
+
+export function imageResponse(base64: string, mimeType = 'image/png') {
+  return {
+    content: [{ type: 'image', data: base64, mimeType }],
+    isError: false
+  }
+}
