@@ -3,7 +3,7 @@ import { HStack } from '@renderer/components/Layout'
 import { useTheme } from '@renderer/context/ThemeProvider'
 import type { EducationLevel, ModelEmployee } from '@renderer/types/modelEmployee'
 import { Button, Empty, Tag } from 'antd'
-import type { FC } from 'react'
+import type { FC, ReactNode } from 'react'
 import { useState } from 'react'
 import styled from 'styled-components'
 
@@ -12,7 +12,7 @@ import EmployeeCard from './EmployeeCard'
 
 interface EducationLevelSectionProps {
   level: EducationLevel
-  icon: string
+  icon: ReactNode
   color: string
   label: string
   employees: ModelEmployee[]

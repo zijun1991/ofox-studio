@@ -71,7 +71,9 @@
       "tooltip": "Το Git Bash απαιτείται για την εκτέλεση πρακτόρων στα Windows. Εγκαταστήστε το από το git-scm.com εάν δεν είναι διαθέσιμο."
     },
     "input": {
-      "placeholder": "Εισάγετε το μήνυμά σας εδώ, στείλτε με {{key}} - @ επιλέξτε διαδρομή, / επιλέξτε εντολή"
+      "placeholder": {
+        "turbo": "[to be translated]:Tell me what to do"
+      }
     },
     "list": {
       "error": {
@@ -4420,6 +4422,11 @@
       "assistant": {
         "title": "Ρυθμίσεις Υπηρεσίας"
       },
+      "background_image": {
+        "description": "[to be translated]:Set a background image for the app window",
+        "select": "[to be translated]:Select Image",
+        "title": "[to be translated]:Background Image"
+      },
       "custom": {
         "css": {
           "cherrycss": "Λήψη από ofox.ai/themes",
@@ -4433,14 +4440,6 @@
         "global": "Γενική γραμματοσειρά",
         "select": "Επιλέξτε γραμματοσειρά",
         "title": "Ρύθμιση γραμματοσειράς"
-      },
-      "navbar": {
-        "position": {
-          "label": "Θέση Γραμμής Πλοήγησης",
-          "left": "Αριστερά",
-          "top": "Πάνω"
-        },
-        "title": "Ρυθμίσεις Γραμμής Πλοήγησης"
       },
       "sidebar": {
         "chat": {
@@ -5431,42 +5430,6 @@
       "zoom_out": "Σμικρύνση εμφάνισης",
       "zoom_reset": "Επαναφορά εμφάνισης"
     },
-    "skin": {
-      "addCustom": "Add Custom",
-      "background": {
-        "addColor": "Add Color",
-        "blur": "Blur",
-        "color": "Color",
-        "colors": "Colors",
-        "direction": "Direction",
-        "directions": {
-          "radial": "Radial",
-          "to-bottom": "Vertical",
-          "to-bottom-right": "Diagonal",
-          "to-right": "Horizontal"
-        },
-        "opacity": "Opacity",
-        "selectImage": "Select Image",
-        "size": "Size",
-        "sizeAuto": "Auto",
-        "sizeContain": "Contain",
-        "sizeCover": "Cover",
-        "title": "Background Settings",
-        "types": {
-          "gradient": "Gradient",
-          "image": "Image",
-          "solid": "Solid"
-        }
-      },
-      "customTitle": "Custom Skin",
-      "deleteConfirm": "Are you sure you want to delete this skin?",
-      "export": "Export Skin",
-      "import": "Import Skin",
-      "name": "Skin Name",
-      "namePlaceholder": "Enter skin name",
-      "primaryColor": "Primary Color",
-      "title": "Skin"
-    },
     "theme": {
       "color_primary": "Κύριο Χρώμα Θέματος",
       "dark": "Σκοτεινό",
@@ -5696,16 +5659,28 @@
     }
   },
   "speedy": {
+    "add_task": "[to be translated]:New Task",
     "chat_placeholder": "Ξεκινήστε νέα συνομιλία",
     "configure_employees": "Ρύθμιση Υπαλλήλων Μοντέλου",
     "expert_mode": "Εξειδικευμένη Λειτουργία",
+    "mode": {
+      "full_auto": "[to be translated]:Full Auto",
+      "plan": "[to be translated]:Plan"
+    },
+    "new_chat": "[to be translated]:New Chat",
+    "new_task_name": "[to be translated]:New Task",
     "new_topic": "Νέο Θέμα",
     "no_employee_description": "Παρακαλώ ρυθμίστε υπαλλήλους μοντέλου για να χρησιμοποιήσετε τη Λειτουργία Turbo",
     "no_employee_title": "Χωρίς Υπαλλήλους Μοντέλου",
     "no_topics": "Δεν υπάρχουν θέματα ακόμα",
     "select_employee": "Επιλογή Υπαλλήλου Μοντέλου",
     "title": "Λειτουργία Turbo",
-    "topic_list_title": "Θέματα"
+    "topic_list_title": "Θέματα",
+    "welcome": {
+      "subtitle": "[to be translated]:Commander, issue the order to rewrite the future",
+      "title": "[to be translated]:Traversing billions of computations, all for this moment."
+    },
+    "workspace": "[to be translated]:Workspace"
   },
   "title": {
     "apps": "Εφαρμογές",

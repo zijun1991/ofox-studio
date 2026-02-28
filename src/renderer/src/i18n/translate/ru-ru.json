@@ -71,7 +71,9 @@
       "tooltip": "Для запуска агентов в Windows требуется Git Bash. Установите его с сайта git-scm.com, если он отсутствует."
     },
     "input": {
-      "placeholder": "Введите ваше сообщение здесь, отправьте с помощью {{key}} — @ выбрать путь, / выбрать команду"
+      "placeholder": {
+        "turbo": "[to be translated]:Tell me what to do"
+      }
     },
     "list": {
       "error": {
@@ -4420,6 +4422,11 @@
       "assistant": {
         "title": "Настройки ассистентов"
       },
+      "background_image": {
+        "description": "[to be translated]:Set a background image for the app window",
+        "select": "[to be translated]:Select Image",
+        "title": "[to be translated]:Background Image"
+      },
       "custom": {
         "css": {
           "cherrycss": "Получить из ofox.ai/themes",
@@ -4433,14 +4440,6 @@
         "global": "Глобальный шрифт",
         "select": "Выбрать шрифт",
         "title": "Настройки шрифта"
-      },
-      "navbar": {
-        "position": {
-          "label": "Положение навигации",
-          "left": "Слева",
-          "top": "Сверху"
-        },
-        "title": "Настройки навигации"
       },
       "sidebar": {
         "chat": {
@@ -5431,42 +5430,6 @@
       "zoom_out": "Уменьшить",
       "zoom_reset": "Сбросить масштаб"
     },
-    "skin": {
-      "addCustom": "Add Custom",
-      "background": {
-        "addColor": "Add Color",
-        "blur": "Blur",
-        "color": "Color",
-        "colors": "Colors",
-        "direction": "Direction",
-        "directions": {
-          "radial": "Radial",
-          "to-bottom": "Vertical",
-          "to-bottom-right": "Diagonal",
-          "to-right": "Horizontal"
-        },
-        "opacity": "Opacity",
-        "selectImage": "Select Image",
-        "size": "Size",
-        "sizeAuto": "Auto",
-        "sizeContain": "Contain",
-        "sizeCover": "Cover",
-        "title": "Background Settings",
-        "types": {
-          "gradient": "Gradient",
-          "image": "Image",
-          "solid": "Solid"
-        }
-      },
-      "customTitle": "Custom Skin",
-      "deleteConfirm": "Are you sure you want to delete this skin?",
-      "export": "Export Skin",
-      "import": "Import Skin",
-      "name": "Skin Name",
-      "namePlaceholder": "Enter skin name",
-      "primaryColor": "Primary Color",
-      "title": "Skin"
-    },
     "theme": {
       "color_primary": "Цвет темы",
       "dark": "Темная",
@@ -5696,16 +5659,28 @@
     }
   },
   "speedy": {
+    "add_task": "[to be translated]:New Task",
     "chat_placeholder": "Начать новый разговор",
     "configure_employees": "Настроить сотрудников модели",
     "expert_mode": "Экспертный режим",
+    "mode": {
+      "full_auto": "[to be translated]:Full Auto",
+      "plan": "[to be translated]:Plan"
+    },
+    "new_chat": "[to be translated]:New Chat",
+    "new_task_name": "[to be translated]:New Task",
     "new_topic": "Новая тема",
     "no_employee_description": "Пожалуйста, настройте сотрудников модели для использования Турбо-режима",
     "no_employee_title": "Нет сотрудников модели",
     "no_topics": "Тем пока нет",
     "select_employee": "Выбрать сотрудника модели",
     "title": "Турбо-режим",
-    "topic_list_title": "Темы"
+    "topic_list_title": "Темы",
+    "welcome": {
+      "subtitle": "[to be translated]:Commander, issue the order to rewrite the future",
+      "title": "[to be translated]:Traversing billions of computations, all for this moment."
+    },
+    "workspace": "[to be translated]:Workspace"
   },
   "title": {
     "apps": "Приложения",

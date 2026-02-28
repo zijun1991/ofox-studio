@@ -4,21 +4,20 @@ import { Sortable, useDndReorder } from '@renderer/components/dnd'
 import HorizontalScrollContainer from '@renderer/components/HorizontalScrollContainer'
 import { isLinux, isMac } from '@renderer/config/constant'
 import { allMinApps } from '@renderer/config/minapps'
-import { useTheme } from '@renderer/context/ThemeProvider'
 import { useFullscreen } from '@renderer/hooks/useFullscreen'
 import { useMinappPopup } from '@renderer/hooks/useMinappPopup'
 import { useMinapps } from '@renderer/hooks/useMinapps'
 import { useSettings } from '@renderer/hooks/useSettings'
 import { useTools } from '@renderer/hooks/useTools'
-import { getThemeModeLabel, getTitleLabel } from '@renderer/i18n/label'
+import { getTitleLabel } from '@renderer/i18n/label'
 import UpdateAppButton from '@renderer/pages/home/components/UpdateAppButton'
+import NavigationService from '@renderer/services/NavigationService'
 import tabsService from '@renderer/services/TabsService'
 import { useAppDispatch, useAppSelector } from '@renderer/store'
 import type { Tab } from '@renderer/store/tabs'
 import { addTab, removeTab, setActiveTab, setTabs } from '@renderer/store/tabs'
 import type { MinAppType } from '@renderer/types'
 import type { CustomTool } from '@renderer/types'
-import { ThemeMode } from '@renderer/types'
 import { classNames } from '@renderer/utils'
 import { Tooltip } from 'antd'
 import type { LRUCache } from 'lru-cache'
@@ -32,13 +31,11 @@ import {
   Languages,
   LayoutGrid,
   MessageSquare,
-  Monitor,
-  Moon,
   NotepadText,
   Palette,
+  Radio,
   Settings,
   Sparkle,
-  Sun,
   Terminal,
   X
 } from 'lucide-react'
@@ -138,16 +135,20 @@ const getTabIcon = (
 }
 
 let lastSettingsPath = '/settings/provider'
-const specialTabs = ['launchpad', 'settings']
+const specialTabs = ['launchpad', 'settings', 'home', 'scheduler', 'channels']
 
 const TabsContainer: React.FC<TabsContainerProps> = ({ children }) => {
   const location = useLocation()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
+
+  // Ensure NavigationService has the navigate function for TabsService.closeTab
+  useEffect(() => {
+    NavigationService.setNavigate(navigate)
+  }, [navigate])
   const tabs = useAppSelector((state) => state.tabs.tabs)
   const activeTabId = useAppSelector((state) => state.tabs.activeTabId)
   const isFullscreen = useFullscreen()
-  const { settedTheme, toggleTheme } = useTheme()
   const { hideMinappPopup, minAppsCache } = useMinappPopup()
   const { minapps } = useMinapps()
   const { customTools } = useTools()
@@ -312,28 +313,45 @@ const TabsContainer: React.FC<TabsContainerProps> = ({ children }) => {
         </HorizontalScrollContainer>
         <RightButtonsContainer style={{ paddingRight: isLinux && useSystemTitleBar ? '12px' : undefined }}>
           <UpdateAppButton />
+          <Tooltip title={t('title.home')} mouseEnterDelay={0.8} placement="bottom">
+            <NavbarIconButton
+              onClick={() => {
+                hideMinappPopup()
+                dispatch(setActiveTab('home'))
+                navigate('/')
+              }}
+              $active={activeTabId === 'home'}>
+              <Home size={16} />
+            </NavbarIconButton>
+          </Tooltip>
+          <Tooltip title={t('title.scheduler')} mouseEnterDelay={0.8} placement="bottom">
+            <NavbarIconButton
+              onClick={() => {
+                hideMinappPopup()
+                navigate('/scheduler')
+              }}
+              $active={activeTabId === 'scheduler'}>
+              <Clock size={16} />
+            </NavbarIconButton>
+          </Tooltip>
+          <Tooltip title={t('title.channels')} mouseEnterDelay={0.8} placement="bottom">
+            <NavbarIconButton
+              onClick={() => {
+                hideMinappPopup()
+                navigate('/channels')
+              }}
+              $active={activeTabId === 'channels'}>
+              <Radio size={16} />
+            </NavbarIconButton>
+          </Tooltip>
           <Tooltip title={t('webview.manager.title')} mouseEnterDelay={0.8} placement="bottom">
-            <ThemeButton onClick={() => window.api.webviewManager.open()}>
+            <NavbarIconButton onClick={() => window.api.webviewManager.open()} $active={false}>
               <Globe size={16} />
-            </ThemeButton>
+            </NavbarIconButton>
           </Tooltip>
-          <Tooltip
-            title={t('settings.theme.title') + ': ' + getThemeModeLabel(settedTheme)}
-            mouseEnterDelay={0.8}
-            placement="bottom">
-            <ThemeButton onClick={toggleTheme}>
-              {settedTheme === ThemeMode.dark ? (
-                <Moon size={16} />
-              ) : settedTheme === ThemeMode.light ? (
-                <Sun size={16} />
-              ) : (
-                <Monitor size={16} />
-              )}
-            </ThemeButton>
-          </Tooltip>
-          <SettingsButton onClick={handleSettingsClick} $active={activeTabId === 'settings'}>
+          <NavbarIconButton onClick={handleSettingsClick} $active={activeTabId === 'settings'}>
             <Settings size={16} />
-          </SettingsButton>
+          </NavbarIconButton>
         </RightButtonsContainer>
         <WindowControls />
       </TabsBar>
@@ -351,6 +369,7 @@ const Container = styled.div`
   flex-direction: column;
   height: 100%;
   width: 100%;
+  background: #B07353;
 `
 
 const TabsBar = styled.div<{ $isFullscreen: boolean }>`
@@ -358,12 +377,13 @@ const TabsBar = styled.div<{ $isFullscreen: boolean }>`
   flex-direction: row;
   align-items: center;
   gap: 5px;
-  padding-left: ${({ $isFullscreen }) => (!$isFullscreen && isMac ? 'calc(env(titlebar-area-x) + 4px)' : '15px')};
+  padding-left: ${({ $isFullscreen }) => (!$isFullscreen && isMac ? '76px' : '15px')};
   padding-right: ${({ $isFullscreen }) => ($isFullscreen ? '12px' : '0')};
   height: var(--navbar-height);
   min-height: ${({ $isFullscreen }) => (!$isFullscreen && isMac ? 'env(titlebar-area-height)' : '')};
   position: relative;
   -webkit-app-region: drag;
+  background: #B07353;
 
   /* 确保交互元素在拖拽区域之上 */
   > * {
@@ -374,6 +394,8 @@ const TabsBar = styled.div<{ $isFullscreen: boolean }>`
 
   .tab-scroll-container {
     -webkit-app-region: drag;
+    margin-left: auto;
+    flex: 0 1 auto;
 
     > * {
       -webkit-app-region: no-drag;
@@ -388,11 +410,17 @@ const Tab = styled.div<{ active?: boolean }>`
   padding: 4px 10px;
   padding-right: 8px;
   background: ${(props) => (props.active ? 'var(--color-list-item)' : 'transparent')};
-  transition: background 0.2s;
+  color: ${(props) => (props.active ? 'var(--color-text)' : '#ffffff')};
+  transition: background 0.2s, color 0.2s;
   border-radius: var(--list-item-border-radius);
   user-select: none;
   height: 30px;
   min-width: 90px;
+
+  .lucide,
+  .close-button {
+    color: inherit;
+  }
 
   .close-button {
     opacity: 0;
@@ -400,7 +428,8 @@ const Tab = styled.div<{ active?: boolean }>`
   }
 
   &:hover {
-    background: ${(props) => (props.active ? 'var(--color-list-item)' : 'var(--color-list-item)')};
+    color: var(--color-text);
+    background: var(--color-list-item);
     .close-button {
       opacity: 1;
     }
@@ -418,12 +447,12 @@ const TabHeader = styled.div`
 const TabIcon = styled.span`
   display: flex;
   align-items: center;
-  color: var(--color-text-2);
+  color: inherit;
   flex-shrink: 0;
 `
 
 const TabTitle = styled.span`
-  color: var(--color-text);
+  color: inherit;
   font-size: 13px;
   display: flex;
   align-items: center;
@@ -438,6 +467,7 @@ const CloseButton = styled.span`
   justify-content: center;
   width: 14px;
   height: 14px;
+  color: inherit;
 `
 
 const AddTabButton = styled.div`
@@ -447,13 +477,19 @@ const AddTabButton = styled.div`
   width: 30px;
   height: 30px;
   cursor: pointer;
-  color: var(--color-text-2);
+  color: #ffffff;
   border-radius: var(--list-item-border-radius);
   flex-shrink: 0;
+  .lucide,
+  .anticon {
+    color: inherit;
+  }
   &.active {
+    color: var(--color-text);
     background: var(--color-list-item);
   }
   &:hover {
+    color: var(--color-text);
     background: var(--color-list-item);
   }
 `
@@ -462,37 +498,25 @@ const RightButtonsContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-left: auto;
   padding-right: ${isMac ? '12px' : '0'};
   flex-shrink: 0;
 `
 
-const ThemeButton = styled.div`
+const NavbarIconButton = styled.div<{ $active: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
   width: 30px;
   height: 30px;
   cursor: pointer;
-  color: var(--color-text);
-
-  &:hover {
-    background: var(--color-list-item);
-    border-radius: 8px;
-  }
-`
-
-const SettingsButton = styled.div<{ $active: boolean }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  cursor: pointer;
-  color: var(--color-text);
+  color: ${(props) => (props.$active ? 'var(--color-text)' : '#ffffff')};
   border-radius: 8px;
   background: ${(props) => (props.$active ? 'var(--color-list-item)' : 'transparent')};
+  .lucide {
+    color: inherit;
+  }
   &:hover {
+    color: var(--color-text);
     background: var(--color-list-item);
   }
 `
@@ -505,7 +529,7 @@ const TabContent = styled.div`
   margin: 6px;
   margin-top: 0;
   border-radius: 8px;
-  overflow: hidden;
+  background-color: var(--color-background);
   position: relative; /* 约束 MinAppTabsPool 绝对定位范围 */
 `
 

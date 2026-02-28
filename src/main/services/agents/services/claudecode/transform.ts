@@ -688,7 +688,7 @@ function handleContentBlockDelta(
       chunks.push({
         type: 'tool-input-delta',
         id: block.toolCallId,
-        delta: block.inputBuffer,
+        delta: delta.partial_json,
         providerMetadata
       })
       break

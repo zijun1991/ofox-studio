@@ -4,7 +4,8 @@ import type { EducationLevel, Model, ModelEmployee } from '@renderer/types/model
 import { EducationLevel as EL } from '@renderer/types/modelEmployee'
 import { getFancyProviderName } from '@renderer/utils/naming'
 import { Form, Input, Modal, Select } from 'antd'
-import type { FC } from 'react'
+import { BookOpen, Crown, GraduationCap, Trophy } from 'lucide-react'
+import type { FC, ReactNode } from 'react'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -24,11 +25,11 @@ interface EmployeeEditModalProps {
 }
 
 // Education level labels with icons and colors
-const EDUCATION_LEVEL_OPTIONS: { value: EducationLevel; icon: string }[] = [
-  { value: EL.HIGH_SCHOOL, icon: '🎓' },
-  { value: EL.UNDERGRADUATE, icon: '📚' },
-  { value: EL.MASTER, icon: '🏆' },
-  { value: EL.PHD, icon: '👑' }
+const EDUCATION_LEVEL_OPTIONS: { value: EducationLevel; icon: ReactNode }[] = [
+  { value: EL.HIGH_SCHOOL, icon: <GraduationCap size={14} /> },
+  { value: EL.UNDERGRADUATE, icon: <BookOpen size={14} /> },
+  { value: EL.MASTER, icon: <Trophy size={14} /> },
+  { value: EL.PHD, icon: <Crown size={14} /> }
 ]
 
 const EmployeeEditModal: FC<EmployeeEditModalProps> = ({

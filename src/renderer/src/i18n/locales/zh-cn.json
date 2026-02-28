@@ -71,7 +71,9 @@
       "tooltip": "在 Windows 上运行智能体需要 Git Bash。如果未安装，请从 git-scm.com 下载安装。"
     },
     "input": {
-      "placeholder": "在这里输入消息，按 {{key}} 发送 - @ 选择路径， / 选择命令"
+      "placeholder": {
+        "turbo": "输入'重塑'，开始新的纪元..."
+      }
     },
     "list": {
       "error": {
@@ -4420,6 +4422,11 @@
       "assistant": {
         "title": "助手设置"
       },
+      "background_image": {
+        "description": "设置应用窗口的背景图",
+        "select": "选择图片",
+        "title": "背景图"
+      },
       "custom": {
         "css": {
           "cherrycss": "从 ofox.ai/themes 获取",
@@ -4433,14 +4440,6 @@
         "global": "全局字体",
         "select": "选择字体",
         "title": "字体设置"
-      },
-      "navbar": {
-        "position": {
-          "label": "导航栏位置",
-          "left": "左侧",
-          "top": "顶部"
-        },
-        "title": "导航栏设置"
       },
       "sidebar": {
         "chat": {
@@ -5431,42 +5430,6 @@
       "zoom_out": "缩小界面",
       "zoom_reset": "重置缩放"
     },
-    "skin": {
-      "addCustom": "添加自定义",
-      "background": {
-        "addColor": "添加颜色",
-        "blur": "模糊度",
-        "color": "颜色",
-        "colors": "颜色",
-        "direction": "方向",
-        "directions": {
-          "radial": "径向",
-          "to-bottom": "垂直",
-          "to-bottom-right": "对角",
-          "to-right": "水平"
-        },
-        "opacity": "透明度",
-        "selectImage": "选择图片",
-        "size": "填充方式",
-        "sizeAuto": "原始",
-        "sizeContain": "包含",
-        "sizeCover": "覆盖",
-        "title": "背景设置",
-        "types": {
-          "gradient": "渐变",
-          "image": "图片",
-          "solid": "纯色"
-        }
-      },
-      "customTitle": "自定义皮肤",
-      "deleteConfirm": "确定要删除这个皮肤吗？",
-      "export": "导出皮肤",
-      "import": "导入皮肤",
-      "name": "皮肤名称",
-      "namePlaceholder": "输入皮肤名称",
-      "primaryColor": "主色调",
-      "title": "皮肤"
-    },
     "theme": {
       "color_primary": "主题颜色",
       "dark": "深色",
@@ -5696,16 +5659,28 @@
     }
   },
   "speedy": {
+    "add_task": "新建任务",
     "chat_placeholder": "开始新对话",
     "configure_employees": "配置模型员工",
     "expert_mode": "专家模式",
-    "new_topic": "新建话题",
+    "mode": {
+      "full_auto": "全自动",
+      "plan": "计划"
+    },
+    "new_chat": "新建聊天",
+    "new_task_name": "新任务",
+    "new_topic": "新建任务",
     "no_employee_description": "请先配置模型员工以使用极速模式",
     "no_employee_title": "未配置模型员工",
-    "no_topics": "暂无话题",
+    "no_topics": "暂无任务",
     "select_employee": "选择模型员工",
     "title": "极速模式",
-    "topic_list_title": "话题列表"
+    "topic_list_title": "任务列表",
+    "welcome": {
+      "subtitle": "指挥官，请下达改写未来的指令",
+      "title": "跨越亿万算力，只为此刻响应。"
+    },
+    "workspace": "工作区"
   },
   "title": {
     "apps": "小程序",

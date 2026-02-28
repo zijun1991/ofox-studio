@@ -15,14 +15,12 @@ import { useAgent } from '@renderer/hooks/agents/useAgent'
 import { useAgentClient } from '@renderer/hooks/agents/useAgentClient'
 import { useAgentSessionInitializer } from '@renderer/hooks/agents/useAgentSessionInitializer'
 import { useCreateDefaultSession } from '@renderer/hooks/agents/useCreateDefaultSession'
-import { useCyclePermissionMode } from '@renderer/hooks/agents/useCyclePermissionMode'
 import { useSession } from '@renderer/hooks/agents/useSession'
 import { useSessions } from '@renderer/hooks/agents/useSessions'
 import { useTurboWorkspaceSync } from '@renderer/hooks/agents/useTurboWorkspaceSync'
 import { useModelEmployee } from '@renderer/hooks/useModelEmployee'
 import { useRuntime } from '@renderer/hooks/useRuntime'
 import { useNavbarPosition } from '@renderer/hooks/useSettings'
-import { useShortcut } from '@renderer/hooks/useShortcuts'
 import AgentSessionInputbar from '@renderer/pages/home/Inputbar/AgentSessionInputbar'
 import AgentSessionMessages from '@renderer/pages/home/Messages/AgentSessionMessages'
 import { useAppDispatch } from '@renderer/store'
@@ -52,6 +50,8 @@ const SpeedyPage: FC = () => {
   const { isLeftNavbar } = useNavbarPosition()
   const { mutate } = useSWRConfig()
 
+  const [isWorkspaceOpen, setIsWorkspaceOpen] = useState(false)
+
   // Initialize Agent Session (auto-loads session when agent is activated)
   useAgentSessionInitializer()
 
@@ -77,19 +77,6 @@ const SpeedyPage: FC = () => {
 
   // Workspace path management with bidirectional sync to Agent config
   const { accessiblePaths, addPath: handleAddPath, removePath: handleRemovePath } = useTurboWorkspaceSync()
-
-  // Permission mode cycle shortcut
-  const { cyclePermissionMode } = useCyclePermissionMode()
-  useShortcut(
-    'cycle_permission_mode',
-    () => {
-      cyclePermissionMode(true)
-    },
-    {
-      preventDefault: true,
-      enableOnFormTags: false
-    }
-  )
 
   // Get model employees
   const { getEmployeesByEducationLevel, getEmployeeByModel } = useModelEmployee()
@@ -227,19 +214,18 @@ const SpeedyPage: FC = () => {
                 onEmployeeChange={handleEmployeeChange}
                 agentId={TURBO_AGENT_ID}
                 activeSessionId={activeSessionId ?? undefined}
+                onToggleWorkspace={() => setIsWorkspaceOpen(!isWorkspaceOpen)}
               />
               {activeSessionId && agent ? (
                 <ChatContent>
-                  <MessagesContainer>
-                    <AgentSessionMessages agentId={TURBO_AGENT_ID} sessionId={activeSessionId} />
-                  </MessagesContainer>
-                  <AgentSessionInputbar agentId={TURBO_AGENT_ID} sessionId={activeSessionId} />
+                  <AgentSessionMessages agentId={TURBO_AGENT_ID} sessionId={activeSessionId} />
+                  <FloatingInputWrapper>
+                    <div className="speedy-inputbar-container">
+                      <AgentSessionInputbar agentId={TURBO_AGENT_ID} sessionId={activeSessionId} />
+                    </div>
+                  </FloatingInputWrapper>
                 </ChatContent>
-              ) : (
-                <ChatPlaceholder>
-                  <PlaceholderText>{t('speedy.chat_placeholder')}</PlaceholderText>
-                </ChatPlaceholder>
-              )}
+              ) : null}
             </QuickPanelProvider>
           ) : (
             <NoEmployeePanel>
@@ -250,20 +236,26 @@ const SpeedyPage: FC = () => {
             </NoEmployeePanel>
           )}
         </ChatArea>
-        <RightPanel>
-          {hasEmployee && (
-            <WorkspacePanel paths={accessiblePaths} onAddPath={handleAddPath} onRemovePath={handleRemovePath} />
-          )}
-        </RightPanel>
+        {isWorkspaceOpen && (
+          <RightPanel>
+            {hasEmployee && (
+              <WorkspacePanel paths={accessiblePaths} onAddPath={handleAddPath} onRemovePath={handleRemovePath} />
+            )}
+          </RightPanel>
+        )}
       </MainContent>
     </Container>
   )
 }
 
 const Container = styled.div`
+  --speedy-brand: #B07353;
+  --speedy-brand-light: rgba(176, 115, 83, 0.15);
+  --speedy-brand-dark: #956044;
   display: flex;
   flex: 1;
   flex-direction: column;
+  background-color: var(--color-background);
   [navbar-position='left'] & {
     max-width: calc(100vw - var(--sidebar-width));
   }
@@ -277,6 +269,7 @@ const MainContent = styled.div`
   flex: 1;
   flex-direction: row;
   overflow: hidden;
+  background-color: var(--color-background);
 
   [navbar-position='top'] & {
     max-width: calc(100vw - 12px);
@@ -287,13 +280,12 @@ const LeftSidebar = styled.div`
   width: var(--assistants-width, 275px);
   min-width: 200px;
   max-width: 400px;
-  border-right: 0.5px solid var(--color-border);
+  border-right: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  [navbar-position='left'] & {
-    background-color: var(--color-background);
-  }
+  padding-top: 0;
+  background-color: var(--color-background);
 `
 
 const ChatArea = styled.div`
@@ -308,22 +300,11 @@ const RightPanel = styled.div`
   width: var(--workspace-width, 280px);
   min-width: 200px;
   max-width: 400px;
-  border-left: 0.5px solid var(--color-border);
+  border-left: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-`
-
-const ChatPlaceholder = styled.div`
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`
-
-const PlaceholderText = styled.div`
-  color: var(--color-text-secondary);
-  font-size: 14px;
+  background-color: var(--color-background);
 `
 
 const ChatContent = styled.div`
@@ -331,13 +312,36 @@ const ChatContent = styled.div`
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  position: relative;
 `
 
-const MessagesContainer = styled.div`
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  min-height: 0;
+const FloatingInputWrapper = styled.div`
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 85%;
+  max-width: 800px;
+  z-index: 10;
+  
+  .speedy-inputbar-container > div {
+    padding: 0; /* Remove default padding from InputbarCore Container */
+  }
+
+  .speedy-inputbar-container > div > div:first-of-type {
+    /* Target InputBarContainer inside InputbarCore */
+    background: color-mix(in srgb, var(--speedy-brand, #B07353) 70%, transparent) !important;
+    border-radius: 28px !important;
+    box-shadow: 0 8px 24px lightgray !important;
+    border: none !important;
+    padding: 10px 10px 10px 10px !important;
+  }
+
+  .speedy-inputbar-container {
+    --color-primary: var(--speedy-brand, #B07353);
+    --color-primary-soft: var(--speedy-brand-light, rgba(176, 115, 83, 0.15));
+    --color-primary-dark: var(--speedy-brand-dark, #956044);
+  }
 `
 
 const NoEmployeePanel = styled.div`

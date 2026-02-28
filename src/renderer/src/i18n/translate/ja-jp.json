@@ -71,7 +71,9 @@
       "tooltip": "Windowsでエージェントを実行するにはGit Bashが必要です。まだインストールされていない場合は、git-scm.comからインストールしてください。"
     },
     "input": {
-      "placeholder": "メッセージをここに入力し、{{key}}で送信 - @でパスを選択、/でコマンドを選択"
+      "placeholder": {
+        "turbo": "[to be translated]:Tell me what to do"
+      }
     },
     "list": {
       "error": {
@@ -4420,6 +4422,11 @@
       "assistant": {
         "title": "アシスタント設定"
       },
+      "background_image": {
+        "description": "アプリウィンドウの背景画像を設定",
+        "select": "画像を選択",
+        "title": "背景画像"
+      },
       "custom": {
         "css": {
           "cherrycss": "ofox.ai/themesから取得",
@@ -4433,14 +4440,6 @@
         "global": "グローバルフォント",
         "select": "フォントを選択",
         "title": "フォント設定"
-      },
-      "navbar": {
-        "position": {
-          "label": "ナビゲーションバー位置",
-          "left": "左",
-          "top": "上"
-        },
-        "title": "ナビゲーションバー設定"
       },
       "sidebar": {
         "chat": {
@@ -5431,42 +5430,6 @@
       "zoom_out": "ズームアウト",
       "zoom_reset": "ズームをリセット"
     },
-    "skin": {
-      "addCustom": "カスタムを追加",
-      "background": {
-        "addColor": "色を追加",
-        "blur": "ぼかし",
-        "color": "色",
-        "colors": "色",
-        "direction": "方向",
-        "directions": {
-          "radial": "放射状",
-          "to-bottom": "垂直",
-          "to-bottom-right": "斜め",
-          "to-right": "水平"
-        },
-        "opacity": "不透明度",
-        "selectImage": "画像を選択",
-        "size": "サイズ",
-        "sizeAuto": "自動",
-        "sizeContain": "含む",
-        "sizeCover": "カバー",
-        "title": "背景設定",
-        "types": {
-          "gradient": "グラデーション",
-          "image": "画像",
-          "solid": "単色"
-        }
-      },
-      "customTitle": "カスタムスキン",
-      "deleteConfirm": "このスキンを削除してもよろしいですか？",
-      "export": "スキンをエクスポート",
-      "import": "スキンをインポート",
-      "name": "スキン名",
-      "namePlaceholder": "スキン名を入力",
-      "primaryColor": "メインカラー",
-      "title": "スキン"
-    },
     "theme": {
       "color_primary": "テーマ色",
       "dark": "ダーク",
@@ -5696,16 +5659,28 @@
     }
   },
   "speedy": {
+    "add_task": "[to be translated]:New Task",
     "chat_placeholder": "新しい会話を開始",
     "configure_employees": "モデル従業員を設定",
     "expert_mode": "エキスパートモード",
+    "mode": {
+      "full_auto": "[to be translated]:Full Auto",
+      "plan": "[to be translated]:Plan"
+    },
+    "new_chat": "[to be translated]:New Chat",
+    "new_task_name": "[to be translated]:New Task",
     "new_topic": "新しいトピック",
     "no_employee_description": "ターボモードを使用するにはモデル従業員を設定してください",
     "no_employee_title": "モデル従業員がありません",
     "no_topics": "トピックはまだありません",
     "select_employee": "モデル従業員を選択",
     "title": "ターボモード",
-    "topic_list_title": "トピック"
+    "topic_list_title": "トピック",
+    "welcome": {
+      "subtitle": "[to be translated]:Commander, issue the order to rewrite the future",
+      "title": "[to be translated]:Traversing billions of computations, all for this moment."
+    },
+    "workspace": "[to be translated]:Workspace"
   },
   "title": {
     "apps": "アプリ",

@@ -49,7 +49,6 @@ import runtime from './runtime'
 import selectionStore from './selectionStore'
 import settings from './settings'
 import shortcuts from './shortcuts'
-import skins from './skins'
 import tabs from './tabs'
 import toolPermissions from './toolPermissions'
 import tools from './tools'
@@ -70,7 +69,6 @@ const rootReducer = combineReducers({
   settings,
   runtime,
   shortcuts,
-  skins,
   knowledge,
   minapps,
   tools,
@@ -98,7 +96,7 @@ const persistedReducer = persistReducer(
   {
     key: 'ofox-claw',
     storage,
-    version: 202,
+    version: 203,
     blacklist: ['runtime', 'messages', 'messageBlocks', 'tabs', 'toolPermissions', 'ofox', 'workspace'],
     migrate
   },

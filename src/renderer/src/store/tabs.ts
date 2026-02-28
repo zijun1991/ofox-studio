@@ -55,9 +55,9 @@ const tabsSlice = createSlice({
       const index = state.tabs.findIndex((tab) => tab.id === action.payload)
       if (index !== -1) {
         state.tabs.splice(index, 1)
-        // 如果关闭的是当前标签页，则切换到最后一个标签页
+        // 如果关闭的是当前标签页，则切换到最后一个标签页或首页
         if (action.payload === state.activeTabId) {
-          state.activeTabId = state.tabs[state.tabs.length - 1].id
+          state.activeTabId = state.tabs.length > 0 ? state.tabs[state.tabs.length - 1].id : 'home'
         }
       }
     },

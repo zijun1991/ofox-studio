@@ -71,7 +71,9 @@
       "tooltip": "Git Bash este necesar pentru a rula agenți pe Windows. Instalează-l de pe git-scm.com dacă nu este disponibil."
     },
     "input": {
-      "placeholder": "Introdu mesajul aici, trimite cu {{key}} - @ selectează calea, / selectează comanda"
+      "placeholder": {
+        "turbo": "[to be translated]:Tell me what to do"
+      }
     },
     "list": {
       "error": {
@@ -4420,6 +4422,11 @@
       "assistant": {
         "title": "Setări asistent"
       },
+      "background_image": {
+        "description": "[to be translated]:Set a background image for the app window",
+        "select": "[to be translated]:Select Image",
+        "title": "[to be translated]:Background Image"
+      },
       "custom": {
         "css": {
           "cherrycss": "Obține de la ofox.ai/themes",
@@ -4433,14 +4440,6 @@
         "global": "Font global",
         "select": "Selectează font",
         "title": "Setări font"
-      },
-      "navbar": {
-        "position": {
-          "label": "Poziție bară de navigare",
-          "left": "Stânga",
-          "top": "Sus"
-        },
-        "title": "Setări bară de navigare"
       },
       "sidebar": {
         "chat": {
@@ -5431,42 +5430,6 @@
       "zoom_out": "Micșorează",
       "zoom_reset": "Resetează zoom-ul"
     },
-    "skin": {
-      "addCustom": "Add Custom",
-      "background": {
-        "addColor": "Add Color",
-        "blur": "Blur",
-        "color": "Color",
-        "colors": "Colors",
-        "direction": "Direction",
-        "directions": {
-          "radial": "Radial",
-          "to-bottom": "Vertical",
-          "to-bottom-right": "Diagonal",
-          "to-right": "Horizontal"
-        },
-        "opacity": "Opacity",
-        "selectImage": "Select Image",
-        "size": "Size",
-        "sizeAuto": "Auto",
-        "sizeContain": "Contain",
-        "sizeCover": "Cover",
-        "title": "Background Settings",
-        "types": {
-          "gradient": "Gradient",
-          "image": "Image",
-          "solid": "Solid"
-        }
-      },
-      "customTitle": "Custom Skin",
-      "deleteConfirm": "Are you sure you want to delete this skin?",
-      "export": "Export Skin",
-      "import": "Import Skin",
-      "name": "Skin Name",
-      "namePlaceholder": "Enter skin name",
-      "primaryColor": "Primary Color",
-      "title": "Skin"
-    },
     "theme": {
       "color_primary": "Culoare primară",
       "dark": "Întunecată",
@@ -5696,16 +5659,28 @@
     }
   },
   "speedy": {
+    "add_task": "[to be translated]:New Task",
     "chat_placeholder": "Începe o conversație nouă",
     "configure_employees": "Configurare Angajați Model",
     "expert_mode": "Modul Expert",
+    "mode": {
+      "full_auto": "[to be translated]:Full Auto",
+      "plan": "[to be translated]:Plan"
+    },
+    "new_chat": "[to be translated]:New Chat",
+    "new_task_name": "[to be translated]:New Task",
     "new_topic": "Subiect Nou",
     "no_employee_description": "Vă rugăm să configurați angajați model pentru a folosi Modul Turbo",
     "no_employee_title": "Fără Angajați Model",
     "no_topics": "Încă fără subiecte",
     "select_employee": "Selectare Angajat Model",
     "title": "Mod Turbo",
-    "topic_list_title": "Subiecte"
+    "topic_list_title": "Subiecte",
+    "welcome": {
+      "subtitle": "[to be translated]:Commander, issue the order to rewrite the future",
+      "title": "[to be translated]:Traversing billions of computations, all for this moment."
+    },
+    "workspace": "[to be translated]:Workspace"
   },
   "title": {
     "apps": "Aplicații",

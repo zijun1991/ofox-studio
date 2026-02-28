@@ -56,12 +56,7 @@ export type UserTheme = {
   colorPrimary: string
   userFontFamily: string
   userCodeFontFamily: string
-  // 新增：背景配置
   background?: BackgroundConfig
-  sidebarBackground?: BackgroundConfig
-  cardBackground?: BackgroundConfig
-  // 当前使用的皮肤 ID
-  activeSkinId?: string
 }
 
 export interface SettingsState {
@@ -276,7 +271,7 @@ export const initialState: SettingsState = {
   launchToTray: false,
   trayOnClose: true,
   tray: true,
-  theme: ThemeMode.system,
+  theme: ThemeMode.light,
   userTheme: {
     colorPrimary: '#00b96b',
     userFontFamily: '',

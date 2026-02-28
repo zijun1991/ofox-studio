@@ -49,7 +49,11 @@ function applyBackground(element: HTMLElement | null, config?: BackgroundConfig)
 
     case 'image':
       if (config.image?.url) {
-        element.style.backgroundImage = `url(${config.image.url})`
+        const imageUrl =
+          config.image.url.startsWith('file://') || config.image.url.startsWith('data:')
+            ? config.image.url
+            : `file://${config.image.url}`
+        element.style.backgroundImage = `url(${imageUrl})`
         element.style.backgroundSize = config.image.size || 'cover'
         element.style.backgroundPosition = 'center'
         element.style.backgroundRepeat = 'no-repeat'
@@ -107,26 +111,6 @@ export default function useUserTheme() {
     } else {
       clearBackground(document.body)
     }
-
-    // 侧边栏背景 - 需要延迟执行，因为 DOM 可能还没准备好
-    setTimeout(() => {
-      const sidebar = document.querySelector('[data-sidebar]') as HTMLElement | null
-      if (theme.sidebarBackground) {
-        applyBackground(sidebar, theme.sidebarBackground)
-      } else {
-        clearBackground(sidebar)
-      }
-
-      // 卡片背景
-      const cards = document.querySelectorAll('[data-card-background]') as NodeListOf<HTMLElement>
-      cards.forEach((card) => {
-        if (theme.cardBackground) {
-          applyBackground(card, theme.cardBackground)
-        } else {
-          clearBackground(card)
-        }
-      })
-    }, 100)
   }
 
   return {

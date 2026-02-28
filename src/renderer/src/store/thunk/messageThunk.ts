@@ -179,7 +179,7 @@ export const renameAgentSessionIfNeeded = async (
 
     // 2. 如果 session 已有非默认名称，直接返回，不调用 LLM
     // 默认名称判断：空字符串、"未命名"、"Unnamed" 等
-    const defaultNames = ['', '未命名', 'Unnamed']
+    const defaultNames = ['', '未命名', 'Unnamed', '新任务', '新任務', 'New Task']
     if (currentName && !defaultNames.includes(currentName)) {
       logger.debug(`[AgentSession] Session already has name: ${currentName}, skipping rename`)
       return

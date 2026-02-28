@@ -28,10 +28,13 @@ const ToggleExpandTool: React.FC<{ context: ToggleExpandRenderContext }> = ({ co
   )
 }
 
+const TURBO_AGENT_ID = 'agent_turbo_system'
+
 const toggleExpandTool = defineTool({
   key: 'toggle_expand',
   label: (t) => t('chat.input.expand'),
   visibleInScopes: [TopicType.Chat, TopicType.Session],
+  condition: (context) => context.session?.agentId !== TURBO_AGENT_ID,
   dependencies: {
     state: ['isExpanded'] as const,
     actions: ['toggleExpanded'] as const

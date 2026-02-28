@@ -89,12 +89,6 @@ const slashCommandsTool = defineTool({
   // Disable slash commands in turbo mode (speedy page)
   condition: (context) => {
     const isTurboMode = context.session?.agentId === TURBO_AGENT_ID
-    console.log('[slashCommandsTool] condition check:', {
-      agentId: context.session?.agentId,
-      TURBO_AGENT_ID,
-      isTurboMode,
-      result: !isTurboMode
-    })
     return !isTurboMode
   },
 

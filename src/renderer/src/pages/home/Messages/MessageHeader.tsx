@@ -105,6 +105,10 @@ const MessageHeader: FC<Props> = memo(({ assistant, model, message, topic, isGro
       return getModelName(model) || getMessageModelId(message) || ''
     }
 
+    if (isSpeedyMode && message.role === 'user') {
+      return '我'
+    }
+
     return userName || t('common.you')
   }, [agent?.name, isAgentView, message, model, t, userName, isSpeedyMode, employees])
 
@@ -180,7 +184,11 @@ const MessageHeader: FC<Props> = memo(({ assistant, model, message, topic, isGro
           )}
         </HStack>
         <InfoWrap className="message-header-info-wrap text-(--color-text-3) text-[10px]">
-          <MessageTime>{dayjs(message?.updatedAt ?? message.createdAt).format('MM/DD HH:mm')}</MessageTime>
+          <MessageTime>
+            {dayjs(message?.updatedAt ?? message.createdAt).format(
+              isSpeedyMode ? 'YYYY/MM/DD HH:mm:ss' : 'MM/DD HH:mm'
+            )}
+          </MessageTime>
           {isBubbleStyle && message.usage !== undefined && (
             <>
               |

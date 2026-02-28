@@ -50,6 +50,42 @@ If the skill is unavailable, directly read `.agents/skills/gh-create-pr/SKILL.md
 - **Build System**: Electron-Vite with experimental rolldown-vite, pnpm workspaces.
 - **State Management**: Redux Toolkit (`src/renderer/src/store/`) for predictable state.
 
+### Turbo Agent 工作目录与配置目录
+
+极速模式（Speedy/Turbo Mode）的 Turbo Agent 有两个关键目录概念，**目前耦合在同一个路径** `~/Documents/Ofox Claw`（即 `accessible_paths[0]`）：
+
+**默认路径定义**: `src/main/services/agents/services/AgentService.ts:101`
+```typescript
+const defaultPath = path.join(os.homedir(), 'Documents', 'Ofox Claw')
+```
+
+#### 1. 工作目录 (cwd)
+- Claude Code SDK 执行时的当前工作目录，用户的工作文件产出在此
+- 取自 `session.accessible_paths[0]`
+- 设置位置: `src/main/services/agents/services/claudecode/index.ts:139`
+
+#### 2. 配置目录 (.claude/)
+- 存储 `.claude/skills/`、`.claude/commands/`、`.claude/plugins/`、`.claude/plugins.json`
+- 由 `initializePresetSkills(workdir)` 安装 preset skills 到 `{workdir}/.claude/skills/`
+- 由 `PluginService.getClaudeBasePath(workdir)` 定位: `{workdir}/.claude`
+- `workdir` 来源: `PluginService.getWorkdirOrThrow()` → `agent.accessible_paths[0]`
+
+#### 3. 全局 Claude 配置 (CLAUDE_CONFIG_DIR)
+- 独立于上述两个目录，固定为 `app.getPath('userData')/.claude`
+- 设置位置: `claudecode/index.ts:210` 通过环境变量 `CLAUDE_CONFIG_DIR` 传递给 SDK
+
+#### 关键文件
+| 职责 | 文件 |
+|------|------|
+| 默认路径定义 & Agent 创建 | `src/main/services/agents/services/AgentService.ts` |
+| Preset skills 安装 | 同上 `initializePresetSkills()` |
+| Claude SDK cwd & env | `src/main/services/agents/services/claudecode/index.ts` |
+| 插件管理 (.claude/) | `src/main/services/agents/plugins/PluginService.ts` |
+| 路径验证 & 目录创建 | `src/main/services/agents/BaseService.ts` `ensurePathsExist()` |
+| UI 工作区同步 | `src/renderer/src/hooks/agents/useTurboWorkspaceSync.ts` |
+
+> **注意**: 若未来要拆分工作目录和配置目录（例如 cwd 改为 `workspace/` 子目录），需要让 `initializePresetSkills` 和 `PluginService` 使用独立的配置根路径，而非直接依赖 `accessible_paths[0]`。
+
 ### Logging
 
 ```typescript

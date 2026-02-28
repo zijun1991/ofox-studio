@@ -5,7 +5,8 @@ import { useModelEmployee } from '@renderer/hooks/useModelEmployee'
 import type { EducationLevel, Model, ModelEmployee } from '@renderer/types/modelEmployee'
 import { EducationLevel as EL } from '@renderer/types/modelEmployee'
 import { Button, Modal } from 'antd'
-import type { FC } from 'react'
+import { BookOpen, Crown, GraduationCap, Trophy } from 'lucide-react'
+import type { FC, ReactNode } from 'react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
@@ -15,11 +16,11 @@ import EducationLevelSection from './EducationLevelSection'
 import EmployeeEditModal from './EmployeeEditModal'
 
 // Education level labels with icons and colors
-const EDUCATION_LEVEL_CONFIG: Record<EducationLevel, { labelKey: string; icon: string; color: string }> = {
-  [EL.HIGH_SCHOOL]: { labelKey: 'high_school', icon: '🎓', color: '#52c41a' },
-  [EL.UNDERGRADUATE]: { labelKey: 'undergraduate', icon: '📚', color: '#1890ff' },
-  [EL.MASTER]: { labelKey: 'master', icon: '🏆', color: '#722ed1' },
-  [EL.PHD]: { labelKey: 'phd', icon: '👑', color: '#fa8c16' }
+const EDUCATION_LEVEL_CONFIG: Record<EducationLevel, { labelKey: string; icon: ReactNode; color: string }> = {
+  [EL.HIGH_SCHOOL]: { labelKey: 'high_school', icon: <GraduationCap size={14} />, color: '#52c41a' },
+  [EL.UNDERGRADUATE]: { labelKey: 'undergraduate', icon: <BookOpen size={14} />, color: '#1890ff' },
+  [EL.MASTER]: { labelKey: 'master', icon: <Trophy size={14} />, color: '#722ed1' },
+  [EL.PHD]: { labelKey: 'phd', icon: <Crown size={14} />, color: '#fa8c16' }
 }
 
 const ModelEmployeeSettings: FC = () => {

@@ -8,33 +8,58 @@
  * - Permission mode selector
  * - Agent settings button
  */
+import LogoSvg from '@renderer/assets/images/cherry-text-logo.svg?url'
 import { DeleteIcon } from '@renderer/components/Icons'
-import { permissionModeCards } from '@renderer/config/agent'
 import { useCreateDefaultSession } from '@renderer/hooks/agents/useCreateDefaultSession'
-import { useSession } from '@renderer/hooks/agents/useSession'
 import { useSessions } from '@renderer/hooks/agents/useSessions'
 import { useUpdateSession } from '@renderer/hooks/agents/useUpdateSession'
 import { useInPlaceEdit } from '@renderer/hooks/useInPlaceEdit'
 import { SessionSettingsPopup } from '@renderer/pages/settings/AgentSettings'
-import type { AgentConfigurationState } from '@renderer/pages/settings/AgentSettings/shared'
-import { useAppDispatch } from '@renderer/store'
-import { newMessagesActions } from '@renderer/store/newMessage'
+import { useAppDispatch, useAppSelector } from '@renderer/store'
+import { newMessagesActions, selectMessagesForTopic } from '@renderer/store/newMessage'
 import { setActiveSessionIdAction, setSessionWaitingAction } from '@renderer/store/runtime'
-import type { PermissionMode } from '@renderer/types/agent'
+import { loadTopicMessagesThunk } from '@renderer/store/thunk/messageThunk'
 import { buildAgentSessionTopicId } from '@renderer/utils/agentSession'
-import { Alert, Select, Spin, Tooltip } from 'antd'
+import { getMainTextContent } from '@renderer/utils/messageUtils/find'
+import { Alert, Spin, Tooltip } from 'antd'
 import { motion } from 'framer-motion'
 import { Plus, Settings2, X } from 'lucide-react'
 import type { FC } from 'react'
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 
 interface SpeedySessionsSidebarProps {
   agentId: string
   activeSessionId: string | null | undefined
   onSessionSelect: (sessionId: string) => void
 }
+
+const SessionPreview: FC<{ sessionId: string }> = memo(({ sessionId }) => {
+  const dispatch = useAppDispatch()
+  const topicId = useMemo(() => buildAgentSessionTopicId(sessionId), [sessionId])
+  const fulfilled = useAppSelector((state) => state.messages.fulfilledByTopic[topicId])
+  const messages = useAppSelector((state) => selectMessagesForTopic(state, topicId))
+
+  // Load messages from DB if not yet loaded for this session
+  useEffect(() => {
+    if (!fulfilled) {
+      dispatch(loadTopicMessagesThunk(topicId))
+    }
+  }, [dispatch, topicId, fulfilled])
+
+  const previewText = useMemo(() => {
+    if (!messages || messages.length === 0) return ''
+    const lastMessage = messages[messages.length - 1]
+    return getMainTextContent(lastMessage).replace(/\n+/g, ' ').trim()
+  }, [messages])
+
+  if (!previewText) return null
+
+  return <SessionPreviewText>{previewText}</SessionPreviewText>
+})
+
+SessionPreview.displayName = 'SessionPreview'
 
 const SpeedySessionsSidebar: FC<SpeedySessionsSidebarProps> = ({ agentId, activeSessionId, onSessionSelect }) => {
   const { t } = useTranslation()
@@ -120,7 +145,6 @@ const SpeedySessionsSidebar: FC<SpeedySessionsSidebarProps> = ({ agentId, active
   }, [createDefaultSession, creatingSession, onSessionSelect])
 
   // Get current session data and update methods
-  const { session } = useSession(agentId, activeSessionId || null)
   const { updateSession } = useUpdateSession(agentId)
 
   // In-place edit hook for session rename
@@ -133,28 +157,6 @@ const SpeedySessionsSidebar: FC<SpeedySessionsSidebarProps> = ({ agentId, active
     },
     onCancel: () => {}
   })
-
-  // Current permission mode
-  const currentPermissionMode = (session?.configuration?.permission_mode as PermissionMode) || 'bypassPermissions'
-
-  // Handle permission mode change
-  const handlePermissionModeChange = useCallback(
-    async (value: unknown) => {
-      if (!activeSessionId || !session) return
-
-      const nextConfiguration: AgentConfigurationState = {
-        max_turns: 100,
-        ...session.configuration,
-        permission_mode: value as PermissionMode
-      }
-
-      await updateSession({
-        id: activeSessionId,
-        configuration: nextConfiguration
-      })
-    },
-    [activeSessionId, session, updateSession]
-  )
 
   // Handle open settings popup
   const handleOpenSettings = useCallback(() => {
@@ -194,58 +196,18 @@ const SpeedySessionsSidebar: FC<SpeedySessionsSidebarProps> = ({ agentId, active
 
   return (
     <Container>
-      <HeaderRow>
-        {/* 左侧：权限模式选择器 */}
-        <PermissionModeSelect
-          value={currentPermissionMode}
-          onChange={handlePermissionModeChange}
-          style={{ flex: 1 }}
-          optionLabelProp="label"
-          popupMatchSelectWidth={280}
-          disabled={!activeSessionId}
-          suffixIcon={
-            <ShortcutHint>
-              <Kbd>⇧</Kbd>
-              <span>+</span>
-              <Kbd>Tab</Kbd>
-            </ShortcutHint>
-          }>
-          {permissionModeCards.map((item) => (
-            <Select.Option
-              key={item.mode}
-              value={item.mode}
-              label={
-                <span>
-                  {item.icon} {t(item.titleKey, item.titleFallback)}
-                </span>
-              }>
-              <PermissionOptionWrapper>
-                <div className="title">
-                  {item.icon} {t(item.titleKey, item.titleFallback)}
-                </div>
-                <div className={`description ${item.caution ? 'caution' : ''}`}>
-                  {t(item.descriptionKey, item.descriptionFallback)}
-                </div>
-              </PermissionOptionWrapper>
-            </Select.Option>
-          ))}
-        </PermissionModeSelect>
-
-        {/* 右侧：设置按钮 */}
-        <Tooltip title={t('agent.settings.title', 'Agent Settings')}>
-          <IconButton onClick={handleOpenSettings} disabled={!activeSessionId}>
-            <Settings2 size={16} />
-          </IconButton>
-        </Tooltip>
-      </HeaderRow>
+      <LogoArea>
+        <img src={LogoSvg} alt="Logo" draggable={false} />
+      </LogoArea>
       <SessionListTitle>
-        <span className="text">{t('speedy.topic_list_title', '话题列表')}</span>
+        <span className="text">{t('speedy.topic_list_title', '任务列表')}</span>
+        <Tooltip title={t('speedy.add_task')}>
+          <AddTopicButton onClick={handleCreateSession} disabled={creatingSession}>
+            <Plus size={14} />
+          </AddTopicButton>
+        </Tooltip>
         <span className="count">{sortedSessions.length}</span>
       </SessionListTitle>
-      <NewTopicButton onClick={handleCreateSession} disabled={creatingSession}>
-        <Plus size={14} />
-        {t('chat.add.topic.title')}
-      </NewTopicButton>
       <SessionList>
         {sortedSessions.length === 0 ? (
           <EmptyState>
@@ -266,15 +228,18 @@ const SpeedySessionsSidebar: FC<SpeedySessionsSidebarProps> = ({ agentId, active
                 {isEditingThis ? (
                   <SessionEditInput {...inputProps} onClick={(e) => e.stopPropagation()} autoFocus />
                 ) : (
-                  <SessionName
-                    title={session.name || t('common.unnamed')}
-                    onDoubleClick={(e) => {
-                      e.stopPropagation()
-                      setTargetSession(session)
-                      startEdit(session.name || '')
-                    }}>
-                    {session.name || t('common.unnamed')}
-                  </SessionName>
+                  <SessionContent>
+                    <SessionName
+                      title={session.name || t('common.unnamed')}
+                      onDoubleClick={(e) => {
+                        e.stopPropagation()
+                        setTargetSession(session)
+                        startEdit(session.name || '')
+                      }}>
+                      {session.name || t('common.unnamed')}
+                    </SessionName>
+                    <SessionPreview sessionId={session.id} />
+                  </SessionContent>
                 )}
                 <MenuButton
                   className="menu"
@@ -288,7 +253,7 @@ const SpeedySessionsSidebar: FC<SpeedySessionsSidebarProps> = ({ agentId, active
                   {isDeleting ? (
                     <DeleteIcon size={14} style={{ pointerEvents: 'none' }} />
                   ) : (
-                    <X size={14} style={{ pointerEvents: 'none', color: 'var(--color-text-3)' }} />
+                    <X size={14} style={{ pointerEvents: 'none' }} />
                   )}
                 </MenuButton>
               </SessionItem>
@@ -296,6 +261,13 @@ const SpeedySessionsSidebar: FC<SpeedySessionsSidebarProps> = ({ agentId, active
           })
         )}
       </SessionList>
+      <HeaderRow>
+        <Tooltip title={t('agent.settings.title', 'Agent Settings')}>
+          <IconButton onClick={handleOpenSettings} disabled={!activeSessionId}>
+            <Settings2 size={16} />
+          </IconButton>
+        </Tooltip>
+      </HeaderRow>
     </Container>
   )
 }
@@ -305,6 +277,19 @@ const Container = styled.div`
   flex-direction: column;
   height: 100%;
   background: var(--color-background);
+`
+
+const LogoArea = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 16px 8px;
+  -webkit-app-region: drag;
+
+  img {
+    height: 56px;
+    pointer-events: none;
+  }
 `
 
 const LoadingContainer = styled.div`
@@ -323,62 +308,13 @@ const HeaderRow = styled.div`
   flex-direction: row;
   align-items: center;
   gap: 8px;
-  padding: 8px 10px 0;
-  margin-bottom: 8px;
+  padding: 10px;
+  border-top: 1px solid var(--color-border);
 `
 
-const PermissionModeSelect = styled(Select)`
-  .ant-select-selector {
-    background: var(--color-background-soft) !important;
-    border: none !important;
-    border-radius: 6px !important;
-    height: 32px !important;
-    padding: 0 8px !important;
-  }
-
-  .ant-select-selection-item {
-    font-size: 12px;
-    color: var(--color-text);
-  }
-
-  .ant-select-arrow {
-    color: inherit;
-    pointer-events: none;
-  }
-
-  &.ant-select-disabled .ant-select-selector {
-    opacity: 0.5;
-  }
-`
-
-const ShortcutHint = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1px;
-
-  span {
-    font-size: 7px;
-    color: rgba(0, 0, 0, 0.2);
-    line-height: 1;
-  }
-`
-
-const Kbd = styled.kbd`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 12px;
-  height: 12px;
-  padding: 0 2px;
-  font-family: system-ui, -apple-system, sans-serif;
-  font-size: 7px;
-  font-weight: 500;
-  line-height: 1;
-  color: rgba(0, 0, 0, 0.25);
-  background: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  border-bottom-width: 1.5px;
-  border-radius: 2px;
+const breathe = keyframes`
+  0%, 100% { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
+  50% { box-shadow: 0 2px 8px 0 rgba(176, 115, 83, 0.3); }
 `
 
 const IconButton = styled.button<{ disabled?: boolean }>`
@@ -387,62 +323,39 @@ const IconButton = styled.button<{ disabled?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-background-soft);
+  background: rgba(176, 115, 83, 0.1);
   border: none;
-  border-radius: 6px;
+  border-radius: var(--list-item-border-radius);
   cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
   opacity: ${(props) => (props.disabled ? 0.5 : 1)};
-  color: var(--color-text-2);
-  transition: all 0.2s;
+  color: rgba(176, 115, 83, 0.6);
+  transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
 
   &:hover:not(:disabled) {
-    background: var(--color-list-item);
-    color: var(--color-text);
+    background-color: var(--speedy-brand, #B07353);
+    color: #fff;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    animation: ${breathe} 3s ease-in-out infinite;
   }
 `
 
-const PermissionOptionWrapper = styled.div`
-  padding: 4px 0;
-
-  .title {
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--color-text);
-    margin-bottom: 2px;
-  }
-
-  .description {
-    font-size: 11px;
-    color: var(--color-text-secondary);
-    line-height: 1.4;
-
-    &.caution {
-      color: var(--color-error);
-      font-weight: 600;
-    }
-  }
-`
-
-const NewTopicButton = styled.button<{ disabled?: boolean }>`
+const AddTopicButton = styled.button<{ disabled?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  margin: 4px 10px 4px 20px;
-  padding: 6px 0;
+  width: 22px;
+  height: 22px;
   background: transparent;
-  border: 1px dashed var(--color-border);
-  border-radius: 6px;
+  border: none;
+  border-radius: 4px;
   cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
   opacity: ${(props) => (props.disabled ? 0.5 : 1)};
   color: var(--color-text-secondary);
-  font-size: 12px;
   transition: all 0.2s;
 
   &:hover:not(:disabled) {
-    border-color: var(--color-primary);
-    color: var(--color-primary);
     background: var(--color-background-soft);
+    color: var(--color-text);
   }
 `
 
@@ -459,13 +372,13 @@ const SessionListTitle = styled.div`
     font-weight: 600;
     color: var(--color-text-secondary);
     letter-spacing: 0.5px;
-    flex: 1;
   }
 
   .count {
+    margin-left: auto;
     font-size: 10px;
-    color: var(--color-text-tertiary);
-    background: var(--color-background-soft);
+    color: #fff;
+    background: var(--speedy-brand, #B07353);
     padding: 1px 6px;
     border-radius: 10px;
   }
@@ -485,10 +398,12 @@ const SessionItem = styled.div`
   padding: 7px 12px;
   border-radius: var(--list-item-border-radius);
   cursor: pointer;
-  background: transparent;
+  background: rgba(176, 115, 83, 0.1);
+  color: #000;
   border: none;
   width: calc(var(--assistants-width) - 20px);
   margin-bottom: 8px;
+  transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
 
   .menu {
     opacity: 0;
@@ -496,8 +411,7 @@ const SessionItem = styled.div`
   }
 
   &:hover {
-    background-color: var(--color-list-item-hover);
-    transition: background-color 0.1s;
+    background: rgba(176, 115, 83, 0.2);
 
     .menu {
       opacity: 1;
@@ -505,18 +419,44 @@ const SessionItem = styled.div`
   }
 
   &.active {
-    background-color: var(--color-list-item);
+    background-color: var(--speedy-brand, #B07353);
+    color: #fff;
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    border-left: 3px solid var(--color-primary);
-    transform: translateX(2px);
+    animation: ${breathe} 3s ease-in-out infinite;
 
     .menu {
       opacity: 1;
+      color: rgba(255, 255, 255, 0.7);
 
       &:hover {
-        color: var(--color-text-2);
+        color: #fff;
       }
     }
+
+    .anticon, svg {
+      color: #fff;
+    }
+  }
+`
+
+const SessionContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  gap: 2px;
+`
+
+const SessionPreviewText = styled.div`
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 11px;
+  color: rgba(176, 115, 83, 0.6);
+
+  .active & {
+    color: rgba(255, 255, 255, 0.7);
   }
 `
 
@@ -527,9 +467,12 @@ const SessionName = styled.div`
   overflow: hidden;
   font-size: 13px;
   position: relative;
-  flex: 1;
   text-align: left;
-  color: var(--color-text);
+  color: inherit;
+
+  .active & {
+    font-weight: 600;
+  }
 `
 
 const SessionEditInput = styled.input`

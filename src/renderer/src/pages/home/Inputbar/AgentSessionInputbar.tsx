@@ -13,15 +13,16 @@ import { CacheService } from '@renderer/services/CacheService'
 import { EVENT_NAMES, EventEmitter } from '@renderer/services/EventService'
 import { pauseTrace } from '@renderer/services/SpanManagerService'
 import { estimateUserPromptUsage } from '@renderer/services/TokenService'
-import { useAppDispatch, useAppSelector } from '@renderer/store'
+import store, { useAppDispatch, useAppSelector } from '@renderer/store'
 import { getChannelBySession } from '@renderer/store/channels'
+import { updateOneBlock } from '@renderer/store/messageBlock'
 import { newMessagesActions, selectMessagesForTopic } from '@renderer/store/newMessage'
 import { sendMessage as dispatchSendMessage } from '@renderer/store/thunk/messageThunk'
 import type { Assistant, Message } from '@renderer/types'
 import type { FileMetadata } from '@renderer/types'
-import type { MessageBlock } from '@renderer/types/newMessage'
-import { MessageBlockStatus } from '@renderer/types/newMessage'
-import { abortCompletion } from '@renderer/utils/abortController'
+import type { MessageBlock, ToolMessageBlock } from '@renderer/types/newMessage'
+import { AssistantMessageStatus, MessageBlockStatus, MessageBlockType } from '@renderer/types/newMessage'
+import { abortCompletion, abortMap } from '@renderer/utils/abortController'
 import { buildAgentSessionTopicId } from '@renderer/utils/agentSession'
 import { getSendMessageShortcutLabel } from '@renderer/utils/input'
 import { createMainTextBlock, createMessage } from '@renderer/utils/messageUtils/create'
@@ -388,7 +389,7 @@ const AgentSessionInputbarInner: FC<InnerProps> = ({ assistant, agentId, session
     return Array.from(askIdSet)
   }, [topicMessages])
 
-  const canAbort = loading && streamingAskIds.length > 0
+  const canAbort = streamingAskIds.length > 0
 
   const abortAgentSession = useCallback(async () => {
     if (!streamingAskIds.length) {
@@ -401,13 +402,62 @@ const AgentSessionInputbarInner: FC<InnerProps> = ({ assistant, agentId, session
       askIds: streamingAskIds
     })
 
+    let hasActiveStream = false
     for (const askId of streamingAskIds) {
+      if (abortMap.has(askId)) {
+        hasActiveStream = true
+      }
       abortCompletion(askId)
+    }
+
+    // If no active streams found (e.g. after page refresh), clean up orphaned message/block states directly
+    if (!hasActiveStream && topicMessages) {
+      logger.info('No active streams found, cleaning up orphaned message and block states')
+      const incompleteBlockStatuses = new Set<string>([
+        MessageBlockStatus.STREAMING,
+        MessageBlockStatus.PENDING,
+        MessageBlockStatus.PROCESSING
+      ])
+      const blockState = store.getState().messageBlocks
+      for (const message of topicMessages) {
+        if (!message) continue
+        if (message.status === 'processing' || message.status === 'pending') {
+          dispatch(
+            newMessagesActions.updateMessage({
+              topicId: sessionTopicId,
+              messageId: message.id,
+              updates: { status: AssistantMessageStatus.SUCCESS }
+            })
+          )
+          if (message.blocks) {
+            for (const blockId of message.blocks) {
+              const block = blockState.entities[blockId]
+              if (block && incompleteBlockStatuses.has(block.status)) {
+                const changes: Partial<MessageBlock> = { status: MessageBlockStatus.PAUSED }
+                // 同步更新 tool block 的 rawMcpToolResponse.status，避免工具调用仍显示 loading
+                if (block.type === MessageBlockType.TOOL) {
+                  const toolBlock = block as ToolMessageBlock
+                  if (toolBlock.metadata?.rawMcpToolResponse) {
+                    changes.metadata = {
+                      ...toolBlock.metadata,
+                      rawMcpToolResponse: {
+                        ...toolBlock.metadata.rawMcpToolResponse,
+                        status: 'cancelled'
+                      }
+                    }
+                  }
+                }
+                dispatch(updateOneBlock({ id: blockId, changes }))
+              }
+            }
+          }
+        }
+      }
     }
 
     pauseTrace(sessionTopicId)
     dispatch(newMessagesActions.setTopicLoading({ topicId: sessionTopicId, loading: false }))
-  }, [dispatch, sessionTopicId, streamingAskIds])
+  }, [dispatch, sessionTopicId, streamingAskIds, topicMessages])
 
   const sendMessage = useCallback(async () => {
     if (sendDisabled) {
@@ -496,6 +546,9 @@ const AgentSessionInputbarInner: FC<InnerProps> = ({ assistant, agentId, session
     return []
   }, [canAddImageFile, canAddTextFile])
 
+  // Check if in turbo mode (speedy page)
+  const isTurboMode = agentId === TURBO_AGENT_ID
+
   const leftToolbar = useMemo(
     () => (
       <ToolbarGroup>
@@ -506,15 +559,13 @@ const AgentSessionInputbarInner: FC<InnerProps> = ({ assistant, agentId, session
   )
   const placeholderText = useMemo(
     () =>
-      t('agent.input.placeholder', {
-        key: getSendMessageShortcutLabel(sendMessageShortcut)
-      }),
-    [sendMessageShortcut, t]
+      isTurboMode
+        ? t('agent.input.placeholder.turbo')
+        : t('agent.input.placeholder', {
+            key: getSendMessageShortcutLabel(sendMessageShortcut)
+          }),
+    [sendMessageShortcut, t, isTurboMode]
   )
-
-  // Check if in turbo mode (speedy page)
-  const isTurboMode = agentId === TURBO_AGENT_ID
-  console.log('[AgentSessionInputbar] turbo mode check:', { agentId, TURBO_AGENT_ID, isTurboMode })
 
   // Handle navigation to channel settings
   const handleGoToChannel = useCallback(() => {
@@ -563,7 +614,7 @@ const AgentSessionInputbarInner: FC<InnerProps> = ({ assistant, agentId, session
       placeholder={placeholderText}
       supportedExts={supportedExts}
       onPause={abortAgentSession}
-      isLoading={canAbort}
+      isLoading={canAbort || loading}
       handleSendMessage={sendMessage}
       leftToolbar={leftToolbar}
       forceEnableQuickPanelTriggers

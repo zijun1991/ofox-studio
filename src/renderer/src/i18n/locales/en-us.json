@@ -71,7 +71,9 @@
       "tooltip": "Git Bash is required to run agents on Windows. Install from git-scm.com if not available."
     },
     "input": {
-      "placeholder": "Enter your message here, send with {{key}} - @ select path, / select command"
+      "placeholder": {
+        "turbo": "Type 'reshape' to begin a new era..."
+      }
     },
     "list": {
       "error": {
@@ -4420,6 +4422,11 @@
       "assistant": {
         "title": "Assistant Settings"
       },
+      "background_image": {
+        "description": "Set a background image for the app window",
+        "select": "Select Image",
+        "title": "Background Image"
+      },
       "custom": {
         "css": {
           "cherrycss": "Get from ofox.ai/themes",
@@ -4433,14 +4440,6 @@
         "global": "Global Font",
         "select": "Select Font",
         "title": "Font Settings"
-      },
-      "navbar": {
-        "position": {
-          "label": "Navbar Position",
-          "left": "Left",
-          "top": "Top"
-        },
-        "title": "Navbar Settings"
       },
       "sidebar": {
         "chat": {
@@ -5431,42 +5430,6 @@
       "zoom_out": "Zoom Out",
       "zoom_reset": "Reset Zoom"
     },
-    "skin": {
-      "addCustom": "Add Custom",
-      "background": {
-        "addColor": "Add Color",
-        "blur": "Blur",
-        "color": "Color",
-        "colors": "Colors",
-        "direction": "Direction",
-        "directions": {
-          "radial": "Radial",
-          "to-bottom": "Vertical",
-          "to-bottom-right": "Diagonal",
-          "to-right": "Horizontal"
-        },
-        "opacity": "Opacity",
-        "selectImage": "Select Image",
-        "size": "Size",
-        "sizeAuto": "Auto",
-        "sizeContain": "Contain",
-        "sizeCover": "Cover",
-        "title": "Background Settings",
-        "types": {
-          "gradient": "Gradient",
-          "image": "Image",
-          "solid": "Solid"
-        }
-      },
-      "customTitle": "Custom Skin",
-      "deleteConfirm": "Are you sure you want to delete this skin?",
-      "export": "Export Skin",
-      "import": "Import Skin",
-      "name": "Skin Name",
-      "namePlaceholder": "Enter skin name",
-      "primaryColor": "Primary Color",
-      "title": "Skin"
-    },
     "theme": {
       "color_primary": "Primary Color",
       "dark": "Dark",
@@ -5696,16 +5659,28 @@
     }
   },
   "speedy": {
+    "add_task": "New Task",
     "chat_placeholder": "Start a new conversation",
     "configure_employees": "Configure Model Employees",
     "expert_mode": "Expert Mode",
-    "new_topic": "New Topic",
+    "mode": {
+      "full_auto": "Full Auto",
+      "plan": "Plan"
+    },
+    "new_chat": "New Chat",
+    "new_task_name": "New Task",
+    "new_topic": "New Task",
     "no_employee_description": "Please configure model employees to start using Speedy Mode",
     "no_employee_title": "No Model Employees",
-    "no_topics": "No topics yet",
+    "no_topics": "No tasks yet",
     "select_employee": "Select Model Employee",
     "title": "Speedy Mode",
-    "topic_list_title": "Topics"
+    "topic_list_title": "Tasks",
+    "welcome": {
+      "subtitle": "Commander, issue the order to rewrite the future",
+      "title": "Traversing billions of computations, all for this moment."
+    },
+    "workspace": "Workspace"
   },
   "title": {
     "apps": "Apps",

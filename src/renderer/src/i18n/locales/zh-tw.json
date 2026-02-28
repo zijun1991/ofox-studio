@@ -71,7 +71,9 @@
       "tooltip": "在 Windows 上執行 Agent 需要 Git Bash。如未安裝，請從 git-scm.com 下載安裝。"
     },
     "input": {
-      "placeholder": "在這裡輸入您的訊息，使用 {{key}} 傳送 - @ 選擇路徑，/ 選擇命令"
+      "placeholder": {
+        "turbo": "[to be translated]:Tell me what to do"
+      }
     },
     "list": {
       "error": {
@@ -4420,6 +4422,11 @@
       "assistant": {
         "title": "助手設定"
       },
+      "background_image": {
+        "description": "設定應用程式視窗的背景圖",
+        "select": "選擇圖片",
+        "title": "背景圖"
+      },
       "custom": {
         "css": {
           "cherrycss": "從 ofox.ai/themes 取得",
@@ -4433,14 +4440,6 @@
         "global": "全域字型",
         "select": "選擇字型",
         "title": "字型設定"
-      },
-      "navbar": {
-        "position": {
-          "label": "導覽列位置",
-          "left": "左側",
-          "top": "頂端"
-        },
-        "title": "導覽列設定"
       },
       "sidebar": {
         "chat": {
@@ -5431,42 +5430,6 @@
       "zoom_out": "縮小介面",
       "zoom_reset": "重設縮放"
     },
-    "skin": {
-      "addCustom": "新增自訂",
-      "background": {
-        "addColor": "新增顏色",
-        "blur": "模糊",
-        "color": "顏色",
-        "colors": "顏色",
-        "direction": "方向",
-        "directions": {
-          "radial": "徑向",
-          "to-bottom": "垂直",
-          "to-bottom-right": "對角",
-          "to-right": "水平"
-        },
-        "opacity": "透明度",
-        "selectImage": "選擇圖片",
-        "size": "大小",
-        "sizeAuto": "自動",
-        "sizeContain": "包含",
-        "sizeCover": "覆蓋",
-        "title": "背景設定",
-        "types": {
-          "gradient": "漸層",
-          "image": "圖片",
-          "solid": "純色"
-        }
-      },
-      "customTitle": "自訂主題",
-      "deleteConfirm": "確定要刪除此主題嗎？",
-      "export": "匯出主題",
-      "import": "匯入主題",
-      "name": "主題名稱",
-      "namePlaceholder": "輸入主題名稱",
-      "primaryColor": "主色調",
-      "title": "主題"
-    },
     "theme": {
       "color_primary": "主題顏色",
       "dark": "深色",
@@ -5696,16 +5659,28 @@
     }
   },
   "speedy": {
+    "add_task": "[to be translated]:New Task",
     "chat_placeholder": "開始新對話",
     "configure_employees": "配置模型員工",
     "expert_mode": "專家模式",
+    "mode": {
+      "full_auto": "[to be translated]:Full Auto",
+      "plan": "[to be translated]:Plan"
+    },
+    "new_chat": "新建聊天",
+    "new_task_name": "新任務",
     "new_topic": "新建話題",
     "no_employee_description": "請先配置模型員工以使用極速模式",
     "no_employee_title": "未配置模型員工",
     "no_topics": "暫無話題",
     "select_employee": "選擇模型員工",
     "title": "極速模式",
-    "topic_list_title": "話題列表"
+    "topic_list_title": "話題列表",
+    "welcome": {
+      "subtitle": "[to be translated]:Commander, issue the order to rewrite the future",
+      "title": "[to be translated]:Traversing billions of computations, all for this moment."
+    },
+    "workspace": "工作區"
   },
   "title": {
     "apps": "小程式",

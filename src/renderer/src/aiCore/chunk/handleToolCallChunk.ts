@@ -169,6 +169,19 @@ export class ToolCallChunkHandler {
       return
     }
 
+    // 防御性检查：如果 streamingArgs 已经是完整的 JSON，
+    // 说明收到了异常的额外 delta（可能来自 SDK 的重复事件），忽略它
+    if (toolCall.streamingArgs) {
+      try {
+        JSON.parse(toolCall.streamingArgs)
+        // 解析成功说明 streamingArgs 已经是完整 JSON，不应该再追加 delta
+        logger.warn(`🔧 [ToolCallChunkHandler] Ignoring extra delta after complete JSON for ${toolCallId}`)
+        return
+      } catch {
+        // 解析失败是正常情况——说明 JSON 尚未完整，继续累积
+      }
+    }
+
     // 累积流式参数
     toolCall.streamingArgs = (toolCall.streamingArgs || '') + delta
 

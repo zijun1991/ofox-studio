@@ -4,6 +4,8 @@ import type React from 'react'
 import ResourceButton from './components/ResourceButton'
 import ResourceQuickPanelManager from './components/ResourceQuickPanelManager'
 
+const TURBO_AGENT_ID = 'agent_turbo_system'
+
 /**
  * Resource Tool
  *
@@ -15,6 +17,7 @@ const resourceTool = defineTool({
   key: 'resource_panel',
   label: (t) => t('chat.input.resource_panel.title'),
   visibleInScopes: [TopicType.Session],
+  condition: (context) => context.session?.agentId !== TURBO_AGENT_ID,
 
   dependencies: {
     state: [] as const,

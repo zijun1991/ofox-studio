@@ -40,29 +40,39 @@ class TabsService {
       return false
     }
 
-    // 如果只有一个标签页，不允许关闭
-    if (tabs.length === 1) {
-      logger.warn('Cannot close the last tab')
-      return false
-    }
-
     // 如果关闭的是当前激活的标签页，需要切换到其他标签页
     if (tabId === activeTabId) {
       const remainingTabs = tabs.filter((tab) => tab.id !== tabId)
-      const lastTab = remainingTabs[remainingTabs.length - 1]
 
-      store.dispatch(setActiveTab(lastTab.id))
+      if (remainingTabs.length > 0) {
+        const lastTab = remainingTabs[remainingTabs.length - 1]
+        store.dispatch(setActiveTab(lastTab.id))
 
-      // 使用 NavigationService 导航到新的标签页
-      if (NavigationService.navigate) {
-        NavigationService.navigate(lastTab.path)
+        // 使用 NavigationService 导航到新的标签页
+        if (NavigationService.navigate) {
+          NavigationService.navigate(lastTab.path)
+        } else {
+          logger.warn('Navigation service not ready, will navigate on next render')
+          setTimeout(() => {
+            if (NavigationService.navigate) {
+              NavigationService.navigate(lastTab.path)
+            }
+          }, 100)
+        }
       } else {
-        logger.warn('Navigation service not ready, will navigate on next render')
-        setTimeout(() => {
-          if (NavigationService.navigate) {
-            NavigationService.navigate(lastTab.path)
-          }
-        }, 100)
+        // 最后一个 tab 被关闭，导航到首页
+        store.dispatch(setActiveTab('home'))
+
+        if (NavigationService.navigate) {
+          NavigationService.navigate('/')
+        } else {
+          logger.warn('Navigation service not ready, will navigate on next render')
+          setTimeout(() => {
+            if (NavigationService.navigate) {
+              NavigationService.navigate('/')
+            }
+          }, 100)
+        }
       }
     }
 

@@ -29,7 +29,7 @@ export const useCreateDefaultSession = (agentId: string | null) => {
       const session = {
         ...agent,
         id: undefined,
-        name: t('common.unnamed')
+        name: t('speedy.new_task_name')
       } satisfies CreateSessionForm
 
       const created = await createSession(session)

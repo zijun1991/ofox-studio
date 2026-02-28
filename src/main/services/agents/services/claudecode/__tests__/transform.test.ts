@@ -176,6 +176,12 @@ describe('Claude → AiSDK transform', () => {
       'tool-result'
     ])
 
+    const toolInputDelta = parts.find((part) => part.type === 'tool-input-delta') as Extract<
+      (typeof parts)[number],
+      { type: 'tool-input-delta' }
+    >
+    expect(toolInputDelta.delta).toBe('{"command":"ls"}')
+
     const finishStep = parts.find((part) => part.type === 'finish-step') as Extract<
       (typeof parts)[number],
       { type: 'finish-step' }

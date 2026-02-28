@@ -60,9 +60,16 @@ export const useCyclePermissionMode = () => {
       }
 
       // 计算下一个权限模式
-      const currentIndex = permissionModes.indexOf(currentMode)
-      const nextIndex = (currentIndex + 1) % permissionModes.length
-      const nextMode = permissionModes[nextIndex]
+      let nextMode: PermissionMode
+      if (isSpeedyPage) {
+        // 极速模式：只在 bypassPermissions 和 plan 之间切换
+        nextMode = currentMode === 'plan' ? 'bypassPermissions' : 'plan'
+      } else {
+        // 专家模式：循环所有权限模式
+        const currentIndex = permissionModes.indexOf(currentMode)
+        const nextIndex = (currentIndex + 1) % permissionModes.length
+        nextMode = permissionModes[nextIndex]
+      }
 
       // 更新权限模式
       const nextConfiguration: AgentConfigurationState = {
@@ -79,13 +86,19 @@ export const useCyclePermissionMode = () => {
         { showSuccessToast: false }
       )
 
-      // 显示 toast 提示：更新成功：<模式名>
+      // 显示 toast 提示
       if (result) {
         const modeCard = permissionModeCards.find((card) => card.mode === nextMode)
         if (modeCard) {
-          window.toast.success(
-            `${t('common.update_success')}：${modeCard.icon} ${t(modeCard.titleKey, modeCard.titleFallback)}`
-          )
+          if (isSpeedyPage) {
+            // 极速模式：与 sidebar switch 一致，只显示图标+名称
+            window.toast.success(`${modeCard.icon} ${t(modeCard.titleKey, modeCard.titleFallback)}`)
+          } else {
+            // 专家模式：显示"更新成功：图标+名称"
+            window.toast.success(
+              `${t('common.update_success')}：${modeCard.icon} ${t(modeCard.titleKey, modeCard.titleFallback)}`
+            )
+          }
         }
       }
     },

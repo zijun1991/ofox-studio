@@ -6,7 +6,7 @@ import { titleBarOverlayDark, titleBarOverlayLight } from '../config'
 import { configManager } from './ConfigManager'
 
 class ThemeService {
-  private theme: ThemeMode = ThemeMode.system
+  private theme: ThemeMode = ThemeMode.light
   constructor() {
     this.theme = configManager.getTheme()
 
@@ -14,8 +14,8 @@ class ThemeService {
       nativeTheme.themeSource = this.theme
     } else {
       // 兼容旧版本
-      configManager.setTheme(ThemeMode.system)
-      nativeTheme.themeSource = ThemeMode.system
+      configManager.setTheme(ThemeMode.light)
+      nativeTheme.themeSource = ThemeMode.light
     }
     nativeTheme.on('updated', this.themeUpdatadHandler.bind(this))
   }

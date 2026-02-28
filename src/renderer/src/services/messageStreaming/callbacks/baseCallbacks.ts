@@ -8,7 +8,13 @@ import { updateOneBlock } from '@renderer/store/messageBlock'
 import { selectMessagesForTopic } from '@renderer/store/newMessage'
 import { newMessagesActions } from '@renderer/store/newMessage'
 import type { Assistant } from '@renderer/types'
-import type { PlaceholderMessageBlock, Response, ThinkingMessageBlock } from '@renderer/types/newMessage'
+import type {
+  MessageBlock,
+  PlaceholderMessageBlock,
+  Response,
+  ThinkingMessageBlock,
+  ToolMessageBlock
+} from '@renderer/types/newMessage'
 import { AssistantMessageStatus, MessageBlockStatus, MessageBlockType } from '@renderer/types/newMessage'
 import { uuid } from '@renderer/utils'
 import { isAgentSessionTopicId } from '@renderer/utils/agentSession'
@@ -124,8 +130,13 @@ export const createBaseCallbacks = (deps: BaseCallbacksDependencies) => {
         blockManager.smartBlockUpdate(possibleBlockId, changes, blockManager.lastBlockType!, true)
       }
 
-      // Fix: 更新所有仍处于 STREAMING 状态的 blocks 为 PAUSED/ERROR
-      // 这修复了停止回复时思考计时器继续运行的问题
+      // Fix: 更新所有仍处于未完成状态的 blocks 为 PAUSED/ERROR
+      // 这修复了停止回复时思考计时器继续运行、工具调用仍显示 loading 的问题
+      const incompleteStatuses = new Set([
+        MessageBlockStatus.STREAMING,
+        MessageBlockStatus.PENDING,
+        MessageBlockStatus.PROCESSING
+      ])
       const currentMessage = getState().messages.entities[assistantMsgId]
       if (currentMessage) {
         const allBlockRefs = findAllBlocks(currentMessage)
@@ -134,9 +145,9 @@ export const createBaseCallbacks = (deps: BaseCallbacksDependencies) => {
         const thinkingInfo = getCurrentThinkingInfo?.()
         for (const blockRef of allBlockRefs) {
           const block = blockState.entities[blockRef.id]
-          if (block && block.status === MessageBlockStatus.STREAMING && block.id !== possibleBlockId) {
+          if (block && incompleteStatuses.has(block.status) && block.id !== possibleBlockId) {
             // 构建更新对象
-            const changes: Partial<ThinkingMessageBlock> = {
+            const changes: Partial<MessageBlock> = {
               status: isErrorTypeAbort ? MessageBlockStatus.PAUSED : MessageBlockStatus.ERROR
             }
             // 如果是 thinking block 且有思考时间信息，保留实际思考时间
@@ -146,7 +157,20 @@ export const createBaseCallbacks = (deps: BaseCallbacksDependencies) => {
               thinkingInfo?.millsec &&
               thinkingInfo.millsec > 0
             ) {
-              changes.thinking_millsec = thinkingInfo.millsec
+              ;(changes as Partial<ThinkingMessageBlock>).thinking_millsec = thinkingInfo.millsec
+            }
+            // 同步更新 tool block 的 rawMcpToolResponse.status，避免工具调用仍显示 loading
+            if (block.type === MessageBlockType.TOOL) {
+              const toolBlock = block as ToolMessageBlock
+              if (toolBlock.metadata?.rawMcpToolResponse) {
+                changes.metadata = {
+                  ...toolBlock.metadata,
+                  rawMcpToolResponse: {
+                    ...toolBlock.metadata.rawMcpToolResponse,
+                    status: 'cancelled'
+                  }
+                }
+              }
             }
             dispatch(
               updateOneBlock({

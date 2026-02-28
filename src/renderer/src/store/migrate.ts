@@ -3325,6 +3325,25 @@ const migrateConfig = {
       logger.error('migrate 202 error', error as Error)
       return state
     }
+  },
+  '203': (state: RootState) => {
+    try {
+      // 清理 UserTheme 中的皮肤相关字段
+      if (state.settings?.userTheme) {
+        delete (state.settings.userTheme as any).sidebarBackground
+        delete (state.settings.userTheme as any).cardBackground
+        delete (state.settings.userTheme as any).activeSkinId
+      }
+      // 清理 skins state
+      delete (state as any).skins
+      // 固定导航栏为 top
+      state.settings.navbarPosition = 'top'
+      logger.info('migrate 203 success')
+      return state
+    } catch (error) {
+      logger.error('migrate 203 error', error as Error)
+      return state
+    }
   }
 }
 

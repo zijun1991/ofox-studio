@@ -34,17 +34,22 @@
 }
 
 html,
-body,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  background-color: #b07353 !important;
+}
+
 #root {
   height: 100%;
   width: 100%;
   margin: 0;
-}
-
-#root {
   display: flex;
   flex-direction: row;
   flex: 1;
+  overflow: hidden;
+  background: transparent;
 }
 
 body {
@@ -57,7 +62,7 @@ body {
   font-family: var(--font-family);
   text-rendering: optimizeLegibility;
   transition: background-color 0.3s linear;
-  background-color: unset;
+  background-color: #b07353;
 
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

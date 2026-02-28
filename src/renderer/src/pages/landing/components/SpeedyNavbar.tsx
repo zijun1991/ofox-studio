@@ -7,23 +7,20 @@
  * Uses NavbarHeader container to match Expert Mode's ChatNavbar layout.
  */
 import { loggerService } from '@logger'
-import { NavbarHeader } from '@renderer/components/app/Navbar'
 import { HStack } from '@renderer/components/Layout'
 import NavbarIcon from '@renderer/components/NavbarIcon'
 import { ReasoningTag, ToolsCallingTag, VisionTag, WebSearchTag } from '@renderer/components/Tags/Model'
 import { useAgentClient } from '@renderer/hooks/agents/useAgentClient'
 import { useUpdateSession } from '@renderer/hooks/agents/useUpdateSession'
 import { useModelEmployee } from '@renderer/hooks/useModelEmployee'
-import { AgentSettingsTab } from '@renderer/pages/home/components/ChatNavBar/Tools/SettingsTab'
 import type { ModelType } from '@renderer/types/index'
 import type { EducationLevel, ModelEmployee } from '@renderer/types/modelEmployee'
-import { Drawer, Select, Tooltip } from 'antd'
-import { Settings2, UserCog } from 'lucide-react'
-import type { FC } from 'react'
-import { useCallback, useState } from 'react'
+import { Select, Tooltip } from 'antd'
+import { BookOpen, Crown, FolderOpen, GraduationCap, Trophy } from 'lucide-react'
+import type { FC, ReactNode } from 'react'
+import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
-import styled from 'styled-components'
+import styled, { createGlobalStyle } from 'styled-components'
 
 const logger = loggerService.withContext('SpeedyNavbar')
 
@@ -32,13 +29,14 @@ interface SpeedyNavbarProps {
   onEmployeeChange: (employeeId: string) => void
   agentId: string
   activeSessionId?: string
+  onToggleWorkspace?: () => void
 }
 
-const EDUCATION_LEVEL_CONFIG: Record<EducationLevel, { labelKey: string; icon: string }> = {
-  high_school: { labelKey: 'modelEmployee.educationLevel.high_school', icon: '🎓' },
-  undergraduate: { labelKey: 'modelEmployee.educationLevel.undergraduate', icon: '📚' },
-  master: { labelKey: 'modelEmployee.educationLevel.master', icon: '🏆' },
-  phd: { labelKey: 'modelEmployee.educationLevel.phd', icon: '👑' }
+const EDUCATION_LEVEL_CONFIG: Record<EducationLevel, { labelKey: string; icon: ReactNode }> = {
+  high_school: { labelKey: 'modelEmployee.educationLevel.high_school', icon: <GraduationCap size={14} /> },
+  undergraduate: { labelKey: 'modelEmployee.educationLevel.undergraduate', icon: <BookOpen size={14} /> },
+  master: { labelKey: 'modelEmployee.educationLevel.master', icon: <Trophy size={14} /> },
+  phd: { labelKey: 'modelEmployee.educationLevel.phd', icon: <Crown size={14} /> }
 }
 
 /**
@@ -79,18 +77,17 @@ const renderEmployeeCapabilityTags = (employee: ModelEmployee, size: number = 10
   )
 }
 
-const SpeedyNavbar: FC<SpeedyNavbarProps> = ({ selectedEmployeeId, onEmployeeChange, agentId, activeSessionId }) => {
+const SpeedyNavbar: FC<SpeedyNavbarProps> = ({
+  selectedEmployeeId,
+  onEmployeeChange,
+  agentId,
+  activeSessionId,
+  onToggleWorkspace
+}) => {
   const { t } = useTranslation()
-  const navigate = useNavigate()
   const { employeesByLevel, educationLevelOrder, getEmployeeById } = useModelEmployee()
   const client = useAgentClient()
   const { updateModel } = useUpdateSession(agentId)
-  const [settingsOpen, setSettingsOpen] = useState(false)
-
-  // Navigate to expert mode
-  const handleEnterExpertMode = () => {
-    navigate('/expert')
-  }
 
   // Get selected employee for display
   const selectedEmployee = selectedEmployeeId ? getEmployeeById(selectedEmployeeId) : null
@@ -134,10 +131,7 @@ const SpeedyNavbar: FC<SpeedyNavbarProps> = ({ selectedEmployeeId, onEmployeeCha
 
     return (
       <SelectedValue>
-        <SelectedType>
-          <TypeIcon>{levelConfig.icon}</TypeIcon>
-          {levelLabel}
-        </SelectedType>
+        <SelectedType>{levelLabel}</SelectedType>
         <SelectedDivider>|</SelectedDivider>
         <SelectedEmployeeName>{selectedEmployee.name}</SelectedEmployeeName>
         <SelectedDivider>|</SelectedDivider>
@@ -176,8 +170,9 @@ const SpeedyNavbar: FC<SpeedyNavbarProps> = ({ selectedEmployeeId, onEmployeeCha
   )
 
   return (
-    <NavbarHeader className="speedy-navbar" style={{ height: 'var(--navbar-height)' }}>
-      <div className="flex h-full min-w-0 flex-1 shrink items-center overflow-auto">
+    <TopBarContainer>
+      <EmployeeDropdownStyle />
+      <div className="left-content">
         <EmployeeSelector
           value={selectedEmployeeId}
           onChange={handleEmployeeSelectChange}
@@ -185,34 +180,58 @@ const SpeedyNavbar: FC<SpeedyNavbarProps> = ({ selectedEmployeeId, onEmployeeCha
           placeholder={t('speedy.select_employee')}
           popupMatchSelectWidth={320}
           labelRender={renderSelectedValue}
+          className="no-drag"
+          popupClassName="speedy-employee-dropdown"
+          style={{
+            position: 'relative',
+            top: '-2px'
+          }}
         />
       </div>
-      <HStack alignItems="center" gap={8}>
-        <Tooltip title={t('speedy.expert_mode')} mouseEnterDelay={0.8}>
-          <NavbarIcon onClick={handleEnterExpertMode}>
-            <UserCog size={18} />
-          </NavbarIcon>
-        </Tooltip>
-        <Tooltip title={t('settings.title')} mouseEnterDelay={0.8}>
-          <NavbarIcon onClick={() => setSettingsOpen(true)}>
-            <Settings2 size={18} />
+      <HStack className="right-content" alignItems="center" justifyContent="flex-end" gap={8}>
+        <Tooltip title={t('speedy.workspace')} mouseEnterDelay={0.8}>
+          <NavbarIcon className="no-drag" onClick={onToggleWorkspace}>
+            <FolderOpen size={18} />
           </NavbarIcon>
         </Tooltip>
       </HStack>
-      <Drawer
-        placement="right"
-        open={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-        width="var(--assistants-width)"
-        closable={false}
-        styles={{ body: { padding: 0, paddingTop: 'var(--navbar-height)' } }}>
-        <AgentSettingsTab />
-      </Drawer>
-    </NavbarHeader>
+    </TopBarContainer>
   )
 }
 
+const TopBarContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  padding: 0 16px;
+  -webkit-app-region: drag;
+  background: transparent;
+  position: relative;
+  z-index: 10;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+
+  .left-content {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .right-content {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .no-drag {
+    -webkit-app-region: no-drag;
+  }
+`
+
 const EmployeeSelector = styled(Select)`
+  position: relative;
+
   .ant-select-selector {
     background: var(--color-background-soft) !important;
     border: none !important;
@@ -223,10 +242,13 @@ const EmployeeSelector = styled(Select)`
 
   .ant-select-selection-item {
     color: var(--color-text);
+    display: flex;
+    align-items: center;
   }
 
   .ant-select-arrow {
     color: var(--color-text-secondary);
+    top: 18px;
   }
 `
 
@@ -238,7 +260,8 @@ const LevelLabel = styled.div`
 `
 
 const LevelIcon = styled.span`
-  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
 `
 
 const LevelName = styled.span`
@@ -270,7 +293,6 @@ const CapabilityTagsRow = styled.div`
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-top: 2px;
   flex-wrap: wrap;
 `
 
@@ -290,7 +312,7 @@ const SelectedType = styled.span`
   font-size: 10px;
   font-weight: 600;
   color: white;
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark, var(--color-primary)) 100%);
+  background: linear-gradient(135deg, var(--speedy-brand, #B07353) 0%, var(--speedy-brand-dark, #956044) 100%);
   padding: 1px 6px;
   border-radius: 10px;
   white-space: nowrap;
@@ -315,9 +337,25 @@ const SelectedEmployeeName = styled.span`
   flex-shrink: 0;
 `
 
-const TypeIcon = styled.span`
-  font-size: 10px;
-  filter: grayscale(0.3);
+const EmployeeDropdownStyle = createGlobalStyle`
+  .speedy-employee-dropdown {
+    .ant-select-group {
+      padding: 8px 12px 4px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+    }
+
+    .ant-select-item-option {
+      border-radius: 6px;
+      margin: 2px 4px;
+      padding: 8px;
+    }
+
+    .ant-select-item-option-grouped {
+      padding-left: 8px;
+    }
+  }
 `
 
 export default SpeedyNavbar

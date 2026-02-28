@@ -14,8 +14,8 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-  theme: ThemeMode.system,
-  settedTheme: ThemeMode.dark,
+  theme: ThemeMode.light,
+  settedTheme: ThemeMode.light,
   toggleTheme: () => {},
   setTheme: () => {}
 })
@@ -65,7 +65,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     // if theme is old auto, then set theme to system
     // we can delete this after next big release
     if (settedTheme !== ThemeMode.dark && settedTheme !== ThemeMode.light && settedTheme !== ThemeMode.system) {
-      setSettedTheme(ThemeMode.system)
+      setSettedTheme(ThemeMode.light)
     }
 
     initUserTheme()

@@ -71,7 +71,9 @@
       "tooltip": "Git Bash ist erforderlich, um Agenten unter Windows auszuführen. Installiere es von git-scm.com, falls es nicht verfügbar ist."
     },
     "input": {
-      "placeholder": "Gib hier deine Nachricht ein, senden mit {{key}} – @ Pfad auswählen, / Befehl auswählen"
+      "placeholder": {
+        "turbo": "[to be translated]:Tell me what to do"
+      }
     },
     "list": {
       "error": {
@@ -4420,6 +4422,11 @@
       "assistant": {
         "title": "Assistenten-Einstellungen"
       },
+      "background_image": {
+        "description": "[to be translated]:Set a background image for the app window",
+        "select": "[to be translated]:Select Image",
+        "title": "[to be translated]:Background Image"
+      },
       "custom": {
         "css": {
           "cherrycss": "Von ofox.ai/themes beziehen",
@@ -4433,14 +4440,6 @@
         "global": "Globale Schriftart",
         "select": "Schriftart auswählen",
         "title": "Schriftart-Einstellungen"
-      },
-      "navbar": {
-        "position": {
-          "label": "Navigationsleistenposition",
-          "left": "Links",
-          "top": "Oben"
-        },
-        "title": "Navigationsleisten-Einstellungen"
       },
       "sidebar": {
         "chat": {
@@ -5431,42 +5430,6 @@
       "zoom_out": "Oberfläche verkleinern",
       "zoom_reset": "Zoom zurücksetzen"
     },
-    "skin": {
-      "addCustom": "Benutzerdefiniert hinzufügen",
-      "background": {
-        "addColor": "Farbe hinzufügen",
-        "blur": "Weichzeichnen",
-        "color": "Farbe",
-        "colors": "Farben",
-        "direction": "Richtung",
-        "directions": {
-          "radial": "Radial",
-          "to-bottom": "Vertikal",
-          "to-bottom-right": "Diagonal",
-          "to-right": "Horizontal"
-        },
-        "opacity": "Deckkraft",
-        "selectImage": "Bild auswählen",
-        "size": "Größe",
-        "sizeAuto": "Automatisch",
-        "sizeContain": "Enthalten",
-        "sizeCover": "Abdecken",
-        "title": "Hintergrundeinstellungen",
-        "types": {
-          "gradient": "Verlauf",
-          "image": "Bild",
-          "solid": "Einfarbig"
-        }
-      },
-      "customTitle": "Benutzerdefinierter Skin",
-      "deleteConfirm": "Sind Sie sicher, dass Sie diesen Skin löschen möchten?",
-      "export": "Skin exportieren",
-      "import": "Skin importieren",
-      "name": "Skin-Name",
-      "namePlaceholder": "Skin-Namen eingeben",
-      "primaryColor": "Primärfarbe",
-      "title": "Skin"
-    },
     "theme": {
       "color_primary": "Theme-Farbe",
       "dark": "Dunkel",
@@ -5696,16 +5659,28 @@
     }
   },
   "speedy": {
+    "add_task": "[to be translated]:New Task",
     "chat_placeholder": "Neue Konversation starten",
     "configure_employees": "Modell-Mitarbeiter konfigurieren",
     "expert_mode": "Expertenmodus",
+    "mode": {
+      "full_auto": "[to be translated]:Full Auto",
+      "plan": "[to be translated]:Plan"
+    },
+    "new_chat": "[to be translated]:New Chat",
+    "new_task_name": "[to be translated]:New Task",
     "new_topic": "Neues Thema",
     "no_employee_description": "Bitte konfigurieren Sie Modell-Mitarbeiter, um den Turbo-Modus zu nutzen",
     "no_employee_title": "Keine Modell-Mitarbeiter",
     "no_topics": "Noch keine Themen",
     "select_employee": "Modell-Mitarbeiter auswählen",
     "title": "Turbo-Modus",
-    "topic_list_title": "Themen"
+    "topic_list_title": "Themen",
+    "welcome": {
+      "subtitle": "[to be translated]:Commander, issue the order to rewrite the future",
+      "title": "[to be translated]:Traversing billions of computations, all for this moment."
+    },
+    "workspace": "[to be translated]:Workspace"
   },
   "title": {
     "apps": "Mini-Apps",
