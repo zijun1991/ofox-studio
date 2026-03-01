@@ -125,6 +125,12 @@ const ChannelDetail: FC = () => {
         return
       }
 
+      // Check if Coworker token is configured before enabling
+      if (enabled && channel.type === 'coworker' && !channel.coworkerConfig?.token?.trim()) {
+        message.warning('请先输入认证令牌再启用 Coworker 频道。')
+        return
+      }
+
       // Check if Telegram bot token is configured before enabling
       if (enabled && channel.type === 'telegram' && !channel.telegramConfig?.botToken?.trim()) {
         message.warning(
@@ -246,6 +252,21 @@ const ChannelDetail: FC = () => {
       const updated: ChannelEntity = {
         ...channel,
         telegramConfig: { ...channel.telegramConfig, ...config } as ChannelEntity['telegramConfig'],
+        updatedAt: new Date().toISOString()
+      }
+      dispatch(updateChannel(updated))
+      syncChannelsToMainProcess(updated)
+      message.success(t('channels.saved', 'Channel saved'))
+    },
+    [channel, dispatch, t, syncChannelsToMainProcess]
+  )
+
+  const handleSaveCoworkerConfig = useCallback(
+    (config: Partial<NonNullable<ChannelEntity['coworkerConfig']>>) => {
+      if (!channel) return
+      const updated: ChannelEntity = {
+        ...channel,
+        coworkerConfig: { ...channel.coworkerConfig, ...config } as ChannelEntity['coworkerConfig'],
         updatedAt: new Date().toISOString()
       }
       dispatch(updateChannel(updated))
@@ -597,6 +618,63 @@ const ChannelDetail: FC = () => {
               <Select.Option value="HTML">HTML</Select.Option>
               <Select.Option value="">{t('channels.telegram.parse_mode_none', 'None')}</Select.Option>
             </Select>
+          </SettingRow>
+        </SettingGroup>
+      )}
+
+      {/* Coworker Configuration */}
+      {channel.type === 'coworker' && (
+        <SettingGroup>
+          <SettingTitle>Coworker 工单系统配置</SettingTitle>
+          <SettingDivider />
+          <SettingRow>
+            <SettingRowTitle>服务地址</SettingRowTitle>
+            <Input
+              style={{ width: 360 }}
+              placeholder="http://192.168.0.51:8003"
+              value={channel.coworkerConfig?.baseUrl || 'http://192.168.0.51:8003'}
+              onChange={(e) => handleSaveCoworkerConfig({ baseUrl: e.target.value })}
+            />
+          </SettingRow>
+          <SettingDivider />
+          <SettingRow>
+            <SettingRowTitle>认证令牌</SettingRowTitle>
+            <Input.Password
+              style={{ width: 360 }}
+              placeholder="请输入认证令牌"
+              value={channel.coworkerConfig?.token || ''}
+              onChange={(e) => handleSaveCoworkerConfig({ token: e.target.value })}
+            />
+          </SettingRow>
+          <SettingDivider />
+          <SettingRow>
+            <SettingRowTitle>用户状态事件</SettingRowTitle>
+            <Switch
+              checked={channel.coworkerConfig?.enableUserStatusEvents ?? false}
+              onChange={(checked) => handleSaveCoworkerConfig({ enableUserStatusEvents: checked })}
+            />
+          </SettingRow>
+          <SettingDivider />
+          <SettingRow>
+            <SettingRowTitle>重连间隔（秒）</SettingRowTitle>
+            <InputNumber
+              style={{ width: 120 }}
+              min={1}
+              placeholder="5"
+              value={channel.coworkerConfig?.reconnectIntervalSec ?? 5}
+              onChange={(value) => handleSaveCoworkerConfig({ reconnectIntervalSec: value ?? undefined })}
+            />
+          </SettingRow>
+          <SettingDivider />
+          <SettingRow>
+            <SettingRowTitle>最大重连次数</SettingRowTitle>
+            <InputNumber
+              style={{ width: 120 }}
+              min={0}
+              placeholder="20"
+              value={channel.coworkerConfig?.maxReconnectAttempts ?? 20}
+              onChange={(value) => handleSaveCoworkerConfig({ maxReconnectAttempts: value ?? undefined })}
+            />
           </SettingRow>
         </SettingGroup>
       )}

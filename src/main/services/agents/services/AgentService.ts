@@ -134,22 +134,29 @@ export class AgentService extends BaseService {
    * This copies bundled skills to the agent's workspace on first run
    */
   private async initializePresetSkills(workdir: string): Promise<void> {
-    const presetSkillsPath = app.isPackaged
+    let presetSkillsPath = app.isPackaged
       ? path.join(getResourcePath(), 'preset-skills')
       : path.join(app.getAppPath(), 'resources', 'preset-skills')
+
+    // In packaged mode, resources are in app.asar.unpacked (due to asarUnpack config)
+    if (app.isPackaged) {
+      presetSkillsPath = presetSkillsPath.replace(/\.asar([\\/])/, '.asar.unpacked$1')
+    }
+
+    logger.info('Initializing preset skills', { presetSkillsPath, workdir, isPackaged: app.isPackaged })
 
     // Check if preset-skills directory exists
     try {
       await fs.promises.access(presetSkillsPath, fs.constants.R_OK)
     } catch {
-      logger.debug('Preset skills directory not found, skipping initialization', { presetSkillsPath })
+      logger.warn('Preset skills directory not found, skipping initialization', { presetSkillsPath })
       return
     }
 
     // Find all skill directories
     const skillDirs = await findAllSkillDirectories(presetSkillsPath, presetSkillsPath)
     if (skillDirs.length === 0) {
-      logger.debug('No preset skills found', { presetSkillsPath })
+      logger.warn('No preset skills found', { presetSkillsPath })
       return
     }
 

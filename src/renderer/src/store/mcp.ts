@@ -249,6 +249,20 @@ export const builtinMCPServers: BuiltinMCPServer[] = [
     provider: 'OfoxStudio',
     installSource: 'builtin',
     isTrusted: true
+  },
+  {
+    id: nanoid(),
+    name: BuiltinMCPServerNames.coworker,
+    type: 'inMemory',
+    isActive: false,
+    env: {
+      COWORKER_BASE_URL: 'http://192.168.0.51:8003',
+      COWORKER_TOKEN: 'YOUR_COWORKER_TOKEN'
+    },
+    shouldConfig: true,
+    provider: 'OfoxStudio',
+    installSource: 'builtin',
+    isTrusted: true
   }
 ] as const
 

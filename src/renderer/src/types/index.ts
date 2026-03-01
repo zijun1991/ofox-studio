@@ -863,7 +863,8 @@ export const BuiltinMCPServerNames = {
   hub: '@cherry/hub',
   scheduler: '@ofox/scheduler',
   webview: '@ofox/webview',
-  llm: '@ofox/llm'
+  llm: '@ofox/llm',
+  coworker: '@ofox/coworker'
 } as const
 
 export type BuiltinMCPServerName = (typeof BuiltinMCPServerNames)[keyof typeof BuiltinMCPServerNames]

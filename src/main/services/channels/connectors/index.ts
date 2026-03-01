@@ -1,4 +1,5 @@
 export { BaseChannelConnector } from './BaseChannelConnector'
+export { CoworkerConnector } from './CoworkerConnector'
 export { EmailConnector } from './EmailConnector'
 export { TelegramConnector } from './TelegramConnector'
 export { WebhookConnector } from './WebhookConnector'

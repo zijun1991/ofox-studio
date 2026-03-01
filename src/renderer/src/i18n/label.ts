@@ -355,7 +355,8 @@ const builtInMcpDescriptionKeyMap: Record<BuiltinMCPServerName, string> = {
   [BuiltinMCPServerNames.hub]: 'settings.mcp.builtinServersDescriptions.hub',
   [BuiltinMCPServerNames.scheduler]: 'settings.mcp.builtinServersDescriptions.scheduler',
   [BuiltinMCPServerNames.webview]: 'settings.mcp.builtinServersDescriptions.webview',
-  [BuiltinMCPServerNames.llm]: 'settings.mcp.builtinServersDescriptions.llm'
+  [BuiltinMCPServerNames.llm]: 'settings.mcp.builtinServersDescriptions.llm',
+  [BuiltinMCPServerNames.coworker]: 'settings.mcp.builtinServersDescriptions.coworker'
 } as const
 
 export const getBuiltInMcpServerDescriptionLabel = (key: string): string => {

@@ -226,6 +226,20 @@ export function getFunctionalKeys(obj: Record<string, any>): string[] {
 }
 
 /**
+ * Ensure all header values are ASCII-safe (ByteString compatible).
+ * Non-ASCII characters are removed to prevent fetch TypeError in packaged Electron apps.
+ */
+export function sanitizeHeaders(headers: Record<string, string | undefined>): Record<string, string> {
+  const result: Record<string, string> = {}
+  for (const [key, value] of Object.entries(headers)) {
+    if (value !== undefined) {
+      result[key] = value.replace(/[^\x00-\xFF]/g, '')
+    }
+  }
+  return result
+}
+
+/**
  * Sanitize environment variables for safe logging
  * Redacts values of sensitive keys to prevent credential leakage
  */

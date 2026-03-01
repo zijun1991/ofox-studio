@@ -31,7 +31,7 @@ import {
   isSupportStreamOptionsProvider,
   isVertexProvider
 } from '@renderer/utils/provider'
-import { defaultAppHeaders } from '@shared/utils'
+import { defaultAppHeaders, sanitizeHeaders } from '@shared/utils'
 import { cloneDeep, isEmpty } from 'lodash'
 
 import type { AiSdkConfig } from '../types'
@@ -246,10 +246,10 @@ export function providerToAiSdkConfig(actualProvider: Provider, model: Model): A
     mode = 'chat'
   }
 
-  const headers: BaseExtraOptions['headers'] = {
+  const headers: BaseExtraOptions['headers'] = sanitizeHeaders({
     ...defaultAppHeaders(),
     ...actualProvider.extra_headers
-  }
+  })
   if (aiSdkProviderId === 'openai') {
     if (actualProvider.extra_headers?.['X-Api-Key'] === undefined) {
       headers['X-Api-Key'] = baseConfig.apiKey

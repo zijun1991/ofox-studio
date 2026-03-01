@@ -5,7 +5,7 @@
 import * as z from 'zod'
 
 // ---- Channel type discriminator ----
-export const ChannelTypeSchema = z.enum(['webhook', 'email', 'telegram'])
+export const ChannelTypeSchema = z.enum(['webhook', 'email', 'telegram', 'coworker'])
 export type ChannelType = z.infer<typeof ChannelTypeSchema>
 
 // ---- Channel status ----
@@ -61,6 +61,21 @@ export const TelegramChannelConfigSchema = z.object({
 })
 export type TelegramChannelConfig = z.infer<typeof TelegramChannelConfigSchema>
 
+// ---- Coworker-specific config ----
+export const CoworkerChannelConfigSchema = z.object({
+  /** Coworker system Base URL (no trailing slash) */
+  baseUrl: z.string().default('http://192.168.0.51:8003'),
+  /** Authentication Token */
+  token: z.string(),
+  /** Whether to subscribe to user status WebSocket events */
+  enableUserStatusEvents: z.boolean().default(false),
+  /** WebSocket reconnect interval (seconds), base for exponential backoff */
+  reconnectIntervalSec: z.number().min(1).default(5),
+  /** Max reconnect attempts (0 = unlimited) */
+  maxReconnectAttempts: z.number().min(0).default(20)
+})
+export type CoworkerChannelConfig = z.infer<typeof CoworkerChannelConfigSchema>
+
 // ---- Proxy Configuration ----
 export const ProxyModeSchema = z.enum(['global', 'custom'])
 export type ProxyMode = z.infer<typeof ProxyModeSchema>
@@ -90,6 +105,7 @@ export const ChannelEntitySchema = z.object({
   webhookConfig: WebhookChannelConfigSchema.optional(),
   emailConfig: EmailChannelConfigSchema.optional(),
   telegramConfig: TelegramChannelConfigSchema.optional(),
+  coworkerConfig: CoworkerChannelConfigSchema.optional(),
 
   // Proxy configuration (for Telegram and Email channels)
   proxyConfig: ChannelProxyConfigSchema.optional(),

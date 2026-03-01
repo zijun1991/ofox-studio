@@ -27,6 +27,7 @@ import type {
 } from '@renderer/types/sdk'
 import { withoutTrailingSlash } from '@renderer/utils/api'
 import { isOllamaProvider } from '@renderer/utils/provider'
+import { sanitizeHeaders } from '@shared/utils'
 
 import { BaseApiClient } from '../BaseApiClient'
 import { normalizeAzureOpenAIEndpoint } from './azureOpenAIEndpoint'
@@ -191,10 +192,10 @@ export abstract class OpenAIBaseClient<
     let apiKeyForSdkInstance = this.apiKey
     let baseURLForSdkInstance = this.getBaseURL()
     logger.debug('baseURLForSdkInstance', { baseURLForSdkInstance })
-    let headersForSdkInstance = {
+    let headersForSdkInstance = sanitizeHeaders({
       ...this.defaultHeaders(),
       ...this.provider.extra_headers
-    }
+    })
 
     if (this.provider.id === 'copilot') {
       const defaultHeaders = store.getState().copilot.defaultHeaders

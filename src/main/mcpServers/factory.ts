@@ -4,6 +4,7 @@ import type { BuiltinMCPServerName } from '@types'
 import { BuiltinMCPServerNames } from '@types'
 
 import BraveSearchServer from './brave-search'
+import CoworkerServer from './coworker'
 import DiDiMcpServer from './didi-mcp'
 import DifyKnowledgeServer from './dify-knowledge'
 import FetchServer from './fetch'
@@ -63,6 +64,9 @@ export function createInMemoryMCPServer(
     }
     case BuiltinMCPServerNames.llm: {
       return new LlmServer().server
+    }
+    case BuiltinMCPServerNames.coworker: {
+      return new CoworkerServer(envs.COWORKER_BASE_URL, envs.COWORKER_TOKEN).server
     }
     default:
       throw new Error(`Unknown in-memory MCP server: ${name}`)

@@ -125,7 +125,8 @@ class OfoxProviderService {
             updateProvider({
               id: providerId,
               models: convertedModels,
-              apiHost: config.apiHost
+              apiHost: config.apiHost,
+              apiKey: apiKey
             })
           )
           logger.debug(`Updated provider ${providerId} with ${convertedModels.length} models`)

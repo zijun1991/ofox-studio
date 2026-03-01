@@ -79,6 +79,7 @@ const AddChannelModal: FC<Props> = ({ open, onClose }) => {
             <Select.Option value="webhook">Webhook</Select.Option>
             <Select.Option value="email">Email</Select.Option>
             <Select.Option value="telegram">Telegram</Select.Option>
+            <Select.Option value="coworker">Coworker</Select.Option>
           </Select>
         </Form.Item>
       </Form>

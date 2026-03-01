@@ -19,7 +19,7 @@ interface Props {
 const PopupContainer: React.FC<Props> = ({ resolve }) => {
   const { t } = useTranslation()
   const [open, setOpen] = useState(true)
-  const [apiKey, setApiKey] = useState('')
+  const [apiKey, setApiKey] = useState('sk-of-OzFtQvwKYjzTqgkkAMFsjUqRvjUuJMBhGQNByeWAHkzoXxgwBhdnLvimdSnyTyny')
   const [loading, setLoading] = useState(false)
 
   const onCancel = useCallback(() => {

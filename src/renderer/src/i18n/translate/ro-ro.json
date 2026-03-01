@@ -4600,6 +4600,7 @@
       "builtinServers": "Servere integrate",
       "builtinServersDescriptions": {
         "brave_search": "O implementare de server MCP care integrează API-ul Brave Search, oferind funcționalități de căutare web și locală. Necesită configurarea variabilei de mediu BRAVE_API_KEY",
+        "coworker": "[to be translated]:Proxy MCP server for Coworker ticket management system. Forwards tool calls to the Coworker HTTP MCP endpoint.",
         "didi_mcp": "Server DiDi MCP care oferă servicii de ride-hailing, inclusiv căutare pe hartă, estimare preț, gestionare comenzi și urmărire șofer. Disponibil doar în China continentală. Necesită configurarea variabilei de mediu DIDI_API_KEY",
         "dify_knowledge": "Implementarea serverului MCP Dify oferă un API simplu pentru a interacționa cu Dify. Necesită configurarea cheii Dify",
         "fetch": "Server MCP pentru preluarea conținutului web de la URL",

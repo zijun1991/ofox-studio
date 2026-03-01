@@ -566,6 +566,10 @@ export class ChannelManager {
         const { TelegramConnector } = await import('./connectors/TelegramConnector')
         return new TelegramConnector(channel)
       }
+      case 'coworker': {
+        const { CoworkerConnector } = await import('./connectors/CoworkerConnector')
+        return new CoworkerConnector(channel)
+      }
       default:
         throw new Error(`Unsupported channel type: ${channel.type}`)
     }

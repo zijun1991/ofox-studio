@@ -4600,6 +4600,7 @@
       "builtinServers": "Встроенные серверы",
       "builtinServersDescriptions": {
         "brave_search": "реализация сервера MCP с интеграцией API поиска Brave, обеспечивающая функции веб-поиска и локального поиска. Требуется настройка переменной среды BRAVE_API_KEY",
+        "coworker": "[to be translated]:Proxy MCP server for Coworker ticket management system. Forwards tool calls to the Coworker HTTP MCP endpoint.",
         "didi_mcp": "Сервер DiDi MCP, предоставляющий услуги такси, включая поиск на карте, оценку стоимости, управление заказами и отслеживание водителей. Доступен только в материковом Китае. Требует настройки переменной окружения DIDI_API_KEY",
         "dify_knowledge": "Реализация сервера MCP Dify, предоставляющая простой API для взаимодействия с Dify. Требуется настройка ключа Dify",
         "fetch": "MCP-сервер для получения содержимого веб-страниц по URL",
