@@ -1,9 +1,7 @@
-import OfoxApiKeyModal from '@renderer/components/OfoxApiKeyModal'
-import { OFOX_PROVIDER_CONFIGS, OFOX_SUPPORTED_PROTOCOLS } from '@renderer/config/ofox'
 import { useTheme } from '@renderer/context/ThemeProvider'
-import OfoxProviderService from '@renderer/services/OfoxProviderService'
-import { updateProvider } from '@renderer/store/llm'
-import { setApiKey, setShowLoginModal } from '@renderer/store/ofoxStore'
+import { updateOfoxApiKey } from '@renderer/store/llm'
+import { setShowLoginModal } from '@renderer/store/ofoxStore'
+import type { Provider } from '@renderer/types'
 import { Avatar, Button, Input, message } from 'antd'
 import type { FC } from 'react'
 import { useState } from 'react'
@@ -15,16 +13,19 @@ const UserInfoCard: FC = () => {
   const { t } = useTranslation()
   const { theme } = useTheme()
   const dispatch = useDispatch()
-  const { isLoggedIn, user, apiKey } = useSelector(
+  const { isLoggedIn, user } = useSelector(
     (state: {
       ofox: {
         isLoggedIn: boolean
         user: { id: string; email: string; name?: string; image?: string } | null
-        apiKey: string
       }
     }) => state.ofox
   )
-  const [inputApiKey, setInputApiKey] = useState(apiKey || '')
+  const ofoxApiKey = useSelector(
+    (state: { llm: { providers: Provider[] } }) =>
+      state.llm.providers.find((p: Provider) => p.id === 'ofox-openai')?.apiKey || ''
+  )
+  const [inputApiKey, setInputApiKey] = useState(ofoxApiKey || '')
 
   const handleLogin = () => {
     dispatch(setShowLoginModal(true))
@@ -35,34 +36,13 @@ const UserInfoCard: FC = () => {
       message.warning(t('settings.account.api_key_required'))
       return
     }
-    // 保存到 Redux store
-    dispatch(setApiKey(inputApiKey.trim()))
-    // 同时更新所有 Ofox Provider 的 apiKey
-    for (const protocol of OFOX_SUPPORTED_PROTOCOLS) {
-      const config = OFOX_PROVIDER_CONFIGS[protocol]
-      dispatch(
-        updateProvider({
-          id: config.id,
-          apiKey: inputApiKey.trim()
-        })
-      )
-    }
+    dispatch(updateOfoxApiKey(inputApiKey.trim()))
     message.success(t('settings.account.api_key_saved'))
   }
 
-  const handleResetApiKey = async () => {
-    const newApiKey = await OfoxApiKeyModal.show()
-    if (newApiKey) {
-      localStorage.setItem('ofox_api_key', newApiKey)
-      dispatch(setApiKey(newApiKey))
-      for (const protocol of OFOX_SUPPORTED_PROTOCOLS) {
-        const config = OFOX_PROVIDER_CONFIGS[protocol]
-        dispatch(updateProvider({ id: config.id, apiKey: newApiKey }))
-      }
-      setInputApiKey(newApiKey)
-      await OfoxProviderService.getInstance().syncProviders(dispatch)
-      message.success('API Key 已重置')
-    }
+  const handleResetApiKey = () => {
+    setInputApiKey('')
+    dispatch(updateOfoxApiKey(''))
   }
 
   const getInitials = () => {

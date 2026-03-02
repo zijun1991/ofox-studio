@@ -5,7 +5,6 @@ import { loggerService } from '@logger'
 import type { AiSdkMiddlewareConfig } from '@renderer/aiCore/middleware/AiSdkMiddlewareBuilder'
 import { buildStreamTextParams } from '@renderer/aiCore/prepareParams'
 import { isDedicatedImageGenerationModel, isEmbeddingModel, isFunctionCallingModel } from '@renderer/config/models'
-import { OFOX_PROVIDER_IDS } from '@renderer/config/ofox'
 import { getStoreSetting } from '@renderer/hooks/useSettings'
 import i18n from '@renderer/i18n'
 import store from '@renderer/store'
@@ -605,11 +604,6 @@ export async function fetchGenerate({
 export function hasApiKey(provider: Provider) {
   if (!provider) return false
 
-  // Ofox Provider 代码中已硬编码 API Key，始终有效
-  if ((OFOX_PROVIDER_IDS as string[]).includes(provider.id)) {
-    return true
-  }
-
   if (
     (isSystemProvider(provider) && NOT_SUPPORT_API_KEY_PROVIDERS.includes(provider.id)) ||
     NOT_SUPPORT_API_KEY_PROVIDER_TYPES.includes(provider.type)
@@ -623,12 +617,6 @@ export function hasApiKey(provider: Provider) {
  * Returns empty string for providers that don't require API keys
  */
 function getRotatedApiKey(provider: Provider): string {
-  // Ofox Provider 使用 store 中用户设置的 API Key
-  if ((OFOX_PROVIDER_IDS as string[]).includes(provider.id)) {
-    const state = store.getState()
-    return state?.ofox?.apiKey || ''
-  }
-
   // Handle providers that don't require API keys
   if (!provider.apiKey || provider.apiKey.trim() === '') {
     return ''

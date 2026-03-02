@@ -5,12 +5,8 @@ import {
   listAllAvailableModels,
   validateModelId
 } from '@main/apiServer/utils'
-import { reduxService } from '@main/services/ReduxService'
 
 import { DEFAULT_TEMPERATURE, logger } from './types'
-
-// Ofox Provider IDs (与 apiServer/utils/index.ts 保持一致)
-const OFOX_PROVIDER_IDS = ['ofox-openai', 'ofox-anthropic', 'ofox-gemini']
 
 export async function resolveModelToChat(modelStr: string, temperature?: number): Promise<ChatOpenAI> {
   const validation = await validateModelId(modelStr)
@@ -27,12 +23,7 @@ export async function resolveModelToChat(modelStr: string, temperature?: number)
     )
   }
 
-  // For Ofox providers, always fetch fresh apiKey from Redux (bypass getAvailableProviders cache)
-  let apiKey = provider.apiKey
-  if (OFOX_PROVIDER_IDS.includes(provider.id)) {
-    const ofoxState = await reduxService.select<{ apiKey: string }>('state.ofox')
-    apiKey = ofoxState?.apiKey || ''
-  }
+  const apiKey = provider.apiKey
 
   if (!apiKey) {
     throw new Error(`API key is missing for provider '${provider.id}'. Please configure the API key in settings.`)

@@ -246,6 +246,14 @@ const llmSlice = createSlice({
           provider.models[modelIndex] = action.payload.model
         }
       }
+    },
+    updateOfoxApiKey: (state, action: PayloadAction<string>) => {
+      const ofoxIds = ['ofox-openai', 'ofox-anthropic', 'ofox-gemini']
+      state.providers.forEach((p) => {
+        if (ofoxIds.includes(p.id)) {
+          p.apiKey = action.payload
+        }
+      })
     }
   }
 })
@@ -273,7 +281,8 @@ export const {
   setAwsBedrockSecretAccessKey,
   setAwsBedrockApiKey,
   setAwsBedrockRegion,
-  updateModel
+  updateModel,
+  updateOfoxApiKey
 } = llmSlice.actions
 
 export default llmSlice.reducer

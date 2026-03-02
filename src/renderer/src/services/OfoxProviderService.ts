@@ -52,7 +52,6 @@ class OfoxProviderService {
 
     const state = window.store?.getState() as RootState
     const currentProviders = state?.llm?.providers || []
-    const apiKey = state?.ofox?.apiKey || ''
 
     for (const protocol of OFOX_SUPPORTED_PROTOCOLS) {
       const config = OFOX_PROVIDER_CONFIGS[protocol]
@@ -62,16 +61,16 @@ class OfoxProviderService {
       const existingProvider = currentProviders.find((p) => p.id === providerId)
 
       if (!existingProvider) {
-        // 创建空的 provider，models 列表为空
+        // 创建空的 provider，models 列表为空，apiKey 由用户在设置中配置（persist 恢复）
         const newProvider: Provider = {
           id: providerId,
           name: config.name,
           type: config.type,
-          apiKey: apiKey,
+          apiKey: '',
           apiHost: config.apiHost,
           models: [],
           enabled: true,
-          isSystem: false
+          isSystem: true
         }
         dispatch(addProvider(newProvider))
         logger.info(`Initialized empty provider ${providerId}`)
@@ -100,10 +99,12 @@ class OfoxProviderService {
       const ofoxModels = response.data
       logger.info(`Fetched ${ofoxModels.length} models from Ofox`)
 
-      // 2. 获取当前 providers 状态和 apiKey
+      // 2. 获取当前 providers 状态
       const state = window.store?.getState() as RootState
       const currentProviders = state?.llm?.providers || []
-      const apiKey = state?.ofox?.apiKey || ''
+
+      // 从已有的 OFOX provider 读取 apiKey（用于新建 provider 时继承）
+      const existingOfoxProvider = currentProviders.find((p) => p.id === 'ofox-openai')
 
       // 3. 为每个支持的协议创建或更新供应商
       for (const protocol of OFOX_SUPPORTED_PROTOCOLS) {
@@ -120,27 +121,26 @@ class OfoxProviderService {
         const existingProvider = currentProviders.find((p) => p.id === providerId)
 
         if (existingProvider) {
-          // 更新现有供应商的模型和 apiHost（确保配置同步）
+          // 更新现有供应商的模型和 apiHost（不覆盖 apiKey，由用户在设置中管理）
           dispatch(
             updateProvider({
               id: providerId,
               models: convertedModels,
-              apiHost: config.apiHost,
-              apiKey: apiKey
+              apiHost: config.apiHost
             })
           )
           logger.debug(`Updated provider ${providerId} with ${convertedModels.length} models`)
         } else {
-          // 创建新供应商
+          // 创建新供应商，从已有 OFOX provider 继承 apiKey
           const newProvider: Provider = {
             id: providerId,
             name: config.name,
             type: config.type,
-            apiKey: apiKey,
+            apiKey: existingOfoxProvider?.apiKey || '',
             apiHost: config.apiHost,
             models: convertedModels,
             enabled: true,
-            isSystem: false
+            isSystem: true
           }
           dispatch(addProvider(newProvider))
           logger.info(`Created new provider ${providerId} with ${convertedModels.length} models`)

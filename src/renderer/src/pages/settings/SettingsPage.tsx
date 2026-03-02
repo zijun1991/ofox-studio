@@ -26,7 +26,6 @@ import { Link, Route, Routes, useLocation } from 'react-router-dom'
 import styled from 'styled-components'
 
 import AboutSettings from './AboutSettings'
-import AccountSettings from './AccountSettings'
 import DataSettings from './DataSettings/DataSettings'
 import DisplaySettings from './DisplaySettings/DisplaySettings'
 import DocProcessSettings from './DocProcessSettings'
@@ -34,6 +33,7 @@ import GeneralSettings from './GeneralSettings'
 import MCPSettings from './MCPSettings'
 import MemorySettings from './MemorySettings'
 import ModelEmployeeSettings from './ModelEmployeeSettings'
+import { ProviderList } from './ProviderSettings'
 import QuickAssistantSettings from './QuickAssistantSettings'
 import QuickPhraseSettings from './QuickPhraseSettings'
 import SelectionAssistantSettings from './SelectionAssistantSettings/SelectionAssistantSettings'
@@ -157,7 +157,7 @@ const SettingsPage: FC = () => {
         </SettingMenus>
         <SettingContent>
           <Routes>
-            <Route path="provider" element={<AccountSettings />} />
+            <Route path="provider/*" element={<ProviderList />} />
             <Route path="model" element={<ModelSettings />} />
             <Route path="model-employee" element={<ModelEmployeeSettings />} />
             <Route path="websearch/*" element={<WebSearchSettings />} />

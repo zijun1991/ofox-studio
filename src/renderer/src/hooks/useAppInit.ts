@@ -1,6 +1,5 @@
 import { loggerService } from '@logger'
 import NotificationModal from '@renderer/components/NotificationModal'
-import OfoxApiKeyModal from '@renderer/components/OfoxApiKeyModal'
 import { isMac } from '@renderer/config/constant'
 import { isLocalAi } from '@renderer/config/env'
 import { useTheme } from '@renderer/context/ThemeProvider'
@@ -11,10 +10,11 @@ import MemoryService from '@renderer/services/MemoryService'
 import OfoxProviderService from '@renderer/services/OfoxProviderService'
 import store, { handleSaveData, useAppDispatch, useAppSelector } from '@renderer/store'
 import { setChannelStatus, updateChannelMetadata } from '@renderer/store/channels'
+import { updateOfoxApiKey } from '@renderer/store/llm'
 import { initializeMCPServers } from '@renderer/store/mcp'
 import { selectMemoryConfig } from '@renderer/store/memory'
 import { importConfig } from '@renderer/store/modelEmployee'
-import { setApiKey, setChecking, setModelsReady } from '@renderer/store/ofoxStore'
+import { setModelsReady } from '@renderer/store/ofoxStore'
 import { setAvatar, setFilesPath, setResourcesPath, setUpdateState } from '@renderer/store/runtime'
 import { loadTopicMessagesThunk } from '@renderer/store/thunk/messageThunk'
 import {
@@ -84,54 +84,33 @@ export function useAppInit() {
     const existingServers = store.getState().mcp.servers
     initializeMCPServers(existingServers, dispatch)
 
-    // Check OFOX API Key on app startup (临时方案，替代登录检查)
-    // TODO: 后续会整体移除，替换为正式登录流程
-    // 注意：apiKey 已经在 store 创建时从 localStorage 同步初始化，此处只需要检查是否需要显示输入弹窗
-    const checkApiKey = async () => {
-      try {
-        dispatch(setChecking(true))
+    // 同步 OFOX 模型列表（不再显示弹窗，apiKey 由用户在设置页配置）
+    const syncOfoxModels = async () => {
+      // 一次性数据迁移：将 localStorage 中的旧 apiKey 迁移到 provider
+      const cachedKey = localStorage.getItem('ofox_api_key')
+      const firstOfoxProvider = store.getState().llm.providers.find((p) => p.id === 'ofox-openai')
+      if (cachedKey && !firstOfoxProvider?.apiKey) {
+        dispatch(updateOfoxApiKey(cachedKey))
+        localStorage.removeItem('ofox_api_key')
+        logger.info('Migrated OFOX API Key from localStorage to provider config')
+      }
 
-        // apiKey 已经在 store 创建时从 localStorage 同步初始化
-        // 此处只需要检查 store 中是否有值，没有则显示输入弹窗
-        const { apiKey } = store.getState().ofox
-
-        if (apiKey) {
-          logger.info('OFOX API Key already initialized from localStorage')
-        } else {
-          // 无缓存，显示 API Key 输入弹窗
-          logger.info('No cached API Key found, showing input modal')
-          const inputApiKey = await OfoxApiKeyModal.show()
-
-          if (inputApiKey) {
-            // 保存到 localStorage 和 Redux store
-            localStorage.setItem('ofox_api_key', inputApiKey)
-            dispatch(setApiKey(inputApiKey))
-            logger.info('API Key saved successfully')
-          } else {
-            // 用户取消输入，保持未登录状态
-            logger.warn('User cancelled API Key input')
-          }
+      // 检查是否有 apiKey，有则同步模型
+      const currentKey = store.getState().llm.providers.find((p) => p.id === 'ofox-openai')?.apiKey
+      if (currentKey) {
+        const SYNC_TIMEOUT = 15_000
+        try {
+          await Promise.race([
+            OfoxProviderService.getInstance().syncProviders(dispatch),
+            new Promise<void>((_, reject) =>
+              setTimeout(() => reject(new Error('Model sync timed out after 15s')), SYNC_TIMEOUT)
+            )
+          ])
+        } catch (error) {
+          logger.error('Failed to sync Ofox providers:', error as Error)
         }
-
-        // API Key 就绪后，同步 Ofox 模型列表到 providers（带超时保护）
-        const currentApiKey = store.getState().ofox.apiKey
-        if (currentApiKey) {
-          const SYNC_TIMEOUT = 15_000
-          try {
-            await Promise.race([
-              OfoxProviderService.getInstance().syncProviders(dispatch),
-              new Promise<void>((_, reject) =>
-                setTimeout(() => reject(new Error('Model sync timed out after 15s')), SYNC_TIMEOUT)
-              )
-            ])
-          } catch (error) {
-            logger.error('Failed to sync Ofox providers:', error as Error)
-          }
-        }
-      } catch (error) {
-        logger.error('Failed to check API Key:', error as Error)
-      } finally {
-        dispatch(setChecking(false))
+      } else {
+        logger.info('No OFOX API Key configured, skipping model sync')
       }
     }
 
@@ -192,8 +171,8 @@ export function useAppInit() {
     // 核心初始化流程：串行阻塞执行，确保模型列表和默认员工配置在后续逻辑前就绪
     const initCore = async () => {
       try {
-        // 阶段1：检查 API Key 并同步模型列表（阻塞）
-        await checkApiKey()
+        // 阶段1：同步 OFOX 模型列表（阻塞）
+        await syncOfoxModels()
 
         // 阶段2：模型就绪后加载默认员工配置（阻塞）
         await loadDefaultModelEmployees()

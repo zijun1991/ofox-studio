@@ -6,9 +6,6 @@ import type { ApiModel, Model, Provider } from '@types'
 
 const logger = loggerService.withContext('ApiServerUtils')
 
-// Ofox Provider IDs (与 renderer 中的 OFOX_PROVIDER_IDS 保持一致)
-const OFOX_PROVIDER_IDS = ['ofox-openai', 'ofox-anthropic', 'ofox-gemini']
-
 /**
  * Extract a single string value from Express params/query which can be string | string[]
  * Returns undefined if the value is an array or undefined
@@ -22,7 +19,7 @@ export function getParamString(value: string | string[] | undefined): string | u
 
 // Cache configuration
 const PROVIDERS_CACHE_KEY = 'api-server:providers'
-const PROVIDERS_CACHE_TTL = 1000 // 1 second - short TTL to ensure Ofox apiKey is refreshed quickly
+const PROVIDERS_CACHE_TTL = 1000 // 1 second
 
 export async function getAvailableProviders(): Promise<Provider[]> {
   try {
@@ -42,20 +39,10 @@ export async function getAvailableProviders(): Promise<Provider[]> {
       return []
     }
 
-    // Get Ofox apiKey from Redux store (not persisted, fetched dynamically)
-    const ofoxState = await reduxService.select<{ apiKey: string }>('state.ofox')
-    const ofoxApiKey = ofoxState?.apiKey || ''
-
     // Support OpenAI and Anthropic type providers for API server
-    const supportedProviders = providers
-      .filter((p: Provider) => p.enabled && (p.type === 'openai' || p.type === 'anthropic'))
-      .map((p: Provider) => {
-        // For Ofox providers, use the dynamically fetched apiKey instead of persisted one
-        if (OFOX_PROVIDER_IDS.includes(p.id)) {
-          return { ...p, apiKey: ofoxApiKey }
-        }
-        return p
-      })
+    const supportedProviders = providers.filter(
+      (p: Provider) => p.enabled && (p.type === 'openai' || p.type === 'anthropic')
+    )
 
     // Cache the filtered results
     CacheService.set(PROVIDERS_CACHE_KEY, supportedProviders, PROVIDERS_CACHE_TTL)
